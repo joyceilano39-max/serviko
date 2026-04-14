@@ -79,9 +79,7 @@ export default function ServicesPage() {
               <span>⏱ {service.duration}</span>
               <span className="font-bold text-pink-500">₱{service.price}</span>
             </div>
-            <button className="mt-2 bg-pink-500 text-white rounded-xl py-2 text-sm font-medium hover:bg-pink-600 transition">
-              Book Now
-            </button>
+            <a href="/booking" className="mt-2 bg-pink-500 text-white rounded-xl py-2 text-sm font-medium hover:bg-pink-600 transition text-center block">Book Now</a>
           </div>
         ))}
       </div>
