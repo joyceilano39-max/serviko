@@ -448,9 +448,8 @@ export default function BookingPage() {
               <div key={i} style={{ marginBottom: "8px" }}>
                 <p style={{ fontWeight: 600, fontSize: "11px", margin: "0 0 3px", color: "#E61D72" }}>👤 {member.name}</p>
                 {member.services.map(s => (
-                  <div key={s.name} style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "2px", paddingLeft: "8px" }}>
-                    <span style={{ color: "#555" }}>{s.name}</span>
-                    <span style={{ fontWeight: 600 }}>₱{s.price}</span>
+                  <div key={s.name} style={{ fontSize: "11px", marginBottom: "2px", paddingLeft: "8px" }}>
+                    <span style={{ color: "#555" }}>• {s.name}</span>
                   </div>
                 ))}
               </div>
