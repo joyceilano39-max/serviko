@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { amount, description, name, email, phone } = await req.json();
+  const { amount, description, name } = await req.json();
 
   const response = await fetch("https://api.paymongo.com/v1/links", {
     method: "POST",
@@ -15,6 +15,10 @@ export async function POST(req: NextRequest) {
           amount: amount * 100,
           description,
           remarks: `Booking for ${name}`,
+          redirect: {
+            success: "https://serviko.dev/payment-success",
+            failed: "https://serviko.dev/checkout",
+          },
         },
       },
     }),
