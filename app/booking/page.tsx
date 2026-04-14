@@ -112,7 +112,7 @@ export default function BookingPage() {
             <p style={{ color: "#E61D72", fontWeight: 900, fontSize: "18px", margin: "12px 0 0" }}>Total Paid: ₱{total}</p>
           </div>
           <div style={{ display: "flex", gap: "12px" }}>
-            <a href="/dashboard" style={{ flex: 1, background: "#E61D72", color: "#fff", padding: "12px", borderRadius: "12px", textDecoration: "none", fontWeight: 700, textAlign: "center" }}>View Booking</a>
+            <a href="/checkout" style={{ flex: 1, background: "#E61D72", color: "#fff", padding: "12px", borderRadius: "12px", textDecoration: "none", fontWeight: 700, textAlign: "center" }}>?? Proceed to Payment</a>
             <a href="/" style={{ flex: 1, background: "#f0f0f0", color: "#555", padding: "12px", borderRadius: "12px", textDecoration: "none", fontWeight: 700, textAlign: "center" }}>Go Home</a>
           </div>
         </div>
@@ -434,3 +434,4 @@ export default function BookingPage() {
     </div>
   );
 }
+
