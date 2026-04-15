@@ -14,8 +14,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Serviko — Para sa Pilipino",
-  description: "Book trusted home services anywhere in the world.",
+  title: "Serviko - Para sa Pilipino",
+  description: "Book beauty, wellness & home services near you!",
+  manifest: "/manifest.json",
+  themeColor: "#E61D72",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Serviko",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
 };
 
 export default function RootLayout({
@@ -31,10 +43,11 @@ export default function RootLayout({
       signUpFallbackRedirectUrl="/dashboard"
     >
       <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <head><link rel="apple-touch-icon" href="/icon-192.png" /></head><body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           {children}
         </body>
       </html>
     </ClerkProvider>
   );
 }
+
