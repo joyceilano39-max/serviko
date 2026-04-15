@@ -5,15 +5,14 @@ export default function PaymentSuccessPage() {
   const [count, setCount] = useState(5);
 
   useEffect(() => {
+    let seconds = 5;
     const interval = setInterval(() => {
-      setCount(prev => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          window.location.href = "/tracking";
-          return 0;
-        }
-        return prev - 1;
-      });
+      seconds--;
+      setCount(seconds);
+      if (seconds <= 0) {
+        clearInterval(interval);
+        window.location.replace("/tracking");
+      }
     }, 1000);
     return () => clearInterval(interval);
   }, []);
@@ -24,7 +23,7 @@ export default function PaymentSuccessPage() {
         <div style={{ fontSize: "72px", marginBottom: "16px" }}>✅</div>
         <h1 style={{ fontWeight: 900, color: "#22c55e", margin: "0 0 8px" }}>Payment Successful!</h1>
         <p style={{ color: "#888", margin: "0 0 8px" }}>Your booking is confirmed!</p>
-        <p style={{ color: "#E61D72", fontWeight: 700, fontSize: "18px", margin: "0 0 24px" }}>Redirecting in {count}...</p>
+        <p style={{ color: "#E61D72", fontWeight: 700, fontSize: "18px", margin: "0 0 24px" }}>Redirecting in {count} seconds...</p>
         <div style={{ width: "100%", height: "6px", background: "#eee", borderRadius: "4px", overflow: "hidden", marginBottom: "24px" }}>
           <div style={{ height: "100%", background: "#22c55e", borderRadius: "4px", width: `${((5 - count) / 5) * 100}%` }} />
         </div>
