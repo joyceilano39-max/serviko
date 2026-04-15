@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { amount, description, name } = await req.json();
+  const { amount, description, name, email } = await req.json();
 
-  const response = await fetch("https://api.paymongo.com/v1/links", {
+  const response = await fetch("https://api.paymongo.com/v1/checkout_sessions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -12,13 +12,23 @@ export async function POST(req: NextRequest) {
     body: JSON.stringify({
       data: {
         attributes: {
-          amount: amount * 100,
-          description,
-          remarks: `Booking for ${name}`,
-          redirect: {
-            success: "https://serviko.dev/payment-success",
-            failed: "https://serviko.dev/checkout",
+          billing: {
+            name: name || "Customer",
+            email: email || "customer@serviko.dev",
           },
+          line_items: [
+            {
+              amount: amount * 100,
+              currency: "PHP",
+              description: description,
+              name: description,
+              quantity: 1,
+            },
+          ],
+          payment_method_types: ["gcash", "card", "paymaya", "qrph"],
+          success_url: "https://serviko.dev/payment-success",
+          cancel_url: "https://serviko.dev/checkout",
+          description: description,
         },
       },
     }),
@@ -32,6 +42,6 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     checkoutUrl: data.data.attributes.checkout_url,
-    referenceNumber: data.data.attributes.reference_number,
+    referenceNumber: data.data.id,
   });
 }
