@@ -1,38 +1,38 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
 const promos = [
-  { id: 1, title: "First Booking!", desc: "Get ₱50 OFF your first service", code: "FIRST50", bg: "linear-gradient(135deg, #E61D72, #C01660)", emoji: "🎁" },
-  { id: 2, title: "Summer Special", desc: "20% OFF all massage services", code: "SUMMER20", bg: "linear-gradient(135deg, #7C3AED, #5B21B6)", emoji: "☀️" },
-  { id: 3, title: "Refer a Friend", desc: "Earn ₱100 for every referral", code: "REFER100", bg: "linear-gradient(135deg, #22c55e, #15803d)", emoji: "👫" },
+  { id: 1, title: "First Booking!", desc: "Get â‚±50 OFF your first service", code: "FIRST50", bg: "linear-gradient(135deg, #E61D72, #C01660)", emoji: "ðŸŽ" },
+  { id: 2, title: "Summer Special", desc: "20% OFF all massage services", code: "SUMMER20", bg: "linear-gradient(135deg, #7C3AED, #5B21B6)", emoji: "â˜€ï¸" },
+  { id: 3, title: "Refer a Friend", desc: "Earn â‚±100 for every referral", code: "REFER100", bg: "linear-gradient(135deg, #22c55e, #15803d)", emoji: "ðŸ‘«" },
 ];
 
 const categories = [
-  { icon: "💇", name: "Hair", keyword: "Hair" },
-  { icon: "💅", name: "Nails", keyword: "Manicure" },
-  { icon: "💆", name: "Massage", keyword: "Massage" },
-  { icon: "🧖", name: "Skin", keyword: "Facial" },
-  { icon: "👁️", name: "Lash", keyword: "Lash" },
-  { icon: "💄", name: "Makeup", keyword: "Makeup" },
-  { icon: "🧹", name: "Cleaning", keyword: "Cleaning" },
-  { icon: "🌿", name: "Garden", keyword: "Garden" },
-  { icon: "🎨", name: "Painting", keyword: "Painting" },
-  { icon: "🔧", name: "Repair", keyword: "Repair" },
+  { icon: "ðŸ’‡", name: "Hair", keyword: "Hair" },
+  { icon: "ðŸ’…", name: "Nails", keyword: "Manicure" },
+  { icon: "ðŸ’†", name: "Massage", keyword: "Massage" },
+  { icon: "ðŸ§–", name: "Skin", keyword: "Facial" },
+  { icon: "ðŸ‘ï¸", name: "Lash", keyword: "Lash" },
+  { icon: "ðŸ’„", name: "Makeup", keyword: "Makeup" },
+  { icon: "ðŸ§¹", name: "Cleaning", keyword: "Cleaning" },
+  { icon: "ðŸŒ¿", name: "Garden", keyword: "Garden" },
+  { icon: "ðŸŽ¨", name: "Painting", keyword: "Painting" },
+  { icon: "ðŸ”§", name: "Repair", keyword: "Repair" },
 ];
 
 const getArtistEmoji = (services: string[]) => {
-  if (!services) return "🌸";
-  if (services.some(s => s.toLowerCase().includes("hair"))) return "✂️";
-  if (services.some(s => s.toLowerCase().includes("massage"))) return "💆";
-  if (services.some(s => s.toLowerCase().includes("nail") || s.toLowerCase().includes("manicure"))) return "💅";
-  if (services.some(s => s.toLowerCase().includes("facial"))) return "🧖";
-  if (services.some(s => s.toLowerCase().includes("lash"))) return "👁️";
-  if (services.some(s => s.toLowerCase().includes("makeup"))) return "💄";
-  if (services.some(s => s.toLowerCase().includes("clean"))) return "🧹";
-  if (services.some(s => s.toLowerCase().includes("garden"))) return "🌿";
-  if (services.some(s => s.toLowerCase().includes("paint"))) return "🎨";
-  return "🌸";
+  if (!services) return "ðŸŒ¸";
+  if (services.some(s => s.toLowerCase().includes("hair"))) return "âœ‚ï¸";
+  if (services.some(s => s.toLowerCase().includes("massage"))) return "ðŸ’†";
+  if (services.some(s => s.toLowerCase().includes("nail") || s.toLowerCase().includes("manicure"))) return "ðŸ’…";
+  if (services.some(s => s.toLowerCase().includes("facial"))) return "ðŸ§–";
+  if (services.some(s => s.toLowerCase().includes("lash"))) return "ðŸ‘ï¸";
+  if (services.some(s => s.toLowerCase().includes("makeup"))) return "ðŸ’„";
+  if (services.some(s => s.toLowerCase().includes("clean"))) return "ðŸ§¹";
+  if (services.some(s => s.toLowerCase().includes("garden"))) return "ðŸŒ¿";
+  if (services.some(s => s.toLowerCase().includes("paint"))) return "ðŸŽ¨";
+  return "ðŸŒ¸";
 };
 
 const getStartingPrice = (services: string[]) => {
@@ -125,26 +125,26 @@ export default function HomePage() {
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 200 }}>
           <div style={{ background: "#fff", borderRadius: "24px 24px 0 0", padding: "32px 24px", width: "100%", maxWidth: "600px" }}>
             <div style={{ textAlign: "center", marginBottom: "24px" }}>
-              <div style={{ fontSize: "48px", marginBottom: "8px" }}>📍</div>
+              <div style={{ fontSize: "48px", marginBottom: "8px" }}>ðŸ“</div>
               <h2 style={{ fontWeight: 900, margin: "0 0 8px" }}>Where are you?</h2>
               <p style={{ color: "#888", margin: 0, fontSize: "13px" }}>We'll show you the nearest artists!</p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
               <div onClick={() => {
                 navigator.geolocation?.getCurrentPosition(pos => {
-                  setSavedAddress("Current Location 📍");
+                  setSavedAddress("Current Location ðŸ“");
                   setShowAddressModal(false);
                 });
               }} style={{ display: "flex", alignItems: "center", gap: "10px", background: "#FFF0F6", borderRadius: "12px", padding: "14px 16px", cursor: "pointer" }}>
-                <span style={{ fontSize: "20px" }}>🎯</span>
+                <span style={{ fontSize: "20px" }}>ðŸŽ¯</span>
                 <span style={{ fontWeight: 600, color: "#E61D72", fontSize: "14px" }}>Use Current Location</span>
               </div>
               <input type="text" value={address} onChange={e => setAddress(e.target.value)}
                 placeholder="Type your address..."
                 style={{ padding: "12px 16px", borderRadius: "12px", border: "1px solid #FFD6E7", fontSize: "14px" }} />
               <p style={{ fontWeight: 600, fontSize: "12px", color: "#888", margin: 0 }}>SAVED ADDRESSES</p>
-              {[{ icon: "🏠", label: "Home", addr: "FCM North Fairview, Quezon City" },
-                { icon: "💼", label: "Work", addr: "Ayala Ave, Makati City" }].map(s => (
+              {[{ icon: "ðŸ ", label: "Home", addr: "FCM North Fairview, Quezon City" },
+                { icon: "ðŸ’¼", label: "Work", addr: "Ayala Ave, Makati City" }].map(s => (
                 <div key={s.label} onClick={() => { setSavedAddress(s.addr); setShowAddressModal(false); }}
                   style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 0", borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}>
                   <span style={{ fontSize: "20px" }}>{s.icon}</span>
@@ -157,7 +157,7 @@ export default function HomePage() {
             </div>
             <button onClick={() => { setSavedAddress(address || "Quezon City"); setShowAddressModal(false); }}
               style={{ width: "100%", background: "#E61D72", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer", fontSize: "15px" }}>
-              Confirm Location 📍
+              Confirm Location ðŸ“
             </button>
           </div>
         </div>
@@ -169,14 +169,14 @@ export default function HomePage() {
           <div style={{ background: "#fff", borderRadius: "24px", padding: "32px", maxWidth: "400px", width: "100%", textAlign: "center" }}>
             {!notified ? (
               <>
-                <div style={{ fontSize: "56px", marginBottom: "12px" }}>🔔</div>
+                <div style={{ fontSize: "56px", marginBottom: "12px" }}>ðŸ””</div>
                 <h3 style={{ fontWeight: 900, margin: "0 0 8px" }}>Notify Me</h3>
                 <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>
                   We'll notify you when <strong>{notifyArtist.name}</strong> becomes available!
                 </p>
                 <div style={{ background: "#FFF0F6", borderRadius: "12px", padding: "16px", marginBottom: "20px", textAlign: "left" }}>
                   <p style={{ fontWeight: 600, color: "#E61D72", margin: "0 0 8px", fontSize: "13px" }}>You'll be notified via:</p>
-                  {["📧 Email notification", "📱 App notification", "💬 SMS (if enabled)"].map(t => (
+                  {["ðŸ“§ Email notification", "ðŸ“± App notification", "ðŸ’¬ SMS (if enabled)"].map(t => (
                     <p key={t} style={{ color: "#555", fontSize: "12px", margin: "0 0 4px" }}>{t}</p>
                   ))}
                 </div>
@@ -187,13 +187,13 @@ export default function HomePage() {
                   </button>
                   <button onClick={() => setNotified(true)}
                     style={{ flex: 2, background: "#E61D72", color: "#fff", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
-                    🔔 Notify Me!
+                    ðŸ”” Notify Me!
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <div style={{ fontSize: "56px", marginBottom: "12px" }}>✅</div>
+                <div style={{ fontSize: "56px", marginBottom: "12px" }}>âœ…</div>
                 <h3 style={{ fontWeight: 900, margin: "0 0 8px", color: "#22c55e" }}>You're on the list!</h3>
                 <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>
                   We'll notify you when {notifyArtist.name} is available.
@@ -217,11 +217,11 @@ export default function HomePage() {
                 <h3 style={{ fontWeight: 900, margin: "0 0 4px" }}>Similar Artists</h3>
                 <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>Available now with similar services</p>
               </div>
-              <button onClick={() => setSimilarArtist(null)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer" }}>✕</button>
+              <button onClick={() => setSimilarArtist(null)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer" }}>âœ•</button>
             </div>
             {getSimilarArtists(similarArtist).length === 0 ? (
               <div style={{ textAlign: "center", padding: "32px" }}>
-                <p style={{ fontSize: "40px" }}>😔</p>
+                <p style={{ fontSize: "40px" }}>ðŸ˜”</p>
                 <p style={{ color: "#888" }}>No similar artists available right now.</p>
                 <p style={{ color: "#888", fontSize: "13px" }}>Try scheduling for later!</p>
               </div>
@@ -234,14 +234,14 @@ export default function HomePage() {
                     </div>
                     <div>
                       <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{artist.name}</p>
-                      <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>📍 {artist.location}</p>
-                      <p style={{ color: "#22c55e", fontSize: "11px", margin: 0, fontWeight: 600 }}>🟢 Available Now</p>
+                      <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>ðŸ“ {artist.location}</p>
+                      <p style={{ color: "#22c55e", fontSize: "11px", margin: 0, fontWeight: 600 }}>ðŸŸ¢ Available Now</p>
                     </div>
                   </div>
                   <Link href={`/booking?artistId=${artist.id}&artistName=${encodeURIComponent(artist.name)}`}
                     onClick={() => setSimilarArtist(null)}
                     style={{ background: "#E61D72", color: "#fff", padding: "8px 16px", borderRadius: "20px", textDecoration: "none", fontSize: "12px", fontWeight: 700 }}>
-                    Book →
+                    Book â†’
                   </Link>
                 </div>
               ))
@@ -252,15 +252,15 @@ export default function HomePage() {
 
       {/* Navbar */}
       <nav style={{ background: "#fff", padding: "12px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", position: "sticky", top: 0, zIndex: 50 }}>
-        <Link href="/" style={{ color: "#E61D72", fontWeight: 900, fontSize: "20px", textDecoration: "none" }}>🌸 Serviko</Link>
+        <Link href="/" style={{ color: "#E61D72", fontWeight: 900, fontSize: "20px", textDecoration: "none" }}>ðŸŒ¸ Serviko</Link>
         <button onClick={() => setShowAddressModal(true)}
           style={{ display: "flex", alignItems: "center", gap: "6px", background: "#FFF0F6", border: "none", padding: "8px 12px", borderRadius: "20px", cursor: "pointer", flex: 1, maxWidth: "200px", margin: "0 12px" }}>
-          <span style={{ fontSize: "14px" }}>📍</span>
+          <span style={{ fontSize: "14px" }}>ðŸ“</span>
           <span style={{ fontSize: "12px", fontWeight: 600, color: "#E61D72", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{savedAddress || "Set Location"}</span>
-          <span style={{ color: "#E61D72", fontSize: "10px" }}>▼</span>
+          <span style={{ color: "#E61D72", fontSize: "10px" }}>â–¼</span>
         </button>
         <div style={{ display: "flex", gap: "8px" }}>
-          <Link href="/vouchers" style={{ fontSize: "20px", textDecoration: "none" }}>🎫</Link>
+          <Link href="/vouchers" style={{ fontSize: "20px", textDecoration: "none" }}>ðŸŽ«</Link>
           <Link href="/sign-in" style={{ background: "#E61D72", color: "#fff", padding: "7px 14px", borderRadius: "20px", textDecoration: "none", fontSize: "12px", fontWeight: 700 }}>Login</Link>
         </div>
       </nav>
@@ -268,10 +268,10 @@ export default function HomePage() {
       {/* Search */}
       <div style={{ background: "#fff", padding: "12px 20px", borderBottom: "1px solid #f0f0f0" }}>
         <div style={{ display: "flex", alignItems: "center", background: "#f5f5f5", borderRadius: "25px", padding: "10px 16px", gap: "8px" }}>
-          <span>🔍</span>
+          <span>ðŸ”</span>
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search services, artists..."
             style={{ border: "none", background: "transparent", flex: 1, fontSize: "14px", outline: "none" }} />
-          {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer" }}>✕</button>}
+          {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer" }}>âœ•</button>}
         </div>
       </div>
 
@@ -288,7 +288,7 @@ export default function HomePage() {
                 <p style={{ opacity: 0.9, margin: "0 0 12px", fontSize: "13px" }}>{promos[currentPromo].desc}</p>
                 <div style={{ background: "rgba(255,255,255,0.25)", display: "inline-block", padding: "6px 14px", borderRadius: "20px" }}>
                   <span style={{ fontWeight: 700, fontSize: "13px" }}>
-                    {copiedCode === promos[currentPromo].code ? "✅ Copied!" : `Code: ${promos[currentPromo].code} — Tap to copy`}
+                    {copiedCode === promos[currentPromo].code ? "âœ… Copied!" : `Code: ${promos[currentPromo].code} â€” Tap to copy`}
                   </span>
                 </div>
               </div>
@@ -305,7 +305,7 @@ export default function HomePage() {
 
         {/* Categories */}
         <div style={{ marginBottom: "20px" }}>
-          <h2 style={{ fontWeight: 900, margin: "0 0 12px", fontSize: "18px" }}>What do you need? 🌸</h2>
+          <h2 style={{ fontWeight: 900, margin: "0 0 12px", fontSize: "18px" }}>What do you need? ðŸŒ¸</h2>
           <div style={{ display: "flex", gap: "10px", overflowX: "auto", paddingBottom: "8px" }}>
             <button onClick={() => setSelectedCategory("")}
               style={{ flexShrink: 0, padding: "10px 16px", borderRadius: "25px", border: "none", cursor: "pointer", fontWeight: 700, fontSize: "12px", background: selectedCategory === "" ? "#E61D72" : "#fff", color: selectedCategory === "" ? "#fff" : "#555", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
@@ -325,10 +325,10 @@ export default function HomePage() {
         {/* Flash Deal */}
         <div style={{ background: "linear-gradient(135deg, #FFD700, #FFA500)", borderRadius: "16px", padding: "14px 18px", marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
-            <p style={{ fontWeight: 900, margin: "0 0 2px", fontSize: "15px" }}>⚡ Flash Deal Today!</p>
+            <p style={{ fontWeight: 900, margin: "0 0 2px", fontSize: "15px" }}>âš¡ Flash Deal Today!</p>
             <p style={{ color: "#333", fontSize: "12px", margin: 0 }}>Massage services 15% off until 6PM</p>
           </div>
-          <Link href="/services" style={{ background: "#fff", color: "#D97706", padding: "8px 16px", borderRadius: "20px", textDecoration: "none", fontWeight: 700, fontSize: "12px" }}>Grab Now →</Link>
+          <Link href="/services" style={{ background: "#fff", color: "#D97706", padding: "8px 16px", borderRadius: "20px", textDecoration: "none", fontWeight: 700, fontSize: "12px" }}>Grab Now â†’</Link>
         </div>
 
         {/* Artists */}
@@ -339,15 +339,15 @@ export default function HomePage() {
                 {selectedCategory ? `${selectedCategory} Artists` : "Artists Near You"}
               </h2>
               <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>
-                📍 {savedAddress || "Set location"} • {filteredArtists.filter(a => a.is_available).length} available now
+                ðŸ“ {savedAddress || "Set location"} â€¢ {filteredArtists.filter(a => a.is_available).length} available now
               </p>
             </div>
-            <Link href="/services" style={{ color: "#E61D72", fontSize: "13px", fontWeight: 600, textDecoration: "none" }}>See All →</Link>
+            <Link href="/services" style={{ color: "#E61D72", fontSize: "13px", fontWeight: 600, textDecoration: "none" }}>See All â†’</Link>
           </div>
 
           {loading ? (
             <div style={{ textAlign: "center", padding: "48px" }}>
-              <div style={{ fontSize: "40px", marginBottom: "12px" }}>🌸</div>
+              <div style={{ fontSize: "40px", marginBottom: "12px" }}>ðŸŒ¸</div>
               <p style={{ color: "#888" }}>Finding artists near you...</p>
             </div>
           ) : (
@@ -362,16 +362,16 @@ export default function HomePage() {
                       </div>
                       <div style={{ flex: 1 }}>
                         <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "15px" }}>{artist.name}</p>
-                        <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>📍 {artist.location}</p>
+                        <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>ðŸ“ {artist.location}</p>
                         {artist.distance_text && (
-                          <p style={{ color: "#E61D72", fontSize: "11px", margin: "0 0 2px", fontWeight: 600 }}>🚶 {artist.distance_text}</p>
+                          <p style={{ color: "#E61D72", fontSize: "11px", margin: "0 0 2px", fontWeight: 600 }}>ðŸš¶ {artist.distance_text}</p>
                         )}
-                        <p style={{ fontSize: "11px", margin: 0 }}>⭐ {parseFloat(artist.rating).toFixed(1)} ({artist.total_reviews} reviews)</p>
+                        <p style={{ fontSize: "11px", margin: 0 }}>â­ {parseFloat(artist.rating).toFixed(1)} ({artist.total_reviews} reviews)</p>
                       </div>
                     </div>
                     <div style={{ position: "absolute", top: "12px", right: "12px" }}>
                       <span style={{ background: artist.is_available ? "#22c55e" : "#f87171", color: "#fff", padding: "3px 8px", borderRadius: "20px", fontSize: "10px", fontWeight: 600 }}>
-                        {artist.is_available ? "🟢 Available" : "🔴 Busy"}
+                        {artist.is_available ? "ðŸŸ¢ Available" : "ðŸ”´ Busy"}
                       </span>
                     </div>
                   </div>
@@ -390,8 +390,8 @@ export default function HomePage() {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div>
                         <p style={{ color: "#888", fontSize: "10px", margin: 0 }}>Starting at</p>
-                        <p style={{ fontWeight: 900, color: "#E61D72", fontSize: "18px", margin: 0 }}>₱{getStartingPrice(artist.services)}</p>
-                        {artist.transport_fee && <p style={{ color: "#888", fontSize: "10px", margin: 0 }}>+₱{artist.transport_fee} transport</p>}
+                        <p style={{ fontWeight: 900, color: "#E61D72", fontSize: "18px", margin: 0 }}>â‚±{getStartingPrice(artist.services)}</p>
+                        {artist.transport_fee && <p style={{ color: "#888", fontSize: "10px", margin: 0 }}>+â‚±{artist.transport_fee} transport</p>}
                       </div>
 
                       {/* Action Buttons based on availability */}
@@ -403,23 +403,23 @@ export default function HomePage() {
                           </Link>
                           <Link href={`/booking?artistId=${artist.id}&artistName=${encodeURIComponent(artist.name)}`}
                             style={{ background: "#E61D72", color: "#fff", padding: "8px 14px", borderRadius: "20px", textDecoration: "none", fontSize: "12px", fontWeight: 700 }}>
-                            Book →
+                            Book â†’
                           </Link>
                         </div>
                       ) : (
                         <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "flex-end" }}>
                           <Link href={`/booking?artistId=${artist.id}&artistName=${encodeURIComponent(artist.name)}&schedule=true`}
                             style={{ background: "#7C3AED", color: "#fff", padding: "6px 12px", borderRadius: "20px", textDecoration: "none", fontSize: "11px", fontWeight: 700, display: "block" }}>
-                            📅 Schedule
+                            ðŸ“… Schedule
                           </Link>
                           <div style={{ display: "flex", gap: "4px" }}>
                             <button onClick={() => setNotifyArtist(artist)}
                               style={{ background: "#FFF9E6", color: "#D97706", border: "none", padding: "5px 8px", borderRadius: "20px", cursor: "pointer", fontSize: "10px", fontWeight: 600 }}>
-                              🔔 Notify
+                              ðŸ”” Notify
                             </button>
                             <button onClick={() => setSimilarArtist(artist)}
                               style={{ background: "#F0FDF4", color: "#22c55e", border: "none", padding: "5px 8px", borderRadius: "20px", cursor: "pointer", fontSize: "10px", fontWeight: 600 }}>
-                              👥 Similar
+                              ðŸ‘¥ Similar
                             </button>
                           </div>
                         </div>
@@ -434,14 +434,14 @@ export default function HomePage() {
 
         {/* How it works */}
         <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", marginTop: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-          <h2 style={{ fontWeight: 900, margin: "0 0 20px", textAlign: "center", fontSize: "18px" }}>How Serviko Works 🌸</h2>
+          <h2 style={{ fontWeight: 900, margin: "0 0 20px", textAlign: "center", fontSize: "18px" }}>How Serviko Works ðŸŒ¸</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px" }}>
             {[
-              { icon: "📍", title: "Set Location", desc: "Tell us where you are" },
-              { icon: "🔍", title: "Browse", desc: "Find artists near you" },
-              { icon: "📅", title: "Book", desc: "Pick date & time" },
-              { icon: "💳", title: "Pay", desc: "GCash, Maya or Card" },
-              { icon: "🌸", title: "Enjoy!", desc: "Artist comes to you" },
+              { icon: "ðŸ“", title: "Set Location", desc: "Tell us where you are" },
+              { icon: "ðŸ”", title: "Browse", desc: "Find artists near you" },
+              { icon: "ðŸ“…", title: "Book", desc: "Pick date & time" },
+              { icon: "ðŸ’³", title: "Pay", desc: "GCash, Maya or Card" },
+              { icon: "ðŸŒ¸", title: "Enjoy!", desc: "Artist comes to you" },
             ].map(item => (
               <div key={item.title} style={{ textAlign: "center", padding: "16px 12px", background: "#FFF0F6", borderRadius: "16px" }}>
                 <div style={{ fontSize: "28px", marginBottom: "8px" }}>{item.icon}</div>
@@ -455,24 +455,24 @@ export default function HomePage() {
         {/* Become Artist */}
         <div style={{ background: "linear-gradient(135deg, #7C3AED, #4F46E5)", borderRadius: "20px", padding: "24px", marginTop: "20px", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "80px" }}>
           <div>
-            <p style={{ fontWeight: 900, fontSize: "18px", margin: "0 0 4px" }}>🎨 Become a Serviko Artist!</p>
+            <p style={{ fontWeight: 900, fontSize: "18px", margin: "0 0 4px" }}>ðŸŽ¨ Become a Serviko Artist!</p>
             <p style={{ opacity: 0.8, margin: "0 0 12px", fontSize: "13px" }}>Earn money on your own schedule. Keep 90%!</p>
             <Link href="/register/artist" style={{ background: "#fff", color: "#7C3AED", padding: "10px 20px", borderRadius: "20px", textDecoration: "none", fontWeight: 700, fontSize: "13px" }}>
-              Register Now →
+              Register Now â†’
             </Link>
           </div>
-          <div style={{ fontSize: "60px", opacity: 0.8 }}>💰</div>
+          <div style={{ fontSize: "60px", opacity: 0.8 }}>ðŸ’°</div>
         </div>
       </div>
 
       {/* Bottom Nav */}
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", padding: "10px 0", boxShadow: "0 -4px 20px rgba(0,0,0,0.08)", display: "flex", justifyContent: "space-around", zIndex: 50 }}>
         {[
-          { icon: "🏠", label: "Home", href: "/" },
-          { icon: "🔍", label: "Services", href: "/services" },
-          { icon: "📅", label: "Book", href: "/booking" },
-          { icon: "📍", label: "Track", href: "/tracking" },
-          { icon: "👤", label: "Profile", href: "/dashboard" },
+          { icon: "ðŸ ", label: "Home", href: "/" },
+          { icon: "ðŸ”", label: "Services", href: "/services" },
+          { icon: "ðŸ“…", label: "Book", href: "/booking" },
+          { icon: "ðŸ“", label: "Track", href: "/tracking" },
+          { icon: "ðŸ‘¤", label: "Profile", href: "/dashboard" },
         ].map(item => (
           <Link key={item.label} href={item.href} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", textDecoration: "none", color: "#888", minWidth: "60px" }}>
             <span style={{ fontSize: "22px" }}>{item.icon}</span>
@@ -483,3 +483,4 @@ export default function HomePage() {
     </div>
   );
 }
+
