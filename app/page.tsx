@@ -21,50 +21,41 @@ const categories = [
   { icon: "🔧", name: "Repair", keyword: "Repair" },
 ];
 
-const serviceIcons: Record<string, string> = {
-  "Haircut": "✂️", "Hair": "💇", "Massage": "💆", "Facial": "🧖",
-  "Manicure": "💅", "Nail": "💅", "Lash": "👁️", "Makeup": "💄",
-  "Cleaning": "🧹", "Garden": "🌿", "Painting": "🎨", "Repair": "🔧",
-  "Waxing": "✨", "Rebond": "💫", "Eyebrow": "👁️",
-};
-
-const getArtistIcon = (services: string[]) => {
-  for (const service of services) {
-    for (const [key, icon] of Object.entries(serviceIcons)) {
-      if (service.toLowerCase().includes(key.toLowerCase())) return icon;
-    }
-  }
+const getArtistEmoji = (services: string[]) => {
+  if (!services) return "🌸";
+  if (services.some(s => s.toLowerCase().includes("hair"))) return "✂️";
+  if (services.some(s => s.toLowerCase().includes("massage"))) return "💆";
+  if (services.some(s => s.toLowerCase().includes("nail") || s.toLowerCase().includes("manicure"))) return "💅";
+  if (services.some(s => s.toLowerCase().includes("facial"))) return "🧖";
+  if (services.some(s => s.toLowerCase().includes("lash"))) return "👁️";
+  if (services.some(s => s.toLowerCase().includes("makeup"))) return "💄";
+  if (services.some(s => s.toLowerCase().includes("clean"))) return "🧹";
+  if (services.some(s => s.toLowerCase().includes("garden"))) return "🌿";
+  if (services.some(s => s.toLowerCase().includes("paint"))) return "🎨";
   return "🌸";
 };
 
 const getStartingPrice = (services: string[]) => {
   const prices: Record<string, number> = {
-    "Haircut": 350, "Hair Coloring": 1000, "Rebond": 1800,
-    "Massage": 700, "Facial": 500, "Manicure": 200,
-    "Pedicure": 250, "Lash": 800, "Makeup": 800,
-    "Cleaning": 800, "Waxing": 200, "Eyebrow": 150,
+    "hair": 350, "color": 1000, "rebond": 1800, "massage": 700,
+    "facial": 500, "manicure": 200, "pedicure": 250, "lash": 800,
+    "makeup": 800, "clean": 800, "garden": 500, "wax": 200, "eyebrow": 150,
   };
+  if (!services) return 300;
   let min = 999999;
   for (const service of services) {
     for (const [key, price] of Object.entries(prices)) {
-      if (service.toLowerCase().includes(key.toLowerCase()) && price < min) {
-        min = price;
-      }
+      if (service.toLowerCase().includes(key) && price < min) min = price;
     }
   }
   return min === 999999 ? 300 : min;
 };
 
 type Artist = {
-  id: number;
-  name: string;
-  bio: string;
-  experience: string;
-  services: string[];
-  location: string;
-  is_available: boolean;
-  rating: string;
-  total_reviews: number;
+  id: number; name: string; bio: string; experience: string;
+  services: string[]; location: string; is_available: boolean;
+  rating: string; total_reviews: number;
+  distance_text?: string; distance_km?: number; transport_fee?: number;
 };
 
 export default function HomePage() {
@@ -77,12 +68,29 @@ export default function HomePage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [copiedCode, setCopiedCode] = useState("");
+  const [notifyArtist, setNotifyArtist] = useState<Artist | null>(null);
+  const [similarArtist, setSimilarArtist] = useState<Artist | null>(null);
+  const [notified, setNotified] = useState(false);
 
   useEffect(() => {
-    fetch("/api/artists")
-      .then(res => res.json())
-      .then(data => { setArtists(data.artists || []); setLoading(false); })
-      .catch(() => setLoading(false));
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          fetch(`/api/artists?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`)
+            .then(res => res.json())
+            .then(data => { setArtists(data.artists || []); setLoading(false); });
+        },
+        () => {
+          fetch("/api/artists")
+            .then(res => res.json())
+            .then(data => { setArtists(data.artists || []); setLoading(false); });
+        }
+      );
+    } else {
+      fetch("/api/artists")
+        .then(res => res.json())
+        .then(data => { setArtists(data.artists || []); setLoading(false); });
+    }
   }, []);
 
   useEffect(() => {
@@ -96,9 +104,16 @@ export default function HomePage() {
     setTimeout(() => setCopiedCode(""), 2000);
   };
 
+  const getSimilarArtists = (artist: Artist) => {
+    return artists.filter(a => a.id !== artist.id && a.is_available &&
+      a.services.some(s => artist.services.some(as => s.toLowerCase().includes(as.toLowerCase().split(" ")[0]))));
+  };
+
   const filteredArtists = artists.filter(a => {
-    const matchesSearch = search === "" || a.name.toLowerCase().includes(search.toLowerCase()) || a.services.some(s => s.toLowerCase().includes(search.toLowerCase()));
-    const matchesCategory = selectedCategory === "" || a.services.some(s => s.toLowerCase().includes(selectedCategory.toLowerCase()));
+    const matchesSearch = search === "" || a.name.toLowerCase().includes(search.toLowerCase()) ||
+      (a.services || []).some(s => s.toLowerCase().includes(search.toLowerCase()));
+    const matchesCategory = selectedCategory === "" ||
+      (a.services || []).some(s => s.toLowerCase().includes(selectedCategory.toLowerCase()));
     return matchesSearch && matchesCategory;
   });
 
@@ -112,27 +127,30 @@ export default function HomePage() {
             <div style={{ textAlign: "center", marginBottom: "24px" }}>
               <div style={{ fontSize: "48px", marginBottom: "8px" }}>📍</div>
               <h2 style={{ fontWeight: 900, margin: "0 0 8px" }}>Where are you?</h2>
-              <p style={{ color: "#888", margin: 0, fontSize: "13px" }}>We'll show you available artists near you</p>
+              <p style={{ color: "#888", margin: 0, fontSize: "13px" }}>We'll show you the nearest artists!</p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
-              <div onClick={() => { setSavedAddress("Current Location 📍"); setShowAddressModal(false); }}
-                style={{ display: "flex", alignItems: "center", gap: "10px", background: "#FFF0F6", borderRadius: "12px", padding: "14px 16px", cursor: "pointer" }}>
+              <div onClick={() => {
+                navigator.geolocation?.getCurrentPosition(pos => {
+                  setSavedAddress("Current Location 📍");
+                  setShowAddressModal(false);
+                });
+              }} style={{ display: "flex", alignItems: "center", gap: "10px", background: "#FFF0F6", borderRadius: "12px", padding: "14px 16px", cursor: "pointer" }}>
                 <span style={{ fontSize: "20px" }}>🎯</span>
                 <span style={{ fontWeight: 600, color: "#E61D72", fontSize: "14px" }}>Use Current Location</span>
               </div>
-              <div style={{ display: "flex", gap: "10px" }}>
-                <input type="text" value={address} onChange={e => setAddress(e.target.value)}
-                  placeholder="Type your address..."
-                  style={{ flex: 1, padding: "12px 16px", borderRadius: "12px", border: "1px solid #FFD6E7", fontSize: "14px" }} />
-              </div>
-              <p style={{ fontWeight: 600, fontSize: "12px", color: "#888", margin: "4px 0 0" }}>SAVED ADDRESSES</p>
-              {[{ icon: "🏠", label: "Home", address: "FCM North Fairview, Quezon City" }, { icon: "💼", label: "Work", address: "Ayala Ave, Makati City" }].map(s => (
-                <div key={s.label} onClick={() => { setSavedAddress(s.address); setShowAddressModal(false); }}
+              <input type="text" value={address} onChange={e => setAddress(e.target.value)}
+                placeholder="Type your address..."
+                style={{ padding: "12px 16px", borderRadius: "12px", border: "1px solid #FFD6E7", fontSize: "14px" }} />
+              <p style={{ fontWeight: 600, fontSize: "12px", color: "#888", margin: 0 }}>SAVED ADDRESSES</p>
+              {[{ icon: "🏠", label: "Home", addr: "FCM North Fairview, Quezon City" },
+                { icon: "💼", label: "Work", addr: "Ayala Ave, Makati City" }].map(s => (
+                <div key={s.label} onClick={() => { setSavedAddress(s.addr); setShowAddressModal(false); }}
                   style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 0", borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}>
                   <span style={{ fontSize: "20px" }}>{s.icon}</span>
                   <div>
                     <p style={{ fontWeight: 600, margin: 0, fontSize: "14px" }}>{s.label}</p>
-                    <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{s.address}</p>
+                    <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{s.addr}</p>
                   </div>
                 </div>
               ))}
@@ -141,6 +159,93 @@ export default function HomePage() {
               style={{ width: "100%", background: "#E61D72", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer", fontSize: "15px" }}>
               Confirm Location 📍
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Notify Me Modal */}
+      {notifyArtist && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "24px" }}>
+          <div style={{ background: "#fff", borderRadius: "24px", padding: "32px", maxWidth: "400px", width: "100%", textAlign: "center" }}>
+            {!notified ? (
+              <>
+                <div style={{ fontSize: "56px", marginBottom: "12px" }}>🔔</div>
+                <h3 style={{ fontWeight: 900, margin: "0 0 8px" }}>Notify Me</h3>
+                <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>
+                  We'll notify you when <strong>{notifyArtist.name}</strong> becomes available!
+                </p>
+                <div style={{ background: "#FFF0F6", borderRadius: "12px", padding: "16px", marginBottom: "20px", textAlign: "left" }}>
+                  <p style={{ fontWeight: 600, color: "#E61D72", margin: "0 0 8px", fontSize: "13px" }}>You'll be notified via:</p>
+                  {["📧 Email notification", "📱 App notification", "💬 SMS (if enabled)"].map(t => (
+                    <p key={t} style={{ color: "#555", fontSize: "12px", margin: "0 0 4px" }}>{t}</p>
+                  ))}
+                </div>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button onClick={() => setNotifyArtist(null)}
+                    style={{ flex: 1, background: "#f0f0f0", color: "#555", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
+                    Cancel
+                  </button>
+                  <button onClick={() => setNotified(true)}
+                    style={{ flex: 2, background: "#E61D72", color: "#fff", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
+                    🔔 Notify Me!
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: "56px", marginBottom: "12px" }}>✅</div>
+                <h3 style={{ fontWeight: 900, margin: "0 0 8px", color: "#22c55e" }}>You're on the list!</h3>
+                <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>
+                  We'll notify you when {notifyArtist.name} is available.
+                </p>
+                <button onClick={() => { setNotifyArtist(null); setNotified(false); }}
+                  style={{ width: "100%", background: "#E61D72", color: "#fff", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
+                  Done
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Similar Artists Modal */}
+      {similarArtist && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 100 }}>
+          <div style={{ background: "#fff", borderRadius: "24px 24px 0 0", padding: "28px 24px", width: "100%", maxWidth: "600px", maxHeight: "80vh", overflowY: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
+              <div>
+                <h3 style={{ fontWeight: 900, margin: "0 0 4px" }}>Similar Artists</h3>
+                <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>Available now with similar services</p>
+              </div>
+              <button onClick={() => setSimilarArtist(null)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer" }}>✕</button>
+            </div>
+            {getSimilarArtists(similarArtist).length === 0 ? (
+              <div style={{ textAlign: "center", padding: "32px" }}>
+                <p style={{ fontSize: "40px" }}>😔</p>
+                <p style={{ color: "#888" }}>No similar artists available right now.</p>
+                <p style={{ color: "#888", fontSize: "13px" }}>Try scheduling for later!</p>
+              </div>
+            ) : (
+              getSimilarArtists(similarArtist).map(artist => (
+                <div key={artist.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: "1px solid #f0f0f0" }}>
+                  <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                    <div style={{ width: "44px", height: "44px", borderRadius: "50%", background: "#FFF0F6", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>
+                      {getArtistEmoji(artist.services)}
+                    </div>
+                    <div>
+                      <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{artist.name}</p>
+                      <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>📍 {artist.location}</p>
+                      <p style={{ color: "#22c55e", fontSize: "11px", margin: 0, fontWeight: 600 }}>🟢 Available Now</p>
+                    </div>
+                  </div>
+                  <Link href={`/booking?artistId=${artist.id}&artistName=${encodeURIComponent(artist.name)}`}
+                    onClick={() => setSimilarArtist(null)}
+                    style={{ background: "#E61D72", color: "#fff", padding: "8px 16px", borderRadius: "20px", textDecoration: "none", fontSize: "12px", fontWeight: 700 }}>
+                    Book →
+                  </Link>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
@@ -226,12 +331,12 @@ export default function HomePage() {
           <Link href="/services" style={{ background: "#fff", color: "#D97706", padding: "8px 16px", borderRadius: "20px", textDecoration: "none", fontWeight: 700, fontSize: "12px" }}>Grab Now →</Link>
         </div>
 
-        {/* Real Artists */}
+        {/* Artists */}
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
             <div>
               <h2 style={{ fontWeight: 900, margin: "0 0 4px", fontSize: "18px" }}>
-                {selectedCategory ? `${selectedCategory} Artists` : "Available Near You"}
+                {selectedCategory ? `${selectedCategory} Artists` : "Artists Near You"}
               </h2>
               <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>
                 📍 {savedAddress || "Set location"} • {filteredArtists.filter(a => a.is_available).length} available now
@@ -243,31 +348,25 @@ export default function HomePage() {
           {loading ? (
             <div style={{ textAlign: "center", padding: "48px" }}>
               <div style={{ fontSize: "40px", marginBottom: "12px" }}>🌸</div>
-              <p style={{ color: "#888" }}>Loading artists near you...</p>
-            </div>
-          ) : filteredArtists.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "48px", background: "#fff", borderRadius: "20px" }}>
-              <div style={{ fontSize: "48px", marginBottom: "12px" }}>😔</div>
-              <p style={{ fontWeight: 700, margin: "0 0 8px" }}>No artists found</p>
-              <p style={{ color: "#888", fontSize: "13px" }}>Try a different search or category</p>
+              <p style={{ color: "#888" }}>Finding artists near you...</p>
             </div>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
               {filteredArtists.map(artist => (
-                <div key={artist.id} style={{ background: "#fff", borderRadius: "20px", overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.08)", opacity: artist.is_available ? 1 : 0.7 }}>
+                <div key={artist.id} style={{ background: "#fff", borderRadius: "20px", overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
+                  {/* Card Header */}
                   <div style={{ background: "linear-gradient(135deg, #FFF0F6, #F5F3FF)", padding: "20px", position: "relative" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
                       <div style={{ width: "60px", height: "60px", borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", flexShrink: 0 }}>
-                        {getArtistIcon(artist.services)}
+                        {getArtistEmoji(artist.services)}
                       </div>
                       <div style={{ flex: 1 }}>
                         <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "15px" }}>{artist.name}</p>
-                        <p style={{ color: "#888", fontSize: "12px", margin: "0 0 4px" }}>{artist.location}</p>
-                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                          <span style={{ color: "#FFD700", fontSize: "12px" }}>★</span>
-                          <span style={{ fontWeight: 600, fontSize: "12px" }}>{parseFloat(artist.rating).toFixed(1)}</span>
-                          <span style={{ color: "#888", fontSize: "11px" }}>({artist.total_reviews} reviews)</span>
-                        </div>
+                        <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>📍 {artist.location}</p>
+                        {artist.distance_text && (
+                          <p style={{ color: "#E61D72", fontSize: "11px", margin: "0 0 2px", fontWeight: 600 }}>🚶 {artist.distance_text}</p>
+                        )}
+                        <p style={{ fontSize: "11px", margin: 0 }}>⭐ {parseFloat(artist.rating).toFixed(1)} ({artist.total_reviews} reviews)</p>
                       </div>
                     </div>
                     <div style={{ position: "absolute", top: "12px", right: "12px" }}>
@@ -276,30 +375,55 @@ export default function HomePage() {
                       </span>
                     </div>
                   </div>
+
+                  {/* Card Body */}
                   <div style={{ padding: "14px 16px" }}>
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}>
-                      {artist.services.slice(0, 3).map(s => (
+                      {(artist.services || []).slice(0, 3).map(s => (
                         <span key={s} style={{ background: "#FFF0F6", color: "#E61D72", padding: "3px 8px", borderRadius: "20px", fontSize: "10px", fontWeight: 600 }}>{s}</span>
                       ))}
-                      {artist.services.length > 3 && (
-                        <span style={{ background: "#f0f0f0", color: "#888", padding: "3px 8px", borderRadius: "20px", fontSize: "10px" }}>+{artist.services.length - 3} more</span>
+                      {(artist.services || []).length > 3 && (
+                        <span style={{ background: "#f0f0f0", color: "#888", padding: "3px 8px", borderRadius: "20px", fontSize: "10px" }}>+{artist.services.length - 3}</span>
                       )}
                     </div>
+
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div>
                         <p style={{ color: "#888", fontSize: "10px", margin: 0 }}>Starting at</p>
                         <p style={{ fontWeight: 900, color: "#E61D72", fontSize: "18px", margin: 0 }}>₱{getStartingPrice(artist.services)}</p>
+                        {artist.transport_fee && <p style={{ color: "#888", fontSize: "10px", margin: 0 }}>+₱{artist.transport_fee} transport</p>}
                       </div>
-                      <div style={{ display: "flex", gap: "8px" }}>
-                        <Link href={`/artist/${artist.name.toLowerCase().replace(/ /g, "-")}`}
-                          style={{ background: "#FFF0F6", color: "#E61D72", padding: "8px 12px", borderRadius: "20px", textDecoration: "none", fontSize: "12px", fontWeight: 600 }}>
-                          Profile
-                        </Link>
-                        <Link href="/booking"
-                          style={{ background: artist.is_available ? "#E61D72" : "#ccc", color: "#fff", padding: "8px 16px", borderRadius: "20px", textDecoration: "none", fontSize: "12px", fontWeight: 700 }}>
-                          Book →
-                        </Link>
-                      </div>
+
+                      {/* Action Buttons based on availability */}
+                      {artist.is_available ? (
+                        <div style={{ display: "flex", gap: "6px" }}>
+                          <Link href={`/artist/${artist.name.toLowerCase().replace(/ /g, "-")}`}
+                            style={{ background: "#FFF0F6", color: "#E61D72", padding: "8px 10px", borderRadius: "20px", textDecoration: "none", fontSize: "11px", fontWeight: 600 }}>
+                            Profile
+                          </Link>
+                          <Link href={`/booking?artistId=${artist.id}&artistName=${encodeURIComponent(artist.name)}`}
+                            style={{ background: "#E61D72", color: "#fff", padding: "8px 14px", borderRadius: "20px", textDecoration: "none", fontSize: "12px", fontWeight: 700 }}>
+                            Book →
+                          </Link>
+                        </div>
+                      ) : (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "flex-end" }}>
+                          <Link href={`/booking?artistId=${artist.id}&artistName=${encodeURIComponent(artist.name)}&schedule=true`}
+                            style={{ background: "#7C3AED", color: "#fff", padding: "6px 12px", borderRadius: "20px", textDecoration: "none", fontSize: "11px", fontWeight: 700, display: "block" }}>
+                            📅 Schedule
+                          </Link>
+                          <div style={{ display: "flex", gap: "4px" }}>
+                            <button onClick={() => setNotifyArtist(artist)}
+                              style={{ background: "#FFF9E6", color: "#D97706", border: "none", padding: "5px 8px", borderRadius: "20px", cursor: "pointer", fontSize: "10px", fontWeight: 600 }}>
+                              🔔 Notify
+                            </button>
+                            <button onClick={() => setSimilarArtist(artist)}
+                              style={{ background: "#F0FDF4", color: "#22c55e", border: "none", padding: "5px 8px", borderRadius: "20px", cursor: "pointer", fontSize: "10px", fontWeight: 600 }}>
+                              👥 Similar
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -328,7 +452,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Become Artist Banner */}
+        {/* Become Artist */}
         <div style={{ background: "linear-gradient(135deg, #7C3AED, #4F46E5)", borderRadius: "20px", padding: "24px", marginTop: "20px", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "80px" }}>
           <div>
             <p style={{ fontWeight: 900, fontSize: "18px", margin: "0 0 4px" }}>🎨 Become a Serviko Artist!</p>
