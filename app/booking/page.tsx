@@ -1,4 +1,5 @@
-"use client";
+﻿"use client";
+import { Suspense } from "react";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
@@ -42,9 +43,9 @@ const getCurrentTime = () => {
 };
 
 const savedAddresses = [
-  { id: 1, icon: "🏠", label: "Home", address: "FCM North Fairview, Quezon City", isDefault: true },
-  { id: 2, icon: "💼", label: "Work", address: "Ayala Ave, Makati City", isDefault: false },
-  { id: 3, icon: "👨‍👩‍👧", label: "Parents", address: "San Antonio, Quezon City", isDefault: false },
+  { id: 1, icon: "ðŸ ", label: "Home", address: "FCM North Fairview, Quezon City", isDefault: true },
+  { id: 2, icon: "ðŸ’¼", label: "Work", address: "Ayala Ave, Makati City", isDefault: false },
+  { id: 3, icon: "ðŸ‘¨â€ðŸ‘©â€ðŸ‘§", label: "Parents", address: "San Antonio, Quezon City", isDefault: false },
 ];
 
 type Artist = {
@@ -54,7 +55,7 @@ type Artist = {
 
 type FamilyMember = { name: string; services: { name: string; price: number }[] };
 
-export default function BookingPage() {
+function BookingContent() {
   const searchParams = useSearchParams();
   const artistIdParam = searchParams.get("artistId");
   const artistNameParam = searchParams.get("artistName");
@@ -105,13 +106,13 @@ export default function BookingPage() {
   }, [artistIdParam, artistNameParam]);
 
   const getArtistEmoji = (services: string[]) => {
-    if (!services?.length) return "🌸";
-    if (services.some(s => s.toLowerCase().includes("hair"))) return "✂️";
-    if (services.some(s => s.toLowerCase().includes("massage"))) return "💆";
-    if (services.some(s => s.toLowerCase().includes("nail") || s.toLowerCase().includes("manicure"))) return "💅";
-    if (services.some(s => s.toLowerCase().includes("facial"))) return "🧖";
-    if (services.some(s => s.toLowerCase().includes("clean"))) return "🧹";
-    return "🌸";
+    if (!services?.length) return "ðŸŒ¸";
+    if (services.some(s => s.toLowerCase().includes("hair"))) return "âœ‚ï¸";
+    if (services.some(s => s.toLowerCase().includes("massage"))) return "ðŸ’†";
+    if (services.some(s => s.toLowerCase().includes("nail") || s.toLowerCase().includes("manicure"))) return "ðŸ’…";
+    if (services.some(s => s.toLowerCase().includes("facial"))) return "ðŸ§–";
+    if (services.some(s => s.toLowerCase().includes("clean"))) return "ðŸ§¹";
+    return "ðŸŒ¸";
   };
 
   const addFamilyMember = () => setFamilyMembers([...familyMembers, { name: `Member ${familyMembers.length + 1}`, services: [] }]);
@@ -129,11 +130,11 @@ export default function BookingPage() {
   const applyVoucher = () => {
     const code = voucherCode.toUpperCase().trim();
     const v = vouchers[code];
-    if (!v) { setVoucherMsg("❌ Invalid code."); setAppliedVoucher(null); return; }
-    if (subtotal < v.minOrder) { setVoucherMsg(`❌ Min. order ₱${v.minOrder}`); return; }
+    if (!v) { setVoucherMsg("âŒ Invalid code."); setAppliedVoucher(null); return; }
+    if (subtotal < v.minOrder) { setVoucherMsg(`âŒ Min. order â‚±${v.minOrder}`); return; }
     const d = v.type === "percent" ? Math.round(subtotal * v.discount / 100) : v.discount;
     setAppliedVoucher({ code, discount: d });
-    setVoucherMsg(`✅ Saved ₱${d}!`);
+    setVoucherMsg(`âœ… Saved â‚±${d}!`);
   };
 
   const allServices = familyMembers.flatMap(m => m.services);
@@ -181,11 +182,11 @@ export default function BookingPage() {
     <div style={{ minHeight: "100vh", background: "#FFF0F6", fontFamily: "Arial, sans-serif" }}>
       {/* Header */}
       <div style={{ background: "linear-gradient(135deg, #E61D72, #7C3AED)", padding: "20px 24px", color: "#fff" }}>
-        <a href="/" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "13px" }}>← Home</a>
+        <a href="/" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "13px" }}>â† Home</a>
         <h1 style={{ fontSize: "22px", fontWeight: 900, margin: "8px 0 4px" }}>
           {selectedArtist ? `Book ${selectedArtist.name}` : "Book a Service"}
         </h1>
-        <p style={{ opacity: 0.8, margin: 0, fontSize: "13px" }}>Book for yourself or the whole family 👨‍👩‍👧‍👦</p>
+        <p style={{ opacity: 0.8, margin: 0, fontSize: "13px" }}>Book for yourself or the whole family ðŸ‘¨â€ðŸ‘©â€ðŸ‘§â€ðŸ‘¦</p>
       </div>
 
       {/* Steps */}
@@ -210,13 +211,13 @@ export default function BookingPage() {
             <div>
               <h2 style={{ fontWeight: 900, margin: "0 0 16px" }}>Choose Your Artist</h2>
               <div style={{ display: "flex", alignItems: "center", background: "#fff", borderRadius: "12px", padding: "10px 16px", gap: "8px", marginBottom: "16px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-                <span>🔍</span>
+                <span>ðŸ”</span>
                 <input value={searchArtist} onChange={e => setSearchArtist(e.target.value)} placeholder="Search by name or service..."
                   style={{ border: "none", background: "transparent", flex: 1, fontSize: "14px", outline: "none" }} />
               </div>
               {loading ? (
                 <div style={{ textAlign: "center", padding: "48px" }}>
-                  <div style={{ fontSize: "40px" }}>🌸</div>
+                  <div style={{ fontSize: "40px" }}>ðŸŒ¸</div>
                   <p style={{ color: "#888" }}>Loading artists...</p>
                 </div>
               ) : (
@@ -232,7 +233,7 @@ export default function BookingPage() {
                           <div style={{ display: "flex", justifyContent: "space-between" }}>
                             <div>
                               <p style={{ fontWeight: 700, margin: "0 0 2px" }}>{artist.name}</p>
-                              <p style={{ color: "#888", fontSize: "12px", margin: "0 0 4px" }}>📍 {artist.location}</p>
+                              <p style={{ color: "#888", fontSize: "12px", margin: "0 0 4px" }}>ðŸ“ {artist.location}</p>
                               <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
                                 {(artist.services || []).slice(0, 3).map(s => (
                                   <span key={s} style={{ background: "#FFF0F6", color: "#E61D72", padding: "2px 6px", borderRadius: "10px", fontSize: "10px" }}>{s}</span>
@@ -241,9 +242,9 @@ export default function BookingPage() {
                             </div>
                             <div style={{ textAlign: "right" }}>
                               <span style={{ background: artist.is_available ? "#F0FDF4" : "#FEF2F2", color: artist.is_available ? "#22c55e" : "#f87171", padding: "3px 8px", borderRadius: "20px", fontSize: "10px", fontWeight: 600 }}>
-                                {artist.is_available ? "🟢 Available" : "🔴 Busy"}
+                                {artist.is_available ? "ðŸŸ¢ Available" : "ðŸ”´ Busy"}
                               </span>
-                              {selectedArtist?.id === artist.id && <p style={{ color: "#E61D72", fontSize: "18px", margin: "4px 0 0" }}>✓</p>}
+                              {selectedArtist?.id === artist.id && <p style={{ color: "#E61D72", fontSize: "18px", margin: "4px 0 0" }}>âœ“</p>}
                             </div>
                           </div>
                         </div>
@@ -254,7 +255,7 @@ export default function BookingPage() {
               )}
               <button onClick={() => selectedArtist && setStep(2)} disabled={!selectedArtist}
                 style={{ width: "100%", marginTop: "16px", background: selectedArtist ? "#E61D72" : "#ccc", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: selectedArtist ? "pointer" : "not-allowed", fontSize: "15px" }}>
-                Continue with {selectedArtist?.name || "Artist"} →
+                Continue with {selectedArtist?.name || "Artist"} â†’
               </button>
             </div>
           )}
@@ -266,7 +267,7 @@ export default function BookingPage() {
                 <span style={{ fontSize: "24px" }}>{getArtistEmoji(selectedArtist.services)}</span>
                 <div>
                   <p style={{ fontWeight: 700, margin: 0 }}>{selectedArtist.name}</p>
-                  <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>📍 {selectedArtist.location}</p>
+                  <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>ðŸ“ {selectedArtist.location}</p>
                 </div>
                 {!artistIdParam && <button onClick={() => setStep(1)} style={{ marginLeft: "auto", background: "none", border: "none", color: "#E61D72", cursor: "pointer", fontSize: "12px", fontWeight: 600 }}>Change</button>}
               </div>
@@ -291,11 +292,11 @@ export default function BookingPage() {
                           background: sel ? "#FFF0F6" : "#f8f8f8", border: sel ? "1px solid #E61D72" : "1px solid transparent" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                           <div style={{ width: "16px", height: "16px", borderRadius: "50%", border: `2px solid ${sel ? "#E61D72" : "#ccc"}`, background: sel ? "#E61D72" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            {sel && <span style={{ color: "#fff", fontSize: "9px" }}>✓</span>}
+                            {sel && <span style={{ color: "#fff", fontSize: "9px" }}>âœ“</span>}
                           </div>
                           <p style={{ margin: 0, fontWeight: 600, fontSize: "13px" }}>{serviceName}</p>
                         </div>
-                        <span style={{ fontWeight: 700, color: "#E61D72", fontSize: "13px" }}>₱{price}</span>
+                        <span style={{ fontWeight: 700, color: "#E61D72", fontSize: "13px" }}>â‚±{price}</span>
                       </div>
                     );
                   })}
@@ -305,10 +306,10 @@ export default function BookingPage() {
                 + Add Family Member
               </button>
               <div style={{ display: "flex", gap: "10px" }}>
-                {!artistIdParam && <button onClick={() => setStep(1)} style={{ flex: 1, background: "#fff", color: "#E61D72", padding: "14px", borderRadius: "12px", border: "2px solid #E61D72", fontWeight: 700, cursor: "pointer" }}>← Back</button>}
+                {!artistIdParam && <button onClick={() => setStep(1)} style={{ flex: 1, background: "#fff", color: "#E61D72", padding: "14px", borderRadius: "12px", border: "2px solid #E61D72", fontWeight: 700, cursor: "pointer" }}>â† Back</button>}
                 <button onClick={() => allServices.length > 0 && setStep(3)} disabled={allServices.length === 0}
                   style={{ flex: 2, background: allServices.length > 0 ? "#E61D72" : "#ccc", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: allServices.length > 0 ? "pointer" : "not-allowed" }}>
-                  Continue →
+                  Continue â†’
                 </button>
               </div>
             </div>
@@ -321,13 +322,13 @@ export default function BookingPage() {
               <div style={{ background: "#fff", borderRadius: "18px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", display: "flex", flexDirection: "column", gap: "14px" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                   <div>
-                    <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>📅 Date</label>
+                    <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>ðŸ“… Date</label>
                     <input type="date" value={date} onChange={e => setDate(e.target.value)} min={getToday()}
                       style={{ width: "100%", padding: "11px", borderRadius: "10px", border: "1px solid #FFD6E7", fontSize: "14px", boxSizing: "border-box" }} />
                     <p style={{ color: "#888", fontSize: "10px", margin: "4px 0 0" }}>Default: Today</p>
                   </div>
                   <div>
-                    <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>🕐 Time</label>
+                    <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>ðŸ• Time</label>
                     <select value={time} onChange={e => setTime(e.target.value)}
                       style={{ width: "100%", padding: "11px", borderRadius: "10px", border: "1px solid #FFD6E7", fontSize: "14px" }}>
                       {["8:00 AM","9:00 AM","10:00 AM","11:00 AM","12:00 PM","1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM","6:00 PM","7:00 PM"].map(t => (
@@ -340,10 +341,10 @@ export default function BookingPage() {
                 {/* Address - Auto loaded */}
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                    <label style={{ fontWeight: 600, fontSize: "13px" }}>📍 Service Address</label>
+                    <label style={{ fontWeight: 600, fontSize: "13px" }}>ðŸ“ Service Address</label>
                     <button onClick={() => setShowAddressModal(true)}
                       style={{ background: "none", border: "none", color: "#E61D72", fontWeight: 600, fontSize: "12px", cursor: "pointer" }}>
-                      Change →
+                      Change â†’
                     </button>
                   </div>
                   <div style={{ background: "#FFF0F6", borderRadius: "12px", padding: "14px 16px", border: "2px solid #E61D72" }}>
@@ -362,31 +363,31 @@ export default function BookingPage() {
 
                 {/* Transport */}
                 <div>
-                  <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "8px" }}>🚗 Distance from Artist</label>
+                  <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "8px" }}>ðŸš— Distance from Artist</label>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
                     {Object.entries(transportFees).map(([range, fee]) => (
                       <div key={range} onClick={() => setDistance(range)}
                         style={{ padding: "10px", borderRadius: "10px", cursor: "pointer", textAlign: "center",
                           background: distance === range ? "#FFF0F6" : "#f8f8f8", border: distance === range ? "2px solid #E61D72" : "2px solid transparent" }}>
                         <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "12px" }}>{range}</p>
-                        <p style={{ color: "#E61D72", fontWeight: 700, margin: 0, fontSize: "12px" }}>+₱{fee}</p>
+                        <p style={{ color: "#E61D72", fontWeight: 700, margin: 0, fontSize: "12px" }}>+â‚±{fee}</p>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>📝 Notes (Optional)</label>
+                  <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>ðŸ“ Notes (Optional)</label>
                   <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2}
                     placeholder="Condo unit, gate code, special requests..."
                     style={{ width: "100%", padding: "11px", borderRadius: "10px", border: "1px solid #FFD6E7", fontSize: "14px", resize: "none", boxSizing: "border-box" }} />
                 </div>
 
                 <div style={{ display: "flex", gap: "10px" }}>
-                  <button onClick={() => setStep(2)} style={{ flex: 1, background: "#fff", color: "#E61D72", padding: "14px", borderRadius: "12px", border: "2px solid #E61D72", fontWeight: 700, cursor: "pointer" }}>← Back</button>
+                  <button onClick={() => setStep(2)} style={{ flex: 1, background: "#fff", color: "#E61D72", padding: "14px", borderRadius: "12px", border: "2px solid #E61D72", fontWeight: 700, cursor: "pointer" }}>â† Back</button>
                   <button onClick={() => setStep(4)}
                     style={{ flex: 2, background: "#E61D72", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer" }}>
-                    Continue to Payment →
+                    Continue to Payment â†’
                   </button>
                 </div>
               </div>
@@ -396,12 +397,12 @@ export default function BookingPage() {
           {/* STEP 4: Payment - All in one, direct to PayMongo */}
           {step === 4 && (
             <div>
-              <h2 style={{ fontWeight: 900, margin: "0 0 16px" }}>💳 Payment</h2>
+              <h2 style={{ fontWeight: 900, margin: "0 0 16px" }}>ðŸ’³ Payment</h2>
               <div style={{ background: "#fff", borderRadius: "18px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", display: "flex", flexDirection: "column", gap: "14px" }}>
 
                 {/* Contact */}
                 <div>
-                  <h3 style={{ fontWeight: 700, margin: "0 0 10px", fontSize: "15px" }}>👤 Your Contact Info</h3>
+                  <h3 style={{ fontWeight: 700, margin: "0 0 10px", fontSize: "15px" }}>ðŸ‘¤ Your Contact Info</h3>
                   {[
                     { label: "Full Name", val: name, set: setName, type: "text", ph: "Your name" },
                     { label: "Email", val: email, set: setEmail, type: "email", ph: "your@email.com" },
@@ -417,10 +418,10 @@ export default function BookingPage() {
 
                 {/* Voucher */}
                 <div>
-                  <h3 style={{ fontWeight: 700, margin: "0 0 10px", fontSize: "15px" }}>🎫 Voucher (Optional)</h3>
+                  <h3 style={{ fontWeight: 700, margin: "0 0 10px", fontSize: "15px" }}>ðŸŽ« Voucher (Optional)</h3>
                   {appliedVoucher ? (
                     <div style={{ background: "#F0FDF4", borderRadius: "10px", padding: "10px 12px", display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid #86EFAC" }}>
-                      <p style={{ fontWeight: 700, color: "#22c55e", margin: 0, fontSize: "13px" }}>✅ {appliedVoucher.code} — Save ₱{appliedVoucher.discount}</p>
+                      <p style={{ fontWeight: 700, color: "#22c55e", margin: 0, fontSize: "13px" }}>âœ… {appliedVoucher.code} â€” Save â‚±{appliedVoucher.discount}</p>
                       <button onClick={() => { setAppliedVoucher(null); setVoucherCode(""); setVoucherMsg(""); }}
                         style={{ background: "#fee2e2", color: "#f87171", border: "none", padding: "4px 8px", borderRadius: "20px", cursor: "pointer", fontSize: "11px" }}>Remove</button>
                     </div>
@@ -431,7 +432,7 @@ export default function BookingPage() {
                           style={{ flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid #FFD6E7", fontSize: "13px" }} />
                         <button onClick={applyVoucher} style={{ background: "#E61D72", color: "#fff", padding: "10px 14px", borderRadius: "10px", border: "none", fontWeight: 700, cursor: "pointer" }}>Apply</button>
                       </div>
-                      {voucherMsg && <p style={{ fontSize: "12px", color: voucherMsg.startsWith("✅") ? "#22c55e" : "#f87171", margin: "0 0 6px" }}>{voucherMsg}</p>}
+                      {voucherMsg && <p style={{ fontSize: "12px", color: voucherMsg.startsWith("âœ…") ? "#22c55e" : "#f87171", margin: "0 0 6px" }}>{voucherMsg}</p>}
                       <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
                         {["FIRST50", "SUMMER20", "REFER100"].map(code => (
                           <button key={code} onClick={() => setVoucherCode(code)}
@@ -446,12 +447,12 @@ export default function BookingPage() {
 
                 {/* Payment Method */}
                 <div>
-                  <h3 style={{ fontWeight: 700, margin: "0 0 10px", fontSize: "15px" }}>💳 Payment Method</h3>
+                  <h3 style={{ fontWeight: 700, margin: "0 0 10px", fontSize: "15px" }}>ðŸ’³ Payment Method</h3>
                   {[
-                    { id: "gcash", label: "📱 GCash", desc: "Pay via GCash" },
-                    { id: "maya", label: "🏦 Maya", desc: "Pay via Maya" },
-                    { id: "card", label: "💳 Credit/Debit Card", desc: "Visa, Mastercard" },
-                    { id: "cod", label: "💵 Cash on Arrival", desc: "Pay when artist arrives" },
+                    { id: "gcash", label: "ðŸ“± GCash", desc: "Pay via GCash" },
+                    { id: "maya", label: "ðŸ¦ Maya", desc: "Pay via Maya" },
+                    { id: "card", label: "ðŸ’³ Credit/Debit Card", desc: "Visa, Mastercard" },
+                    { id: "cod", label: "ðŸ’µ Cash on Arrival", desc: "Pay when artist arrives" },
                   ].map(m => (
                     <div key={m.id} onClick={() => setPaymentMethod(m.id)}
                       style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderRadius: "10px", cursor: "pointer", marginBottom: "6px",
@@ -468,13 +469,13 @@ export default function BookingPage() {
                 {error && <p style={{ color: "#f87171", fontSize: "13px", margin: 0 }}>{error}</p>}
 
                 <div style={{ display: "flex", gap: "10px" }}>
-                  <button onClick={() => setStep(3)} style={{ flex: 1, background: "#fff", color: "#E61D72", padding: "14px", borderRadius: "12px", border: "2px solid #E61D72", fontWeight: 700, cursor: "pointer" }}>← Back</button>
+                  <button onClick={() => setStep(3)} style={{ flex: 1, background: "#fff", color: "#E61D72", padding: "14px", borderRadius: "12px", border: "2px solid #E61D72", fontWeight: 700, cursor: "pointer" }}>â† Back</button>
                   <button onClick={handlePay} disabled={payLoading || !name || !email}
                     style={{ flex: 2, background: payLoading || !name || !email ? "#ccc" : "#E61D72", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 900, cursor: payLoading || !name || !email ? "not-allowed" : "pointer", fontSize: "15px" }}>
-                    {payLoading ? "Processing..." : `Pay ₱${total} 🌸`}
+                    {payLoading ? "Processing..." : `Pay â‚±${total} ðŸŒ¸`}
                   </button>
                 </div>
-                <p style={{ textAlign: "center", color: "#888", fontSize: "11px", margin: 0 }}>🔒 Secured by PayMongo</p>
+                <p style={{ textAlign: "center", color: "#888", fontSize: "11px", margin: 0 }}>ðŸ”’ Secured by PayMongo</p>
               </div>
             </div>
           )}
@@ -483,20 +484,20 @@ export default function BookingPage() {
         {/* Sidebar */}
         <div style={{ position: "sticky", top: "80px", height: "fit-content" }}>
           <div style={{ background: "#fff", borderRadius: "18px", padding: "18px", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
-            <h3 style={{ fontWeight: 900, margin: "0 0 12px", fontSize: "14px" }}>📋 Summary</h3>
+            <h3 style={{ fontWeight: 900, margin: "0 0 12px", fontSize: "14px" }}>ðŸ“‹ Summary</h3>
             {selectedArtist && (
               <div style={{ background: "#FFF0F6", borderRadius: "8px", padding: "8px 10px", marginBottom: "10px" }}>
                 <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "12px", color: "#E61D72" }}>{getArtistEmoji(selectedArtist.services)} {selectedArtist.name}</p>
-                <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>📍 {selectedArtist.location}</p>
+                <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>ðŸ“ {selectedArtist.location}</p>
               </div>
             )}
             {familyMembers.map((member, i) => member.services.length > 0 && (
               <div key={i} style={{ marginBottom: "8px" }}>
-                <p style={{ fontWeight: 600, fontSize: "11px", margin: "0 0 3px", color: "#E61D72" }}>👤 {member.name}</p>
+                <p style={{ fontWeight: 600, fontSize: "11px", margin: "0 0 3px", color: "#E61D72" }}>ðŸ‘¤ {member.name}</p>
                 {member.services.map(s => (
                   <div key={s.name} style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", paddingLeft: "8px", marginBottom: "2px" }}>
-                    <span style={{ color: "#555" }}>• {s.name}</span>
-                    <span style={{ fontWeight: 600 }}>₱{s.price}</span>
+                    <span style={{ color: "#555" }}>â€¢ {s.name}</span>
+                    <span style={{ fontWeight: 600 }}>â‚±{s.price}</span>
                   </div>
                 ))}
               </div>
@@ -504,25 +505,25 @@ export default function BookingPage() {
             {allServices.length > 0 && (
               <div style={{ borderTop: "1px solid #FFE4F0", paddingTop: "8px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", marginBottom: "3px" }}>
-                  <span style={{ color: "#888" }}>Subtotal</span><span>₱{subtotal}</span>
+                  <span style={{ color: "#888" }}>Subtotal</span><span>â‚±{subtotal}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", marginBottom: "3px" }}>
-                  <span style={{ color: "#888" }}>🚗 Transport</span><span>₱{transport}</span>
+                  <span style={{ color: "#888" }}>ðŸš— Transport</span><span>â‚±{transport}</span>
                 </div>
                 {discount > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", marginBottom: "3px" }}>
-                    <span style={{ color: "#22c55e" }}>🎫 Voucher</span><span style={{ color: "#22c55e" }}>-₱{discount}</span>
+                    <span style={{ color: "#22c55e" }}>ðŸŽ« Voucher</span><span style={{ color: "#22c55e" }}>-â‚±{discount}</span>
                   </div>
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 900, fontSize: "16px", borderTop: "1px solid #FFE4F0", paddingTop: "8px", marginTop: "4px" }}>
-                  <span>Total</span><span style={{ color: "#E61D72" }}>₱{total}</span>
+                  <span>Total</span><span style={{ color: "#E61D72" }}>â‚±{total}</span>
                 </div>
               </div>
             )}
             {date && (
               <div style={{ background: "#FFF0F6", borderRadius: "8px", padding: "8px", marginTop: "8px", fontSize: "11px" }}>
-                <p style={{ margin: "0 0 2px", fontWeight: 600 }}>📅 {date} at {time}</p>
-                <p style={{ margin: 0, color: "#888" }}>📍 {selectedAddress.address}</p>
+                <p style={{ margin: "0 0 2px", fontWeight: 600 }}>ðŸ“… {date} at {time}</p>
+                <p style={{ margin: 0, color: "#888" }}>ðŸ“ {selectedAddress.address}</p>
               </div>
             )}
           </div>
@@ -535,7 +536,7 @@ export default function BookingPage() {
           <div style={{ background: "#fff", borderRadius: "24px 24px 0 0", padding: "28px 24px", width: "100%", maxWidth: "600px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
               <h3 style={{ fontWeight: 900, margin: 0 }}>Select Address</h3>
-              <button onClick={() => setShowAddressModal(false)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer" }}>✕</button>
+              <button onClick={() => setShowAddressModal(false)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer" }}>âœ•</button>
             </div>
             {savedAddresses.map(addr => (
               <div key={addr.id} onClick={() => { setSelectedAddress(addr); setShowAddressModal(false); }}
@@ -549,15 +550,23 @@ export default function BookingPage() {
                   </div>
                   <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{addr.address}</p>
                 </div>
-                {selectedAddress.id === addr.id && <span style={{ color: "#E61D72", fontSize: "18px" }}>✓</span>}
+                {selectedAddress.id === addr.id && <span style={{ color: "#E61D72", fontSize: "18px" }}>âœ“</span>}
               </div>
             ))}
             <a href="/addresses" style={{ display: "block", textAlign: "center", color: "#888", fontSize: "13px", marginTop: "8px" }}>
-              + Manage saved addresses →
+              + Manage saved addresses â†’
             </a>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",background:"#FFF0F6"}}><p style={{color:"#E61D72",fontWeight:700}}>🌸 Loading...</p></div>}>
+      <BookingContent />
+    </Suspense>
   );
 }
