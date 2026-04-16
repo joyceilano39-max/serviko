@@ -105,25 +105,17 @@ export default function BookingPage() {
 
   const handlePay = async () => {
     if (!name || !email) { setError("Please fill in your name and email."); return; }
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: total,
-          description: `Serviko Booking - ${allServices.map(s => s.name).join(", ")}`,
-          name, email,
-        }),
-      });
-      const data = await res.json();
-      if (data.error) { setError(data.error); setLoading(false); return; }
-      window.location.href = data.checkoutUrl;
-    } catch {
-      setError("Payment failed. Please try again.");
-      setLoading(false);
-    }
+    // Save booking data to localStorage so checkout can read it
+    const bookingData = {
+      artistName: selectedArtist?.name,
+      artistId: selectedArtist?.id,
+      date, time, address, distance, notes,
+      memberCount: familyMembers.length,
+      services: allServices.map(s => s.name),
+      subtotal, transport: transportFees[distance], total,
+    };
+    localStorage.setItem("serviko_booking", JSON.stringify(bookingData));
+    window.location.href = "/checkout";
   };
 
   const getArtistEmoji = (services: string[]) => {
