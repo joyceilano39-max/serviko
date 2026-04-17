@@ -1,24 +1,36 @@
-"use client";
-import { useState } from "react";
+﻿"use client";
+import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 
-const referralHistory = [
-  { name: "Maria Santos", date: "April 10, 2026", status: "Completed", reward: 100 },
-  { name: "Ana Reyes", date: "April 8, 2026", status: "Completed", reward: 100 },
-  { name: "Liza Cruz", date: "April 5, 2026", status: "Pending", reward: 0 },
-  { name: "Joy Dela Cruz", date: "April 3, 2026", status: "Completed", reward: 100 },
-];
+type Referral = {
+  id: number;
+  referred_name: string;
+  status: string;
+  reward: number;
+  created_at: string;
+};
 
 export default function ReferralPage() {
+  const { user } = useUser();
+  const [history, setHistory] = useState<Referral[]>([]);
+  const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  const referralCode = "JOYCE-SRV-2026";
-  const referralLink = `https://serviko.dev/register?ref=${referralCode}`;
-  const totalEarned = referralHistory.filter(r => r.status === "Completed").reduce((sum, r) => sum + r.reward, 0);
 
-  const copyCode = () => {
-    navigator.clipboard.writeText(referralCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const firstName = user?.firstName || "User";
+  const userId = user?.id?.slice(-4).toUpperCase() || "0000";
+  const referralCode = `SRV-${firstName.toUpperCase().slice(0, 4)}-${userId}`;
+  const referralLink = `https://serviko.dev/register?ref=${referralCode}`;
+
+  useEffect(() => {
+    if (!user) return;
+    fetch(`/api/referral?code=${referralCode}`)
+      .then(r => r.json())
+      .then(d => { setHistory(d.referrals || []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [user]);
+
+  const totalEarned = history.filter(r => r.status === "completed").reduce((sum, r) => sum + r.reward, 0);
+  const pending = history.filter(r => r.status === "pending").length;
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -26,130 +38,89 @@ export default function ReferralPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const shareOnFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`, "_blank");
+  };
+
   return (
-    <div style={{ minHeight: "100vh", background: "#FFF0F6" }}>
-      {/* Hero */}
-      <div style={{ background: "linear-gradient(135deg, #E61D72 0%, #7C3AED 100%)", padding: "48px 32px", color: "#fff", textAlign: "center" }}>
-        <div style={{ fontSize: "64px", marginBottom: "16px" }}>🎁</div>
-        <h1 style={{ fontSize: "36px", fontWeight: 900, margin: "0 0 8px" }}>Refer & Earn</h1>
-        <p style={{ opacity: 0.8, margin: "0 0 24px", fontSize: "16px" }}>Invite friends to Serviko and earn ₱100 for every successful referral!</p>
-        <div style={{ display: "flex", gap: "32px", justifyContent: "center", flexWrap: "wrap" }}>
+    <div style={{ minHeight: "100vh", background: "#FFF0F6", fontFamily: "Arial, sans-serif" }}>
+      <div style={{ background: "linear-gradient(135deg, #E61D72, #7C3AED)", padding: "20px 24px", color: "#fff" }}>
+        <a href="/" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "13px" }}>Back to Home</a>
+        <h1 style={{ fontSize: "22px", fontWeight: 900, margin: "8px 0 4px" }}>Refer & Earn</h1>
+        <p style={{ opacity: 0.8, margin: 0, fontSize: "13px" }}>Earn P100 for every friend who books!</p>
+      </div>
+
+      <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "20px" }}>
+          <div style={{ background: "#fff", borderRadius: "16px", padding: "16px", textAlign: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <p style={{ fontWeight: 900, fontSize: "28px", color: "#22c55e", margin: "0 0 4px" }}>P{totalEarned}</p>
+            <p style={{ color: "#555", fontSize: "12px", margin: 0, fontWeight: 600 }}>Total Earned</p>
+          </div>
+          <div style={{ background: "#fff", borderRadius: "16px", padding: "16px", textAlign: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <p style={{ fontWeight: 900, fontSize: "28px", color: "#F59E0B", margin: "0 0 4px" }}>{pending}</p>
+            <p style={{ color: "#555", fontSize: "12px", margin: 0, fontWeight: 600 }}>Pending Friends</p>
+          </div>
+        </div>
+
+        <div style={{ background: "#fff", borderRadius: "20px", padding: "20px", marginBottom: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <h3 style={{ fontWeight: 900, margin: "0 0 16px" }}>How it Works</h3>
           {[
-            ["4", "Friends Referred"],
-            ["₱300", "Total Earned"],
-            ["1", "Pending"],
-          ].map(([val, label]) => (
-            <div key={label} style={{ textAlign: "center" }}>
-              <p style={{ fontSize: "36px", fontWeight: 900, margin: 0 }}>{val}</p>
-              <p style={{ opacity: 0.8, fontSize: "13px", margin: 0 }}>{label}</p>
+            { step: "1", text: "Share your referral link with friends", color: "#E61D72" },
+            { step: "2", text: "Friend registers using your link", color: "#7C3AED" },
+            { step: "3", text: "Friend completes their first booking", color: "#22c55e" },
+            { step: "4", text: "You earn P100 reward automatically!", color: "#F59E0B" },
+          ].map(item => (
+            <div key={item.step} style={{ display: "flex", gap: "12px", alignItems: "center", marginBottom: "12px" }}>
+              <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: item.color, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, flexShrink: 0 }}>
+                {item.step}
+              </div>
+              <p style={{ color: "#555", fontSize: "13px", margin: 0 }}>{item.text}</p>
             </div>
           ))}
         </div>
-      </div>
 
-      <div style={{ maxWidth: "700px", margin: "0 auto", padding: "32px" }}>
-
-        {/* Referral Code */}
-        <div style={{ background: "#fff", borderRadius: "20px", padding: "32px", marginBottom: "24px", boxShadow: "0 4px 16px rgba(0,0,0,0.08)", textAlign: "center" }}>
-          <h2 style={{ fontWeight: 900, margin: "0 0 8px" }}>Your Referral Code</h2>
-          <p style={{ color: "#888", margin: "0 0 24px", fontSize: "14px" }}>Share this code with friends to earn rewards</p>
-          
-          <div style={{ background: "#FFF0F6", borderRadius: "16px", padding: "20px", marginBottom: "16px", border: "2px dashed #E61D72" }}>
-            <p style={{ fontSize: "32px", fontWeight: 900, color: "#E61D72", margin: 0, letterSpacing: "4px" }}>{referralCode}</p>
+        <div style={{ background: "#fff", borderRadius: "20px", padding: "20px", marginBottom: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <h3 style={{ fontWeight: 900, margin: "0 0 8px" }}>Your Referral Link</h3>
+          <p style={{ color: "#888", fontSize: "12px", margin: "0 0 12px" }}>Your code: <strong style={{ color: "#E61D72" }}>{referralCode}</strong></p>
+          <div style={{ background: "#FFF0F6", borderRadius: "12px", padding: "12px 16px", marginBottom: "12px", wordBreak: "break-all", fontSize: "13px", color: "#555" }}>
+            {referralLink}
           </div>
-
-          <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
-            <button onClick={copyCode}
-              style={{ background: "#E61D72", color: "#fff", padding: "12px 24px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer", fontSize: "14px" }}>
-              {copied ? "✅ Copied!" : "📋 Copy Code"}
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button onClick={copyLink} style={{ flex: 1, background: copied ? "#22c55e" : "#E61D72", color: "#fff", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
+              {copied ? "Copied!" : "Copy Link"}
             </button>
-            <button onClick={copyLink}
-              style={{ background: "#fff", color: "#E61D72", padding: "12px 24px", borderRadius: "12px", border: "2px solid #E61D72", fontWeight: 700, cursor: "pointer", fontSize: "14px" }}>
-              🔗 Copy Link
+            <button onClick={shareOnFacebook} style={{ flex: 1, background: "#1877F2", color: "#fff", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
+              Share on Facebook
             </button>
-          </div>
-
-          {/* Share Buttons */}
-          <div style={{ marginTop: "20px" }}>
-            <p style={{ color: "#888", fontSize: "13px", marginBottom: "12px" }}>Share via:</p>
-            <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
-              {[
-                { label: "📱 Messenger", color: "#0084FF" },
-                { label: "💬 Viber", color: "#7360F2" },
-                { label: "📧 Email", color: "#E61D72" },
-              ].map((btn) => (
-                <button key={btn.label}
-                  style={{ padding: "10px 20px", borderRadius: "20px", border: "none", background: btn.color, color: "#fff", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}>
-                  {btn.label}
-                </button>
-              ))}
-            </div>
           </div>
         </div>
 
-        {/* How it works */}
-        <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", marginBottom: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-          <h3 style={{ fontWeight: 700, margin: "0 0 20px" }}>How It Works</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {[
-              { step: "1", icon: "🔗", title: "Share Your Code", desc: "Share your unique referral code or link with friends and family" },
-              { step: "2", icon: "📝", title: "Friend Signs Up", desc: "Your friend registers on Serviko using your referral code" },
-              { step: "3", icon: "📅", title: "Friend Books", desc: "Your friend completes their first booking on Serviko" },
-              { step: "4", icon: "💰", title: "You Both Earn", desc: "You get ₱100 credit, your friend gets ₱50 off their first booking!" },
-            ].map((item) => (
-              <div key={item.step} style={{ display: "flex", alignItems: "flex-start", gap: "16px" }}>
-                <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "#E61D72", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, flexShrink: 0 }}>{item.step}</div>
-                <div>
-                  <p style={{ fontWeight: 700, margin: "0 0 4px" }}>{item.icon} {item.title}</p>
-                  <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Rewards */}
-        <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", marginBottom: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-            <h3 style={{ fontWeight: 700, margin: 0 }}>My Rewards</h3>
-            <div style={{ background: "#FFF0F6", borderRadius: "12px", padding: "8px 16px" }}>
-              <span style={{ color: "#E61D72", fontWeight: 900, fontSize: "18px" }}>₱{totalEarned}</span>
-              <span style={{ color: "#888", fontSize: "13px" }}> earned</span>
+        <div style={{ background: "#fff", borderRadius: "20px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <h3 style={{ fontWeight: 900, margin: "0 0 16px" }}>Referral History</h3>
+          {loading ? (
+            <p style={{ color: "#888", textAlign: "center" }}>Loading...</p>
+          ) : history.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "24px 0" }}>
+              <p style={{ fontWeight: 700, margin: "0 0 8px" }}>No referrals yet</p>
+              <p style={{ color: "#888", fontSize: "13px" }}>Share your link to start earning!</p>
             </div>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {referralHistory.map((ref, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: i < referralHistory.length - 1 ? "1px solid #FFE4F0" : "none" }}>
+          ) : (
+            history.map(ref => (
+              <div key={ref.id} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #f0f0f0" }}>
                 <div>
-                  <p style={{ fontWeight: 600, margin: "0 0 2px" }}>{ref.name}</p>
-                  <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{ref.date}</p>
+                  <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{ref.referred_name}</p>
+                  <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{new Date(ref.created_at).toLocaleDateString("en-PH")}</p>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <span style={{ background: ref.status === "Completed" ? "#F0FDF4" : "#FFF9E6", color: ref.status === "Completed" ? "#22c55e" : "#D97706", padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600 }}>{ref.status}</span>
-                  {ref.reward > 0 && <p style={{ color: "#E61D72", fontWeight: 700, margin: "4px 0 0", fontSize: "14px" }}>+₱{ref.reward}</p>}
+                  <span style={{ background: ref.status === "completed" ? "#F0FDF4" : "#FFF9E6", color: ref.status === "completed" ? "#22c55e" : "#D97706", padding: "2px 8px", borderRadius: "20px", fontSize: "10px", fontWeight: 700, display: "block", marginBottom: "2px" }}>
+                    {ref.status}
+                  </span>
+                  <p style={{ fontWeight: 700, color: "#22c55e", margin: 0 }}>+P{ref.reward}</p>
                 </div>
               </div>
-            ))}
-          </div>
+            ))
+          )}
         </div>
-
-        {/* First Booking Voucher */}
-        <div style={{ background: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)", borderRadius: "20px", padding: "24px", boxShadow: "0 4px 16px rgba(255,165,0,0.3)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <p style={{ fontWeight: 900, fontSize: "18px", margin: "0 0 4px", color: "#1a1a1a" }}>🎉 First Booking Voucher</p>
-              <p style={{ color: "#333", fontSize: "13px", margin: "0 0 8px" }}>For your referred friends</p>
-              <div style={{ background: "#fff", borderRadius: "8px", padding: "8px 16px", display: "inline-block" }}>
-                <span style={{ fontWeight: 900, color: "#E61D72", fontSize: "20px" }}>₱50 OFF</span>
-              </div>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <p style={{ fontWeight: 900, fontSize: "48px", margin: 0 }}>🎫</p>
-            </div>
-          </div>
-          <p style={{ color: "#333", fontSize: "12px", margin: "12px 0 0" }}>* Valid for first booking only. Minimum booking of ₱300.</p>
-        </div>
-
       </div>
     </div>
   );
