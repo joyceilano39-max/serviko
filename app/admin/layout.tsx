@@ -1,6 +1,6 @@
 ﻿"use client";
 import { useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const ADMIN_EMAILS = [
@@ -11,23 +11,31 @@ const ADMIN_EMAILS = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoaded } = useUser();
   const router = useRouter();
+  const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
     if (!isLoaded) return;
-    if (!user) { router.replace("/sign-in"); return; }
+    if (!user) {
+      router.replace("/sign-in?redirect_url=/admin");
+      return;
+    }
     const email = user.emailAddresses[0]?.emailAddress;
-    if (!ADMIN_EMAILS.includes(email)) { router.replace("/"); }
-  }, [user, isLoaded, router]);
+    if (ADMIN_EMAILS.includes(email)) {
+      setAllowed(true);
+    } else {
+      router.replace("/");
+    }
+  }, [user, isLoaded]);
 
   if (!isLoaded) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Arial, sans-serif" }}>
-        <p style={{ color: "#888" }}>Loading...</p>
+        <p style={{ color: "#888" }}>Checking access...</p>
       </div>
     );
   }
 
-  if (!user || !ADMIN_EMAILS.includes(user.emailAddresses[0]?.emailAddress)) {
+  if (!allowed) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f8f8f8", fontFamily: "Arial, sans-serif" }}>
         <div style={{ background: "#fff", borderRadius: "24px", padding: "48px 32px", textAlign: "center", maxWidth: "400px", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
