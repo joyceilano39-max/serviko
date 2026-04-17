@@ -1,4 +1,4 @@
-import { neon } from "@neondatabase/serverless";
+﻿import { neon } from "@neondatabase/serverless";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -12,9 +12,7 @@ export async function GET() {
     `;
 
     const artists = await sql`
-      SELECT u.name, u.email, u.phone, a.* 
-      FROM artists a
-      JOIN users u ON a.user_id = u.id
+      SELECT u.name, u.email, u.phone, a.* FROM artists a JOIN users u ON a.user_id = u.id WHERE a.verification_status != 'removed'
       ORDER BY a.created_at DESC
     `;
 
