@@ -18,7 +18,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
     if (action === "remove_artist") {
-      await sql`UPDATE artists SET is_available = false, verification_status = 'removed' WHERE id = ${artistId}`;
+      await sql`DELETE FROM artist_services WHERE artist_id = ${artistId}`;
+      await sql`DELETE FROM artists WHERE id = ${artistId}`;
+      return NextResponse.json({ success: true });
+    }
+    if (action === "unban_customer") {
+      await sql`UPDATE users SET role = 'customer' WHERE id = ${customerId}`;
       return NextResponse.json({ success: true });
     }
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
@@ -14,14 +14,7 @@ const vouchers: Record<string, { discount: number; type: "fixed" | "percent"; mi
   "WELCOME50": { discount: 50, type: "fixed", minOrder: 0 },
 };
 
-const servicePrices: Record<string, number> = {
-  "haircut": 500, "boys haircut": 150, "men": 200, "hair color": 1200,
-  "rebond": 1800, "keratin": 1500, "full body massage": 800,
-  "hot stone": 1000, "foot": 400, "facial": 650, "whitening": 900,
-  "manicure": 250, "pedicure": 300, "gel nails": 600, "lash": 800,
-  "eyebrow": 150, "makeup": 800, "cleaning": 800, "deep clean": 2500,
-  "garden": 500, "painting": 1500, "waxing": 200,
-};
+const servicePrices: Record<string, number> = {};
 
 const getServicePrice = (service: string) => {
   const lower = service.toLowerCase();
@@ -258,7 +251,7 @@ function BookingContent() {
               )}
               <button onClick={() => selectedArtist && setStep(2)} disabled={!selectedArtist}
                 style={{ width: "100%", marginTop: "16px", background: selectedArtist ? "#E61D72" : "#ccc", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: selectedArtist ? "pointer" : "not-allowed", fontSize: "15px" }}>
-                Continue with {selectedArtist?.name || "Artist"} →
+                Continue with {selectedArtist?.name || "Artist"} â†’
               </button>
             </div>
           )}
@@ -297,7 +290,7 @@ function BookingContent() {
                           background: sel ? "#FFF0F6" : "#f8f8f8", border: sel ? "1px solid #E61D72" : "1px solid transparent" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                           <div style={{ width: "16px", height: "16px", borderRadius: "50%", border: `2px solid ${sel ? "#E61D72" : "#ccc"}`, background: sel ? "#E61D72" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            {sel && <span style={{ color: "#fff", fontSize: "9px" }}>✓</span>}
+                            {sel && <span style={{ color: "#fff", fontSize: "9px" }}>âœ“</span>}
                           </div>
                           <p style={{ margin: 0, fontWeight: 600, fontSize: "13px" }}>{serviceName}</p>
                         </div>
@@ -314,7 +307,7 @@ function BookingContent() {
                 {!artistIdParam && <button onClick={() => setStep(1)} style={{ flex: 1, background: "#fff", color: "#E61D72", padding: "14px", borderRadius: "12px", border: "2px solid #E61D72", fontWeight: 700, cursor: "pointer" }}>Back</button>}
                 <button onClick={() => allServices.length > 0 && setStep(3)} disabled={allServices.length === 0}
                   style={{ flex: 2, background: allServices.length > 0 ? "#E61D72" : "#ccc", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: allServices.length > 0 ? "pointer" : "not-allowed" }}>
-                  Continue →
+                  Continue â†’
                 </button>
               </div>
             </div>
@@ -488,7 +481,7 @@ function BookingContent() {
                 <p style={{ fontWeight: 600, fontSize: "11px", margin: "0 0 3px", color: "#E61D72" }}>{member.name}</p>
                 {member.services.map(s => (
                   <div key={s.name} style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", paddingLeft: "8px", marginBottom: "2px" }}>
-                    <span style={{ color: "#555" }}>• {s.name}</span>
+                    <span style={{ color: "#555" }}>â€¢ {s.name}</span>
                     <span style={{ fontWeight: 600 }}>P{s.price}</span>
                   </div>
                 ))}
@@ -569,3 +562,4 @@ export default function BookingPage() {
     </Suspense>
   );
 }
+
