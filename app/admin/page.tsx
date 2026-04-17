@@ -1,83 +1,102 @@
 "use client";
 import { useState } from "react";
 
-const bookings = [
-  { id: "SRV-001", customer: "Joyce Ilano", artist: "Maria Santos", service: "Full Body Massage", date: "April 15, 2026", total: 1900, status: "pending", payment: "GCash" },
-  { id: "SRV-002", customer: "Maria Reyes", artist: "Ana Reyes", service: "Haircut & Styling", date: "April 15, 2026", total: 550, status: "completed", payment: "Maya" },
-  { id: "SRV-003", customer: "Ana Cruz", artist: "Joy Dela Cruz", service: "Manicure & Pedicure", date: "April 16, 2026", total: 500, status: "accepted", payment: "Credit Card" },
-  { id: "SRV-004", customer: "Liza Santos", artist: "Grace Tan", service: "Facial Treatment", date: "April 17, 2026", total: 700, status: "pending", payment: "Cash" },
+const stats = [
+  { label: "Total Revenue", value: "₱124,500", change: "+12%", icon: "💰", color: "#E61D72" },
+  { label: "Total Bookings", value: "248", change: "+8%", icon: "📅", color: "#3b82f6" },
+  { label: "Active Laborers", value: "32", change: "+3", icon: "👷", color: "#22c55e" },
+  { label: "Customers", value: "1,204", change: "+45", icon: "👥", color: "#7C3AED" },
+  { label: "Commission Earned", value: "₱12,450", change: "+12%", icon: "📊", color: "#F59E0B" },
+  { label: "Pending Approvals", value: "7", change: "laborers", icon: "⏳", color: "#f87171" },
 ];
 
-const artists = [
-  { name: "Maria Santos", role: "Massage Therapist", location: "Quezon City", rating: 4.9, bookings: 128, earnings: 48200, status: "active" },
-  { name: "Ana Reyes", role: "Hair Specialist", location: "Makati", rating: 4.8, bookings: 95, earnings: 32000, status: "active" },
-  { name: "Joy Dela Cruz", role: "Nail Technician", location: "Pasig", rating: 4.7, bookings: 82, earnings: 28500, status: "active" },
-  { name: "Grace Tan", role: "Skin Care Expert", location: "Taguig", rating: 4.8, bookings: 73, earnings: 31000, status: "pending" },
+const bookings = [
+  { id: "BK001", customer: "Joyce Ilano", laborer: "Maria Santos", service: "Full Body Massage", date: "Apr 15, 2026", amount: 800, status: "Upcoming", commission: 80 },
+  { id: "BK002", customer: "Dela Cruz Family", laborer: "Ana Reyes", service: "Haircut x3", date: "Apr 14, 2026", amount: 1500, status: "Completed", commission: 150 },
+  { id: "BK003", customer: "Liza Cruz", laborer: "Joy Santos", service: "Manicure x2", date: "Apr 13, 2026", amount: 900, status: "Completed", commission: 90 },
+  { id: "BK004", customer: "Maria Reyes", laborer: "Ana Reyes", service: "Facial Treatment", date: "Apr 12, 2026", amount: 650, status: "Cancelled", commission: 0 },
+  { id: "BK005", customer: "Santos Family", laborer: "Maria Santos", service: "Hot Stone Massage", date: "Apr 11, 2026", amount: 1000, status: "Completed", commission: 100 },
+];
+
+const laborers = [
+  { name: "Maria Santos", service: "Massage", rating: 4.9, bookings: 128, status: "Active", earnings: "₱45,200", superHost: true },
+  { name: "Ana Reyes", service: "Hair", rating: 4.8, bookings: 95, status: "Active", earnings: "₱38,100", superHost: true },
+  { name: "Joy Dela Cruz", service: "Nails", rating: 4.7, bookings: 82, status: "Active", earnings: "₱29,800", superHost: false },
+  { name: "Liza Cruz", service: "Skin Care", rating: 4.6, bookings: 61, status: "Pending", earnings: "₱0", superHost: false },
+  { name: "Rose Santos", service: "Hair", rating: 0, bookings: 0, status: "Pending", earnings: "₱0", superHost: false },
 ];
 
 const customers = [
-  { name: "Joyce Ilano", email: "joyce@gmail.com", bookings: 12, spent: 8400, joined: "Jan 2026", status: "active" },
-  { name: "Maria Reyes", email: "maria@gmail.com", bookings: 8, spent: 5200, joined: "Feb 2026", status: "active" },
-  { name: "Ana Cruz", email: "ana@gmail.com", bookings: 5, spent: 3100, joined: "Mar 2026", status: "active" },
-  { name: "Liza Santos", email: "liza@gmail.com", bookings: 3, spent: 1800, joined: "Apr 2026", status: "active" },
+  { name: "Joyce Ilano", email: "joyce@email.com", bookings: 12, spent: "₱8,400", joined: "Mar 20, 2026", status: "Active" },
+  { name: "Maria Reyes", email: "maria@email.com", bookings: 8, spent: "₱5,200", joined: "Mar 22, 2026", status: "Active" },
+  { name: "Liza Santos", email: "liza@email.com", bookings: 5, spent: "₱3,100", joined: "Apr 1, 2026", status: "Active" },
+  { name: "Ana Cruz", email: "ana@email.com", bookings: 2, spent: "₱1,300", joined: "Apr 5, 2026", status: "Inactive" },
 ];
 
-type TabType = "overview" | "bookings" | "artists" | "customers" | "finance";
+const statusColor: Record<string, { bg: string; color: string }> = {
+  Upcoming: { bg: "#EFF6FF", color: "#3b82f6" },
+  Completed: { bg: "#F0FDF4", color: "#22c55e" },
+  Cancelled: { bg: "#FEF2F2", color: "#f87171" },
+  Active: { bg: "#F0FDF4", color: "#22c55e" },
+  Pending: { bg: "#FFF9E6", color: "#D97706" },
+  Inactive: { bg: "#F3F4F6", color: "#888" },
+};
 
-export default function AdminPage() {
-  const [tab, setTab] = useState<TabType>("overview");
+export default function AdminDashboardPage() {
+  const [activeSection, setActiveSection] = useState("overview");
+  const [laborerFilter, setLaborerFilter] = useState("all");
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8f8f8", fontFamily: "Arial, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#F8F9FA" }}>
+
       {/* Header */}
-      <div style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)", padding: "20px 32px", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div>
-          <p style={{ color: "#E61D72", fontWeight: 900, fontSize: "20px", margin: "0 0 2px" }}>🌸 Serviko Admin</p>
-          <p style={{ opacity: 0.6, fontSize: "13px", margin: 0 }}>Owner Dashboard</p>
+      <div style={{ background: "#1a1a1a", padding: "20px 32px", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span style={{ fontSize: "24px" }}>🌸</span>
+          <div>
+            <h1 style={{ margin: 0, fontSize: "18px", fontWeight: 900, color: "#E61D72" }}>Serviko Admin</h1>
+            <p style={{ margin: 0, fontSize: "12px", color: "#888" }}>Management Dashboard</p>
+          </div>
         </div>
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <span style={{ background: "#22c55e", color: "#fff", padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600 }}>🟢 Live</span>
-          <span style={{ color: "#888", fontSize: "13px" }}>Joyce Ilano • Owner</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <span style={{ background: "#f87171", color: "#fff", borderRadius: "50%", width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700 }}>7</span>
+          <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "#E61D72", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700 }}>A</div>
         </div>
       </div>
 
       {/* Nav */}
-      <div style={{ background: "#fff", display: "flex", overflowX: "auto", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-        {([
-          { id: "overview", label: "🏠 Overview" },
-          { id: "bookings", label: "📅 Bookings" },
-          { id: "artists", label: "🎨 Artists" },
-          { id: "customers", label: "👥 Customers" },
-          { id: "finance", label: "💰 Finance" },
-        ] as { id: TabType; label: string }[]).map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)}
-            style={{ padding: "14px 24px", border: "none", cursor: "pointer", fontWeight: 700, fontSize: "13px", whiteSpace: "nowrap",
-              background: tab === t.id ? "#fff" : "#f8f8f8",
-              color: tab === t.id ? "#E61D72" : "#888",
-              borderBottom: tab === t.id ? "3px solid #E61D72" : "3px solid transparent" }}>
-            {t.label}
-          </button>
-        ))}
+      <div style={{ background: "#fff", borderBottom: "1px solid #eee", padding: "0 32px" }}>
+        <div style={{ display: "flex", gap: "0", overflowX: "auto" }}>
+          {[
+            { key: "overview", label: "📊 Overview" },
+            { key: "bookings", label: "📅 Bookings" },
+            { key: "laborers", label: "👷 Laborers" },
+            { key: "customers", label: "👥 Customers" },
+            { key: "finance", label: "💰 Finance" },
+          ].map((tab) => (
+            <button key={tab.key} onClick={() => setActiveSection(tab.key)}
+              style={{ padding: "16px 24px", border: "none", background: "transparent", cursor: "pointer", fontWeight: 600, fontSize: "14px", whiteSpace: "nowrap",
+                borderBottom: activeSection === tab.key ? "3px solid #E61D72" : "3px solid transparent",
+                color: activeSection === tab.key ? "#E61D72" : "#888" }}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px" }}>
+      <div style={{ padding: "32px", maxWidth: "1200px", margin: "0 auto" }}>
 
         {/* OVERVIEW */}
-        {tab === "overview" && (
-          <div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" }}>
-              {[
-                { label: "Total Bookings", value: bookings.length, icon: "📅", color: "#3b82f6", bg: "#EFF6FF" },
-                { label: "Total Artists", value: artists.length, icon: "🎨", color: "#7C3AED", bg: "#F5F3FF" },
-                { label: "Total Customers", value: customers.length, icon: "👥", color: "#E61D72", bg: "#FFF0F6" },
-                { label: "Total Revenue", value: "₱48,200", icon: "💰", color: "#22c55e", bg: "#F0FDF4" },
-                { label: "Pending Bookings", value: bookings.filter(b => b.status === "pending").length, icon: "⏳", color: "#D97706", bg: "#FFF9E6" },
-                { label: "Commission (10%)", value: "₱4,820", icon: "🏦", color: "#E61D72", bg: "#FFF0F6" },
-              ].map(stat => (
-                <div key={stat.label} style={{ background: stat.bg, borderRadius: "16px", padding: "20px" }}>
+        {activeSection === "overview" && (
+          <>
+            <h2 style={{ fontWeight: 900, margin: "0 0 24px" }}>Dashboard Overview</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px", marginBottom: "32px" }}>
+              {stats.map((stat) => (
+                <div key={stat.label} style={{ background: "#fff", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", borderLeft: `4px solid ${stat.color}` }}>
                   <div style={{ fontSize: "28px", marginBottom: "8px" }}>{stat.icon}</div>
-                  <p style={{ fontWeight: 900, fontSize: "22px", color: stat.color, margin: "0 0 4px" }}>{stat.value}</p>
-                  <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{stat.label}</p>
+                  <p style={{ fontSize: "22px", fontWeight: 900, color: stat.color, margin: "0 0 4px" }}>{stat.value}</p>
+                  <p style={{ color: "#888", fontSize: "12px", margin: "0 0 4px" }}>{stat.label}</p>
+                  <span style={{ color: "#22c55e", fontSize: "12px", fontWeight: 600 }}>{stat.change}</span>
                 </div>
               ))}
             </div>
@@ -88,161 +107,186 @@ export default function AdminPage() {
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ borderBottom: "2px solid #f0f0f0" }}>
-                    {["ID", "Customer", "Artist", "Service", "Date", "Total", "Status"].map(h => (
+                    {["ID", "Customer", "Laborer", "Service", "Date", "Amount", "Commission", "Status"].map((h) => (
                       <th key={h} style={{ textAlign: "left", padding: "8px 12px", fontSize: "12px", color: "#888", fontWeight: 600 }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {bookings.map(b => (
-                    <tr key={b.id} style={{ borderBottom: "1px solid #f8f8f8" }}>
-                      <td style={{ padding: "12px", fontSize: "13px", color: "#888" }}>{b.id}</td>
-                      <td style={{ padding: "12px", fontSize: "13px", fontWeight: 600 }}>{b.customer}</td>
-                      <td style={{ padding: "12px", fontSize: "13px" }}>{b.artist}</td>
+                  {bookings.map((b) => (
+                    <tr key={b.id} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                      <td style={{ padding: "12px", fontSize: "13px", fontWeight: 600, color: "#E61D72" }}>{b.id}</td>
+                      <td style={{ padding: "12px", fontSize: "13px" }}>{b.customer}</td>
+                      <td style={{ padding: "12px", fontSize: "13px" }}>{b.laborer}</td>
                       <td style={{ padding: "12px", fontSize: "13px" }}>{b.service}</td>
                       <td style={{ padding: "12px", fontSize: "13px", color: "#888" }}>{b.date}</td>
-                      <td style={{ padding: "12px", fontSize: "13px", fontWeight: 700, color: "#E61D72" }}>₱{b.total}</td>
+                      <td style={{ padding: "12px", fontSize: "13px", fontWeight: 700 }}>₱{b.amount}</td>
+                      <td style={{ padding: "12px", fontSize: "13px", color: "#22c55e", fontWeight: 700 }}>₱{b.commission}</td>
                       <td style={{ padding: "12px" }}>
-                        <span style={{ background: b.status === "completed" ? "#F0FDF4" : b.status === "accepted" ? "#EFF6FF" : "#FFF9E6",
-                          color: b.status === "completed" ? "#22c55e" : b.status === "accepted" ? "#3b82f6" : "#D97706",
-                          padding: "3px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: 600 }}>
-                          {b.status}
-                        </span>
+                        <span style={{ background: statusColor[b.status].bg, color: statusColor[b.status].color, padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: 600 }}>{b.status}</span>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </div>
+          </>
         )}
 
         {/* BOOKINGS */}
-        {tab === "bookings" && (
-          <div>
-            <h2 style={{ fontWeight: 900, margin: "0 0 16px" }}>All Bookings</h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {bookings.map(b => (
-                <div key={b.id} style={{ background: "#fff", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div>
-                    <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "6px" }}>
-                      <span style={{ fontWeight: 700 }}>{b.customer}</span>
-                      <span style={{ color: "#888", fontSize: "12px" }}>→ {b.artist}</span>
-                      <span style={{ color: "#888", fontSize: "12px" }}>• {b.id}</span>
-                    </div>
-                    <p style={{ color: "#888", fontSize: "13px", margin: "0 0 4px" }}>{b.service} • {b.date}</p>
-                    <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>💳 {b.payment}</p>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <p style={{ fontWeight: 900, color: "#E61D72", fontSize: "18px", margin: "0 0 6px" }}>₱{b.total}</p>
-                    <span style={{ background: b.status === "completed" ? "#F0FDF4" : b.status === "accepted" ? "#EFF6FF" : "#FFF9E6",
-                      color: b.status === "completed" ? "#22c55e" : b.status === "accepted" ? "#3b82f6" : "#D97706",
-                      padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600 }}>
-                      {b.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
+        {activeSection === "bookings" && (
+          <>
+            <h2 style={{ fontWeight: 900, margin: "0 0 24px" }}>All Bookings</h2>
+            <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ borderBottom: "2px solid #f0f0f0" }}>
+                    {["ID", "Customer", "Laborer", "Service", "Date", "Amount", "Commission", "Status", "Action"].map((h) => (
+                      <th key={h} style={{ textAlign: "left", padding: "8px 12px", fontSize: "12px", color: "#888", fontWeight: 600 }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {bookings.map((b) => (
+                    <tr key={b.id} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                      <td style={{ padding: "12px", fontSize: "13px", fontWeight: 600, color: "#E61D72" }}>{b.id}</td>
+                      <td style={{ padding: "12px", fontSize: "13px" }}>{b.customer}</td>
+                      <td style={{ padding: "12px", fontSize: "13px" }}>{b.laborer}</td>
+                      <td style={{ padding: "12px", fontSize: "13px" }}>{b.service}</td>
+                      <td style={{ padding: "12px", fontSize: "13px", color: "#888" }}>{b.date}</td>
+                      <td style={{ padding: "12px", fontSize: "13px", fontWeight: 700 }}>₱{b.amount}</td>
+                      <td style={{ padding: "12px", fontSize: "13px", color: "#22c55e", fontWeight: 700 }}>₱{b.commission}</td>
+                      <td style={{ padding: "12px" }}>
+                        <span style={{ background: statusColor[b.status].bg, color: statusColor[b.status].color, padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: 600 }}>{b.status}</span>
+                      </td>
+                      <td style={{ padding: "12px" }}>
+                        <button style={{ background: "#FFF0F6", color: "#E61D72", border: "none", padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>View</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
+          </>
         )}
 
-        {/* ARTISTS */}
-        {tab === "artists" && (
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-              <h2 style={{ fontWeight: 900, margin: 0 }}>All Artists</h2>
-              <a href="/register/artist" style={{ background: "#7C3AED", color: "#fff", padding: "10px 20px", borderRadius: "20px", textDecoration: "none", fontWeight: 600, fontSize: "13px" }}>+ Add Artist</a>
+        {/* LABORERS */}
+        {activeSection === "laborers" && (
+          <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+              <h2 style={{ fontWeight: 900, margin: 0 }}>Laborers</h2>
+              <div style={{ display: "flex", gap: "8px" }}>
+                {["all", "active", "pending"].map((f) => (
+                  <button key={f} onClick={() => setLaborerFilter(f)}
+                    style={{ padding: "8px 16px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "13px", textTransform: "capitalize",
+                      background: laborerFilter === f ? "#E61D72" : "#fff",
+                      color: laborerFilter === f ? "#fff" : "#888" }}>
+                    {f}
+                  </button>
+                ))}
+              </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {artists.map(a => (
-                <div key={a.name} style={{ background: "#fff", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-                    <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "#F5F3FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px" }}>🎨</div>
+              {laborers.filter(l => laborerFilter === "all" || l.status.toLowerCase() === laborerFilter).map((l) => (
+                <div key={l.name} style={{ background: "#fff", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                    <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "#FFF0F6", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>👷</div>
                     <div>
-                      <p style={{ fontWeight: 700, margin: "0 0 2px" }}>{a.name}</p>
-                      <p style={{ color: "#888", fontSize: "13px", margin: "0 0 2px" }}>{a.role} • {a.location}</p>
-                      <div style={{ display: "flex", gap: "12px", fontSize: "12px", color: "#888" }}>
-                        <span>★ {a.rating}</span>
-                        <span>📅 {a.bookings} bookings</span>
-                        <span>💰 ₱{a.earnings.toLocaleString()} earned</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <p style={{ fontWeight: 700, margin: 0 }}>{l.name}</p>
+                        {l.superHost && <span style={{ background: "#FFF9E6", color: "#D97706", padding: "2px 8px", borderRadius: "10px", fontSize: "11px", fontWeight: 700 }}>⭐ Super Host</span>}
                       </div>
+                      <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{l.service} • {l.bookings} bookings • {l.rating > 0 ? `${l.rating}⭐` : "No rating yet"}</p>
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                    <span style={{ background: a.status === "active" ? "#F0FDF4" : "#FFF9E6", color: a.status === "active" ? "#22c55e" : "#D97706", padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600 }}>
-                      {a.status === "active" ? "✅ Active" : "⏳ Pending"}
-                    </span>
-                    {a.status === "pending" && (
-                      <button style={{ background: "#7C3AED", color: "#fff", border: "none", padding: "6px 14px", borderRadius: "20px", cursor: "pointer", fontSize: "12px", fontWeight: 600 }}>Approve</button>
+                  <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+                    <div style={{ textAlign: "right" }}>
+                      <p style={{ fontWeight: 700, color: "#E61D72", margin: 0 }}>{l.earnings}</p>
+                      <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>Total Earnings</p>
+                    </div>
+                    <span style={{ background: statusColor[l.status].bg, color: statusColor[l.status].color, padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600 }}>{l.status}</span>
+                    {l.status === "Pending" && (
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button style={{ background: "#22c55e", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>Approve</button>
+                        <button style={{ background: "#f87171", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>Reject</button>
+                      </div>
                     )}
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </>
         )}
 
         {/* CUSTOMERS */}
-        {tab === "customers" && (
-          <div>
-            <h2 style={{ fontWeight: 900, margin: "0 0 16px" }}>All Customers</h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {customers.map(c => (
-                <div key={c.name} style={{ background: "#fff", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-                    <div style={{ width: "44px", height: "44px", borderRadius: "50%", background: "#FFF0F6", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, color: "#E61D72", fontSize: "18px" }}>{c.name[0]}</div>
-                    <div>
-                      <p style={{ fontWeight: 700, margin: "0 0 2px" }}>{c.name}</p>
-                      <p style={{ color: "#888", fontSize: "13px", margin: "0 0 2px" }}>{c.email}</p>
-                      <div style={{ display: "flex", gap: "12px", fontSize: "12px", color: "#888" }}>
-                        <span>📅 {c.bookings} bookings</span>
-                        <span>💰 ₱{c.spent.toLocaleString()} spent</span>
-                        <span>🗓️ Joined {c.joined}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <span style={{ background: "#F0FDF4", color: "#22c55e", padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600 }}>✅ Active</span>
-                </div>
-              ))}
+        {activeSection === "customers" && (
+          <>
+            <h2 style={{ fontWeight: 900, margin: "0 0 24px" }}>All Customers</h2>
+            <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ borderBottom: "2px solid #f0f0f0" }}>
+                    {["Name", "Email", "Bookings", "Total Spent", "Joined", "Status"].map((h) => (
+                      <th key={h} style={{ textAlign: "left", padding: "8px 12px", fontSize: "12px", color: "#888", fontWeight: 600 }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {customers.map((c) => (
+                    <tr key={c.name} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                      <td style={{ padding: "12px", fontSize: "13px", fontWeight: 600 }}>{c.name}</td>
+                      <td style={{ padding: "12px", fontSize: "13px", color: "#888" }}>{c.email}</td>
+                      <td style={{ padding: "12px", fontSize: "13px" }}>{c.bookings}</td>
+                      <td style={{ padding: "12px", fontSize: "13px", fontWeight: 700, color: "#E61D72" }}>{c.spent}</td>
+                      <td style={{ padding: "12px", fontSize: "13px", color: "#888" }}>{c.joined}</td>
+                      <td style={{ padding: "12px" }}>
+                        <span style={{ background: statusColor[c.status].bg, color: statusColor[c.status].color, padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: 600 }}>{c.status}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
+          </>
         )}
 
         {/* FINANCE */}
-        {tab === "finance" && (
-          <div>
-            <h2 style={{ fontWeight: 900, margin: "0 0 16px" }}>Finance Overview</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+        {activeSection === "finance" && (
+          <>
+            <h2 style={{ fontWeight: 900, margin: "0 0 24px" }}>Finance Overview</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "32px" }}>
               {[
-                { label: "Total Revenue", value: "₱48,200", color: "#22c55e", bg: "#F0FDF4", icon: "💰" },
-                { label: "Serviko Commission (10%)", value: "₱4,820", color: "#E61D72", bg: "#FFF0F6", icon: "🏦" },
-                { label: "Artist Payouts (90%)", value: "₱43,380", color: "#7C3AED", bg: "#F5F3FF", icon: "💸" },
-                { label: "Pending Payouts", value: "₱3,600", color: "#D97706", bg: "#FFF9E6", icon: "⏳" },
-              ].map(stat => (
-                <div key={stat.label} style={{ background: stat.bg, borderRadius: "16px", padding: "20px" }}>
-                  <div style={{ fontSize: "28px", marginBottom: "8px" }}>{stat.icon}</div>
-                  <p style={{ fontWeight: 900, fontSize: "22px", color: stat.color, margin: "0 0 4px" }}>{stat.value}</p>
-                  <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{stat.label}</p>
+                { label: "Total Revenue", value: "₱124,500", color: "#E61D72", icon: "💰" },
+                { label: "Commission Collected", value: "₱12,450", color: "#22c55e", icon: "📊" },
+                { label: "Incentives Paid", value: "₱3,200", color: "#f87171", icon: "🎁" },
+                { label: "Net Profit", value: "₱9,250", color: "#3b82f6", icon: "📈" },
+                { label: "Pending Payouts", value: "₱28,400", color: "#D97706", icon: "⏳" },
+                { label: "Completed Payouts", value: "₱96,100", color: "#7C3AED", icon: "✅" },
+              ].map((item) => (
+                <div key={item.label} style={{ background: "#fff", borderRadius: "16px", padding: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+                  <div style={{ fontSize: "32px", marginBottom: "8px" }}>{item.icon}</div>
+                  <p style={{ fontSize: "28px", fontWeight: 900, color: item.color, margin: "0 0 4px" }}>{item.value}</p>
+                  <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{item.label}</p>
                 </div>
               ))}
             </div>
+
             <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-              <h3 style={{ fontWeight: 700, margin: "0 0 16px" }}>Transaction History</h3>
-              {bookings.map(b => (
-                <div key={b.id} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid #f8f8f8", fontSize: "14px" }}>
+              <h3 style={{ fontWeight: 700, margin: "0 0 16px" }}>Commission Breakdown</h3>
+              {bookings.filter(b => b.status === "Completed").map((b) => (
+                <div key={b.id} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid #f0f0f0" }}>
                   <div>
-                    <p style={{ fontWeight: 600, margin: "0 0 2px" }}>{b.customer} → {b.artist}</p>
-                    <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{b.service} • {b.date} • {b.payment}</p>
+                    <p style={{ fontWeight: 600, margin: 0 }}>{b.customer} - {b.service}</p>
+                    <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{b.date} • {b.laborer}</p>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <p style={{ fontWeight: 700, color: "#22c55e", margin: "0 0 2px" }}>+₱{b.total}</p>
-                    <p style={{ color: "#E61D72", fontSize: "12px", margin: 0 }}>Commission: ₱{Math.round(b.total * 0.1)}</p>
+                    <p style={{ fontWeight: 700, margin: 0 }}>₱{b.amount}</p>
+                    <p style={{ color: "#22c55e", fontSize: "13px", fontWeight: 600, margin: 0 }}>+₱{b.commission} commission</p>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>
