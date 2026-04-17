@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useRef } from "react";
 import Link from "next/link";
 
@@ -60,6 +60,15 @@ export default function ArtistRegisterPage() {
     setLoading(true);
     setError("");
     try {
+      let profilePhotoUrl = "";
+      let validIdUrl = "";
+      if (profilePhoto?.file) {
+        profilePhotoUrl = await uploadToCloudinary(profilePhoto.file, "selfies");
+      }
+      if (validId?.file) {
+        validIdUrl = await uploadToCloudinary(validId.file, "ids");
+      }
+
       const res = await fetch("/api/register/artist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -67,6 +76,8 @@ export default function ArtistRegisterPage() {
           name: form.name, email: form.email, phone: form.phone,
           address: form.city, bio: form.bio, experience: form.experience,
           services: selectedServices, gcash: form.gcash, clerkId: null,
+          profilePhoto: profilePhotoUrl,
+          validId: validIdUrl,
         }),
       });
       const data = await res.json();
@@ -80,13 +91,13 @@ export default function ArtistRegisterPage() {
 
   if (success) {
     return (
-      <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #F5F3FF 0%, #fff 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: "32px" }}>
+      <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #F5F3FF 0%, #fff 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: "32px", fontFamily: "Arial, sans-serif" }}>
         <div style={{ background: "#fff", borderRadius: "24px", padding: "48px 32px", textAlign: "center", maxWidth: "400px", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
-          <div style={{ fontSize: "72px", marginBottom: "16px" }}>ðŸŽ¨</div>
+          <div style={{ width: "72px", height: "72px", borderRadius: "50%", background: "#7C3AED", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: "28px", fontWeight: 900 }}>OK</div>
           <h1 style={{ fontWeight: 900, color: "#7C3AED", margin: "0 0 8px" }}>Application Submitted!</h1>
-          <p style={{ color: "#888", margin: "0 0 20px" }}>We'll verify your account within 24 hours.</p>
+          <p style={{ color: "#888", margin: "0 0 20px" }}>We will verify your account within 24 hours.</p>
           <div style={{ background: "#F5F3FF", borderRadius: "16px", padding: "16px", marginBottom: "24px", textAlign: "left" }}>
-            {["ID verification (24 hrs)", "Background check", "Email confirmation", "Start earning! ðŸŽ‰"].map((t, i) => (
+            {["ID verification (24 hrs)", "Background check", "Email confirmation", "Start earning!"].map((t, i) => (
               <div key={i} style={{ display: "flex", gap: "8px", marginBottom: "6px", fontSize: "13px" }}>
                 <span style={{ color: "#7C3AED", fontWeight: 700 }}>{i + 1}.</span>
                 <span style={{ color: "#555" }}>{t}</span>
@@ -94,7 +105,7 @@ export default function ArtistRegisterPage() {
             ))}
           </div>
           <Link href="/artist-dashboard" style={{ display: "block", background: "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", textDecoration: "none", fontWeight: 700 }}>
-            Go to Dashboard â†’
+            Go to Dashboard
           </Link>
         </div>
       </div>
@@ -106,10 +117,10 @@ export default function ArtistRegisterPage() {
       <div style={{ maxWidth: "520px", margin: "0 auto" }}>
 
         <div style={{ textAlign: "center", marginBottom: "24px" }}>
-          <Link href="/register" style={{ color: "#888", fontSize: "13px", textDecoration: "none" }}>â† Back</Link>
+          <Link href="/register" style={{ color: "#888", fontSize: "13px", textDecoration: "none" }}>Back</Link>
           <p style={{ color: "#7C3AED", fontWeight: 900, fontSize: "24px", margin: "8px 0 4px" }}>Serviko</p>
           <h1 style={{ fontSize: "20px", fontWeight: 900, margin: "0 0 4px" }}>Become a Serviko Artist</h1>
-          <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>Quick & easy â€” takes only 3 minutes!</p>
+          <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>Quick and easy - takes only 3 minutes!</p>
         </div>
 
         {/* Progress */}
@@ -129,7 +140,7 @@ export default function ArtistRegisterPage() {
           {/* STEP 1: Basic Info */}
           {step === 1 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-              <h3 style={{ fontWeight: 700, margin: 0, fontSize: "16px" }}>ðŸ‘¤ Basic Information</h3>
+              <h3 style={{ fontWeight: 700, margin: 0, fontSize: "16px" }}>Basic Information</h3>
               {[
                 { label: "Full Name", key: "name", type: "text", ph: "Maria Santos" },
                 { label: "Email", key: "email", type: "email", ph: "maria@email.com" },
@@ -150,7 +161,7 @@ export default function ArtistRegisterPage() {
                 }
                 setError(""); setStep(2);
               }} style={{ background: "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer", fontSize: "15px" }}>
-                Continue â†’
+                Continue
               </button>
             </div>
           )}
@@ -159,15 +170,15 @@ export default function ArtistRegisterPage() {
           {step === 2 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               <div>
-                <h3 style={{ fontWeight: 700, margin: "0 0 4px", fontSize: "16px" }}>ðŸ“¸ Photo & ID Verification</h3>
-                <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>For customer safety and trust â€” takes 30 seconds!</p>
+                <h3 style={{ fontWeight: 700, margin: "0 0 4px", fontSize: "16px" }}>Photo & ID Verification</h3>
+                <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>For customer safety and trust - takes 30 seconds!</p>
               </div>
 
-              {/* Profile Photo */}
+              {/* Selfie */}
               <div>
                 <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "8px" }}>
                   Selfie Photo <span style={{ color: "#f87171" }}>*</span>
-                  <span style={{ color: "#888", fontWeight: 400 }}> â€” Clear face, no filters</span>
+                  <span style={{ color: "#888", fontWeight: 400 }}> - Clear face, no filters</span>
                 </label>
                 <input ref={profileRef} type="file" accept="image/*" capture="user" style={{ display: "none" }} onChange={e => handleFile(e, setProfilePhoto)} />
                 <div onClick={() => profileRef.current?.click()}
@@ -175,13 +186,13 @@ export default function ArtistRegisterPage() {
                   {profilePhoto ? (
                     <div style={{ position: "relative", display: "inline-block" }}>
                       <img src={profilePhoto.preview} alt="Profile" style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%", border: "3px solid #7C3AED" }} />
-                      <div style={{ position: "absolute", bottom: 0, right: 0, background: "#22c55e", color: "#fff", borderRadius: "50%", width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" }}>âœ“</div>
+                      <div style={{ position: "absolute", bottom: 0, right: 0, background: "#22c55e", color: "#fff", borderRadius: "50%", width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" }}>✓</div>
                     </div>
                   ) : (
                     <>
-                      <div style={{ fontSize: "40px", marginBottom: "8px" }}>ðŸ¤³</div>
-                      <p style={{ fontWeight: 600, color: "#7C3AED", margin: "0 0 4px", fontSize: "14px" }}>Tap to take/upload selfie</p>
-                      <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>JPG, PNG â€” Max 5MB</p>
+                      <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "#EDE9FE", margin: "0 auto 8px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "#7C3AED" }}>CAM</div>
+                      <p style={{ fontWeight: 600, color: "#7C3AED", margin: "0 0 4px", fontSize: "14px" }}>Tap to take or upload selfie</p>
+                      <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>JPG, PNG - Max 5MB</p>
                     </>
                   )}
                 </div>
@@ -191,7 +202,6 @@ export default function ArtistRegisterPage() {
               <div>
                 <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "8px" }}>
                   Valid Government ID <span style={{ color: "#f87171" }}>*</span>
-                  <span style={{ color: "#888", fontWeight: 400 }}> â€” Any 1 government ID</span>
                 </label>
                 <select value={form.idType} onChange={e => setForm({ ...form, idType: e.target.value })}
                   style={{ width: "100%", padding: "11px 14px", borderRadius: "10px", border: "1px solid #EDE9FE", fontSize: "14px", marginBottom: "10px" }}>
@@ -206,20 +216,19 @@ export default function ArtistRegisterPage() {
                   {validId ? (
                     <div style={{ position: "relative" }}>
                       <img src={validId.preview} alt="ID" style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "8px" }} />
-                      <div style={{ position: "absolute", top: "8px", right: "8px", background: "#22c55e", color: "#fff", borderRadius: "50%", width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" }}>âœ“</div>
+                      <div style={{ position: "absolute", top: "8px", right: "8px", background: "#22c55e", color: "#fff", borderRadius: "50%", width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" }}>✓</div>
                     </div>
                   ) : (
                     <>
-                      <div style={{ fontSize: "32px", marginBottom: "6px" }}>ðŸªª</div>
+                      <div style={{ width: "48px", height: "48px", borderRadius: "8px", background: "#EDE9FE", margin: "0 auto 8px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "#7C3AED", fontSize: "11px" }}>ID</div>
                       <p style={{ fontWeight: 600, color: "#7C3AED", margin: "0 0 2px", fontSize: "13px" }}>Upload photo of your ID</p>
-                      <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>Front side only â€¢ Clear & readable</p>
+                      <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>Front side only - Clear and readable</p>
                     </>
                   )}
                 </div>
               </div>
 
-              <div style={{ background: "#FFFBEB", borderRadius: "12px", padding: "12px", display: "flex", gap: "8px", alignItems: "flex-start" }}>
-                <span style={{ fontSize: "16px", flexShrink: 0 }}>ðŸ”’</span>
+              <div style={{ background: "#FFFBEB", borderRadius: "12px", padding: "12px" }}>
                 <p style={{ color: "#555", fontSize: "12px", margin: 0, lineHeight: 1.6 }}>
                   Your ID is encrypted and used only for identity verification under <strong>RA 10173 (Data Privacy Act)</strong>. It will never be shared publicly.
                 </p>
@@ -227,12 +236,12 @@ export default function ArtistRegisterPage() {
 
               {error && <p style={{ color: "#f87171", fontSize: "13px", margin: 0 }}>{error}</p>}
               <div style={{ display: "flex", gap: "10px" }}>
-                <button onClick={() => setStep(1)} style={{ flex: 1, background: "#fff", color: "#7C3AED", padding: "14px", borderRadius: "12px", border: "2px solid #7C3AED", fontWeight: 700, cursor: "pointer" }}>â† Back</button>
+                <button onClick={() => setStep(1)} style={{ flex: 1, background: "#fff", color: "#7C3AED", padding: "14px", borderRadius: "12px", border: "2px solid #7C3AED", fontWeight: 700, cursor: "pointer" }}>Back</button>
                 <button onClick={() => {
                   if (!profilePhoto || !validId || !form.idType) { setError("Please upload your selfie and valid ID."); return; }
                   setError(""); setStep(3);
                 }} style={{ flex: 2, background: "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer" }}>
-                  Continue â†’
+                  Continue
                 </button>
               </div>
             </div>
@@ -242,7 +251,7 @@ export default function ArtistRegisterPage() {
           {step === 3 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
               <div>
-                <h3 style={{ fontWeight: 700, margin: "0 0 4px", fontSize: "16px" }}>ðŸ› ï¸ Your Services</h3>
+                <h3 style={{ fontWeight: 700, margin: "0 0 4px", fontSize: "16px" }}>Your Services</h3>
                 <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>Select what you offer (choose all that apply)</p>
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
@@ -251,7 +260,7 @@ export default function ArtistRegisterPage() {
                     style={{ padding: "7px 14px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "12px",
                       background: selectedServices.includes(s) ? "#7C3AED" : "#EDE9FE",
                       color: selectedServices.includes(s) ? "#fff" : "#7C3AED" }}>
-                    {selectedServices.includes(s) ? "âœ“ " : ""}{s}
+                    {selectedServices.includes(s) ? "✓ " : ""}{s}
                   </button>
                 ))}
               </div>
@@ -280,36 +289,34 @@ export default function ArtistRegisterPage() {
               </div>
               {error && <p style={{ color: "#f87171", fontSize: "13px", margin: 0 }}>{error}</p>}
               <div style={{ display: "flex", gap: "10px" }}>
-                <button onClick={() => setStep(2)} style={{ flex: 1, background: "#fff", color: "#7C3AED", padding: "14px", borderRadius: "12px", border: "2px solid #7C3AED", fontWeight: 700, cursor: "pointer" }}>â† Back</button>
+                <button onClick={() => setStep(2)} style={{ flex: 1, background: "#fff", color: "#7C3AED", padding: "14px", borderRadius: "12px", border: "2px solid #7C3AED", fontWeight: 700, cursor: "pointer" }}>Back</button>
                 <button onClick={() => {
                   if (selectedServices.length === 0 || !form.experience) { setError("Please select services and experience."); return; }
                   setError(""); setStep(4);
-                }} style={{ flex: 2, background: "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer" }}>Continue â†’</button>
+                }} style={{ flex: 2, background: "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer" }}>Continue</button>
               </div>
             </div>
           )}
 
-          {/* STEP 4: Confirm & Agree */}
+          {/* STEP 4: Confirm */}
           {step === 4 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <h3 style={{ fontWeight: 700, margin: 0, fontSize: "16px" }}>OK Almost Done!</h3>
+              <h3 style={{ fontWeight: 700, margin: 0, fontSize: "16px" }}>Almost Done!</h3>
 
-              {/* Summary */}
               <div style={{ background: "#F5F3FF", borderRadius: "14px", padding: "16px" }}>
                 <p style={{ fontWeight: 700, color: "#7C3AED", margin: "0 0 10px" }}>Your Application Summary</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "#888" }}>Name</span><span style={{ fontWeight: 600 }}>{form.name}</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "#888" }}>Location</span><span style={{ fontWeight: 600 }}>{form.city}</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "#888" }}>ID Type</span><span style={{ fontWeight: 600 }}>{form.idType}</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "#888" }}>Experience</span><span style={{ fontWeight: 600 }}>{form.experience}</span>
-                  </div>
+                  {[
+                    { label: "Name", val: form.name },
+                    { label: "Location", val: form.city },
+                    { label: "ID Type", val: form.idType },
+                    { label: "Experience", val: form.experience },
+                  ].map(item => (
+                    <div key={item.label} style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ color: "#888" }}>{item.label}</span>
+                      <span style={{ fontWeight: 600 }}>{item.val}</span>
+                    </div>
+                  ))}
                   <div>
                     <span style={{ color: "#888" }}>Services: </span>
                     <span style={{ fontWeight: 600 }}>{selectedServices.slice(0, 3).join(", ")}{selectedServices.length > 3 ? ` +${selectedServices.length - 3} more` : ""}</span>
@@ -317,18 +324,17 @@ export default function ArtistRegisterPage() {
                 </div>
               </div>
 
-              {/* Single Agreement */}
               <div style={{ background: "#FFFBEB", borderRadius: "14px", padding: "16px", border: "1px solid #FDE68A" }}>
-                <p style={{ fontWeight: 700, color: "#D97706", margin: "0 0 10px" }}>ðŸ“‹ By submitting, you agree to:</p>
+                <p style={{ fontWeight: 700, color: "#D97706", margin: "0 0 10px" }}>By submitting, you agree to:</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "12px", color: "#555", marginBottom: "14px" }}>
                   {[
-                    "Serviko Terms & Conditions â€” professional conduct & 10% commission",
-                    "Data Privacy Act (RA 10173) â€” your data is safe & protected",
-                    "Independent Contractor Agreement â€” you work on your own schedule",
-                    "Background check consent â€” NBI/PNP verification for customer safety",
+                    "Serviko Terms & Conditions - professional conduct & 10% commission",
+                    "Data Privacy Act (RA 10173) - your data is safe & protected",
+                    "Independent Contractor Agreement - you work on your own schedule",
+                    "Background check consent - NBI/PNP verification for customer safety",
                   ].map((t, i) => (
                     <div key={i} style={{ display: "flex", gap: "8px" }}>
-                      <span style={{ color: "#22c55e", fontWeight: 700, flexShrink: 0 }}>âœ“</span>
+                      <span style={{ color: "#22c55e", fontWeight: 700, flexShrink: 0 }}>✓</span>
                       <span>{t}</span>
                     </div>
                   ))}
@@ -336,28 +342,25 @@ export default function ArtistRegisterPage() {
                 <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
                   <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)}
                     style={{ width: "18px", height: "18px", accentColor: "#7C3AED", flexShrink: 0 }} />
-                  <span style={{ fontWeight: 600, fontSize: "13px", color: "#555" }}>
-                    I agree to all terms and conditions
-                  </span>
+                  <span style={{ fontWeight: 600, fontSize: "13px", color: "#555" }}>I agree to all terms and conditions</span>
                 </label>
               </div>
 
-              {/* Benefits Reminder */}
               <div style={{ background: "#F5F3FF", borderRadius: "14px", padding: "14px" }}>
-                <p style={{ fontWeight: 700, color: "#7C3AED", margin: "0 0 8px", fontSize: "13px" }}>ðŸŽ¨ Artist Benefits</p>
+                <p style={{ fontWeight: 700, color: "#7C3AED", margin: "0 0 8px", fontSize: "13px" }}>Artist Benefits</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                   {["Keep 90%", "GCash payout daily", "Set own schedule", "Free profile listing", "Work permit included"].map(b => (
-                    <span key={b} style={{ background: "#fff", color: "#7C3AED", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: 600 }}>âœ“ {b}</span>
+                    <span key={b} style={{ background: "#fff", color: "#7C3AED", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: 600 }}>✓ {b}</span>
                   ))}
                 </div>
               </div>
 
               {error && <p style={{ color: "#f87171", fontSize: "13px", margin: 0 }}>{error}</p>}
               <div style={{ display: "flex", gap: "10px" }}>
-                <button onClick={() => setStep(3)} style={{ flex: 1, background: "#fff", color: "#7C3AED", padding: "14px", borderRadius: "12px", border: "2px solid #7C3AED", fontWeight: 700, cursor: "pointer" }}>â† Back</button>
+                <button onClick={() => setStep(3)} style={{ flex: 1, background: "#fff", color: "#7C3AED", padding: "14px", borderRadius: "12px", border: "2px solid #7C3AED", fontWeight: 700, cursor: "pointer" }}>Back</button>
                 <button onClick={handleSubmit} disabled={loading || !agreed}
                   style={{ flex: 2, background: loading || !agreed ? "#ccc" : "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: loading || !agreed ? "not-allowed" : "pointer", fontSize: "15px" }}>
-                  {loading ? "Submitting..." : "Submit Application ðŸŽ¨"}
+                  {loading ? "Submitting..." : "Submit Application"}
                 </button>
               </div>
             </div>
@@ -368,10 +371,3 @@ export default function ArtistRegisterPage() {
     </div>
   );
 }
-
-
-
-
-
-
-
