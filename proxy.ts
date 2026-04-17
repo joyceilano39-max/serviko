@@ -1,10 +1,37 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+﻿import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const isPublicRoute = createRouteMatcher([
-  '/',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/webhook(.*)',
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/api/artists(.*)",
+  "/api/notify(.*)",
+  "/api/payment(.*)",
+  "/api/register(.*)",
+  "/api/reviews(.*)",
+  "/api/upload(.*)",
+  "/api/bookings(.*)",
+  "/api/admin(.*)",
+  "/api/artist(.*)",
+  "/api/customer(.*)",
+  "/api/db(.*)",
+  "/booking(.*)",
+  "/services(.*)",
+  "/reviews(.*)",
+  "/map-pin(.*)",
+  "/tracking(.*)",
+  "/register(.*)",
+  "/artist-login(.*)",
+  "/work-permit(.*)",
+  "/about(.*)",
+  "/privacy(.*)",
+  "/terms(.*)",
+  "/vouchers(.*)",
+  "/referral(.*)",
+  "/superhost(.*)",
+  "/artist(.*)",
+  "/addresses(.*)",
+  "/payment-success(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
@@ -15,7 +42,7 @@ export default clerkMiddleware(async (auth, request) => {
 
 export const config = {
   matcher: [
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    '/(api|trpc)(.*)',
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
   ],
 };
