@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 const ADMIN_EMAILS = [
   "penasjoyce5@gmail.com",
   "irinasamanthaipenas@gmail.com",
+  "joycepenas39@gmail.com",
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -41,7 +42,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div style={{ background: "#fff", borderRadius: "24px", padding: "48px 32px", textAlign: "center", maxWidth: "400px", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
           <h2 style={{ fontWeight: 900, margin: "0 0 8px", color: "#f87171" }}>Access Denied</h2>
           <p style={{ color: "#888", margin: "0 0 8px", fontSize: "13px" }}>Your email: <strong>{userEmail || "not detected"}</strong></p>
-          <p style={{ color: "#888", margin: "0 0 20px", fontSize: "13px" }}>Required: penasjoyce5@gmail.com</p>
+          <p style={{ color: "#888", margin: "0 0 20px", fontSize: "13px" }}>Required: admin email</p>
           <a href="/" style={{ display: "block", background: "#E61D72", color: "#fff", padding: "12px", borderRadius: "12px", textDecoration: "none", fontWeight: 700 }}>Back to Home</a>
         </div>
       </div>
