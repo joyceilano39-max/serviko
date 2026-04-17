@@ -292,7 +292,7 @@ export default function ArtistRegisterPage() {
           {/* STEP 4: Confirm & Agree */}
           {step === 4 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <h3 style={{ fontWeight: 700, margin: 0, fontSize: "16px" }}>âœ… Almost Done!</h3>
+              <h3 style={{ fontWeight: 700, margin: 0, fontSize: "16px" }}>OK Almost Done!</h3>
 
               {/* Summary */}
               <div style={{ background: "#F5F3FF", borderRadius: "14px", padding: "16px" }}>
@@ -368,6 +368,7 @@ export default function ArtistRegisterPage() {
     </div>
   );
 }
+
 
 
 
