@@ -140,7 +140,7 @@ export default function HomePage() {
 
               <a href="/map-pin" style={{ display: "flex", alignItems: "center", gap: "10px", background: "#F5F3FF", borderRadius: "12px", padding: "14px 16px", cursor: "pointer", textDecoration: "none" }}>
                 <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#7C3AED", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "11px", flexShrink: 0 }}>MAP</div>
-                <span style={{ fontWeight: 600, color: "#7C3AED", fontSize: "14px" }}>Pin on Map (Grab Style)</span>
+                <span style={{ fontWeight: 600, color: "#7C3AED", fontSize: "14px" }}>Pin My Location on Map</span>
               </a>
 
               <input type="text" value={address} onChange={e => setAddress(e.target.value)}
@@ -466,4 +466,5 @@ export default function HomePage() {
     </div>
   );
 }
+
 
