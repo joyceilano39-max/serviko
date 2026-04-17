@@ -35,7 +35,7 @@ const getArtistLabel = (services: string[]) => {
 
 const getStartingPrice = (services: string[]) => {
   const prices: Record<string, number> = {
-    "hair": 0, "massage": 0, "facial": 0, "manicure": 0,
+    
     "makeup": 800, "clean": 800, "garden": 500, "wax": 200, "eyebrow": 150,
   };
   if (!services) return 300;
@@ -465,6 +465,7 @@ export default function HomePage() {
     </div>
   );
 }
+
 
 
 
