@@ -6,13 +6,7 @@ const transportFees: Record<string, number> = {
   "0-3 km": 50, "3-7 km": 100, "7-15 km": 150, "15+ km": 200,
 };
 
-const vouchers: Record<string, { discount: number; type: "fixed" | "percent"; minOrder: number }> = {
-  "FIRST50": { discount: 50, type: "fixed", minOrder: 0 },
-  "REFER100": { discount: 100, type: "fixed", minOrder: 500 },
-  "SUMMER20": { discount: 20, type: "percent", minOrder: 200 },
-  "LOYAL200": { discount: 200, type: "fixed", minOrder: 800 },
-  "WELCOME50": { discount: 50, type: "fixed", minOrder: 0 },
-};
+const vouchers: Record<string, { discount: number; type: "fixed" | "percent"; minOrder: number }> = {};
 
 const servicePrices: Record<string, number> = {};
 
@@ -562,5 +556,6 @@ export default function BookingPage() {
     </Suspense>
   );
 }
+
 
 
