@@ -1,355 +1,355 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 
-const bookings = [
-  { id: "SRV-001", customer: "Joyce Ilano", members: 2, services: ["Full Body Massage", "Hot Stone Massage"], date: "April 15, 2026", time: "2:00 PM", address: "123 Rizal St, Quezon City", distance: "3-7 km", transport: 100, total: 1900, status: "pending", payment: "GCash" },
-  { id: "SRV-002", customer: "Maria Reyes", members: 1, services: ["Foot Massage"], date: "April 15, 2026", time: "5:00 PM", address: "456 Mabini Ave, Makati", distance: "7-15 km", transport: 150, total: 550, status: "accepted", payment: "Maya" },
-  { id: "SRV-003", customer: "Ana Cruz", members: 3, services: ["Full Body Massage", "Hot Stone Massage", "Foot Massage"], date: "April 16, 2026", time: "10:00 AM", address: "789 Burgos St, BGC", distance: "15+ km", transport: 200, total: 2400, status: "completed", payment: "Credit Card" },
-  { id: "SRV-004", customer: "Liza Santos", members: 1, services: ["Hot Stone Massage"], date: "April 17, 2026", time: "3:00 PM", address: "321 Aurora Blvd, QC", distance: "0-3 km", transport: 50, total: 1050, status: "pending", payment: "Cash" },
-];
-
-const statusColors: Record<string, { bg: string; color: string; label: string }> = {
-  pending:   { bg: "#FFF9E6", color: "#D97706", label: "⏳ Pending" },
-  accepted:  { bg: "#EFF6FF", color: "#3b82f6", label: "✅ Accepted" },
-  completed: { bg: "#F0FDF4", color: "#22c55e", label: "🌸 Completed" },
-  declined:  { bg: "#FEF2F2", color: "#f87171", label: "❌ Declined" },
+type Booking = {
+  id: number;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  date: string;
+  time: string;
+  address: string;
+  services: string;
+  total: number;
+  transport_fee: number;
+  status: string;
+  notes: string;
+  created_at: string;
+  members: any;
 };
 
-type TabType = "overview" | "bookings" | "schedule" | "earnings" | "profile";
+type TabType = "overview" | "bookings" | "earnings" | "profile";
 
-export default function ArtistDashboard() {
-  const [tab, setTab] = useState<TabType>("overview");
-  const [bookingList, setBookingList] = useState(bookings);
+export default function ArtistDashboardPage() {
+  const { user } = useUser();
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabType>("overview");
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
   const [isAvailable, setIsAvailable] = useState(true);
-  const [selectedBooking, setSelectedBooking] = useState<typeof bookings[0] | null>(null);
+  const [filterStatus, setFilterStatus] = useState("all");
 
-  const pending = bookingList.filter(b => b.status === "pending");
-  const accepted = bookingList.filter(b => b.status === "accepted");
-  const completed = bookingList.filter(b => b.status === "completed");
-  const totalEarnings = completed.reduce((sum, b) => sum + (b.total * 0.9), 0);
-  const monthEarnings = 12400;
+  useEffect(() => {
+    fetchBookings();
+  }, [user]);
 
-  const handleAccept = (id: string) => {
-    setBookingList(bookingList.map(b => b.id === id ? { ...b, status: "accepted" } : b));
-    setSelectedBooking(null);
+  const fetchBookings = async () => {
+    setLoading(true);
+    try {
+      const email = user?.emailAddresses[0]?.emailAddress;
+      const res = await fetch(`/api/artist/bookings${email ? `?email=${email}` : ""}`);
+      const data = await res.json();
+      setBookings(data.bookings || []);
+    } catch {
+      setBookings([]);
+    }
+    setLoading(false);
   };
 
-  const handleDecline = (id: string) => {
-    setBookingList(bookingList.map(b => b.id === id ? { ...b, status: "declined" } : b));
-    setSelectedBooking(null);
+  const handleBookingAction = async (bookingId: number, status: string) => {
+    setProcessing(true);
+    try {
+      const res = await fetch("/api/artist/bookings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingId, status }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSuccessMsg(status === "accepted" ? "Booking accepted!" : "Booking declined!");
+        setTimeout(() => setSuccessMsg(""), 3000);
+        fetchBookings();
+        setSelectedBooking(null);
+      }
+    } catch {
+      alert("Action failed. Try again.");
+    }
+    setProcessing(false);
+  };
+
+  const toggleAvailability = async () => {
+    const newStatus = !isAvailable;
+    setIsAvailable(newStatus);
+    try {
+      await fetch("/api/artist/availability", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user?.emailAddresses[0]?.emailAddress, isAvailable: newStatus }),
+      });
+    } catch {}
+  };
+
+  const pending = bookings.filter(b => b.status === "pending");
+  const accepted = bookings.filter(b => b.status === "accepted");
+  const completed = bookings.filter(b => b.status === "completed");
+  const totalEarnings = completed.reduce((sum, b) => sum + (b.total * 0.9), 0);
+  const todayBookings = accepted.filter(b => b.date === new Date().toISOString().split("T")[0]);
+
+  const filteredBookings = filterStatus === "all" ? bookings : bookings.filter(b => b.status === filterStatus);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending": return { bg: "#FFF9E6", color: "#D97706" };
+      case "accepted": return { bg: "#EFF6FF", color: "#3b82f6" };
+      case "completed": return { bg: "#F0FDF4", color: "#22c55e" };
+      case "declined": return { bg: "#FEF2F2", color: "#f87171" };
+      default: return { bg: "#f8f8f8", color: "#888" };
+    }
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#F5F3FF", fontFamily: "Arial, sans-serif" }}>
-
+    <div style={{ minHeight: "100vh", background: "#f8f8f8", fontFamily: "Arial, sans-serif" }}>
       {/* Header */}
-      <div style={{ background: "linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)", padding: "24px 32px", color: "#fff" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <div style={{ width: "56px", height: "56px", borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px" }}>💆</div>
-            <div>
-              <p style={{ fontWeight: 900, fontSize: "20px", margin: "0 0 2px" }}>Maria Santos</p>
-              <p style={{ opacity: 0.8, margin: "0 0 6px", fontSize: "13px" }}>Massage Therapist • Quezon City</p>
-              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                <span style={{ color: "#FFD700" }}>★★★★★</span>
-                <span style={{ fontSize: "13px", opacity: 0.8 }}>4.9 (128 reviews)</span>
-              </div>
-            </div>
+      <div style={{ background: "linear-gradient(135deg, #7C3AED, #4F46E5)", padding: "20px 24px", color: "#fff" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <p style={{ opacity: 0.8, fontSize: "13px", margin: "0 0 4px" }}>Artist Dashboard</p>
+            <h1 style={{ fontSize: "22px", fontWeight: 900, margin: "0 0 4px" }}>
+              Welcome, {user?.firstName || "Artist"}!
+            </h1>
+            <p style={{ opacity: 0.8, fontSize: "13px", margin: 0 }}>
+              {pending.length > 0 ? `${pending.length} pending booking(s)!` : "No pending bookings"}
+            </p>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
-            {/* Availability Toggle */}
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,255,255,0.15)", padding: "8px 16px", borderRadius: "20px" }}>
-              <span style={{ fontSize: "13px", fontWeight: 600 }}>{isAvailable ? "🟢 Available" : "🔴 Busy"}</span>
-              <div onClick={() => setIsAvailable(!isAvailable)}
-                style={{ width: "44px", height: "24px", borderRadius: "12px", background: isAvailable ? "#22c55e" : "#f87171", cursor: "pointer", position: "relative", transition: "background 0.3s" }}>
-                <div style={{ position: "absolute", width: "18px", height: "18px", borderRadius: "50%", background: "#fff", top: "3px", left: isAvailable ? "23px" : "3px", transition: "left 0.3s" }} />
-              </div>
-            </div>
-            <span style={{ background: "#FFD700", color: "#1a1a1a", padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 700 }}>⭐ SUPER ARTIST</span>
+          {/* Availability Toggle */}
+          <div style={{ textAlign: "right" }}>
+            <p style={{ fontSize: "11px", opacity: 0.8, margin: "0 0 4px" }}>Status</p>
+            <button onClick={toggleAvailability}
+              style={{ background: isAvailable ? "#22c55e" : "#f87171", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer", fontWeight: 700, fontSize: "12px" }}>
+              {isAvailable ? "Available" : "Busy"}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Nav Tabs */}
-      <div style={{ background: "#fff", display: "flex", overflowX: "auto", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-        {([
-          { id: "overview", label: "🏠 Overview" },
-          { id: "bookings", label: `📅 Bookings ${pending.length > 0 ? `(${pending.length})` : ""}` },
-          { id: "schedule", label: "🗓️ Schedule" },
-          { id: "earnings", label: "💰 Earnings" },
-          { id: "profile", label: "👤 Profile" },
-        ] as { id: TabType; label: string }[]).map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)}
-            style={{ padding: "14px 20px", border: "none", cursor: "pointer", fontWeight: 700, fontSize: "13px", whiteSpace: "nowrap",
-              background: tab === t.id ? "#fff" : "#f8f8f8",
-              color: tab === t.id ? "#7C3AED" : "#888",
-              borderBottom: tab === t.id ? "3px solid #7C3AED" : "3px solid transparent" }}>
-            {t.label}
+      {successMsg && (
+        <div style={{ background: "#22c55e", color: "#fff", padding: "12px 24px", textAlign: "center", fontWeight: 700 }}>
+          {successMsg}
+        </div>
+      )}
+
+      {/* Pending Alert */}
+      {pending.length > 0 && (
+        <div style={{ background: "#FFF9E6", borderLeft: "4px solid #F59E0B", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <p style={{ fontWeight: 700, color: "#D97706", margin: 0, fontSize: "14px" }}>
+            {pending.length} new booking request{pending.length > 1 ? "s" : ""} waiting!
+          </p>
+          <button onClick={() => { setActiveTab("bookings"); setFilterStatus("pending"); }}
+            style={{ background: "#F59E0B", color: "#fff", border: "none", padding: "6px 14px", borderRadius: "20px", cursor: "pointer", fontWeight: 600, fontSize: "12px" }}>
+            Review Now
+          </button>
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div style={{ background: "#fff", display: "flex", gap: "4px", padding: "12px 20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", overflowX: "auto" }}>
+        {[
+          { id: "overview", label: "Overview" },
+          { id: "bookings", label: `Bookings ${pending.length > 0 ? `(${pending.length})` : ""}` },
+          { id: "earnings", label: "Earnings" },
+          { id: "profile", label: "Profile" },
+        ].map(tab => (
+          <button key={tab.id} onClick={() => setActiveTab(tab.id as TabType)}
+            style={{ padding: "8px 16px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "12px", whiteSpace: "nowrap",
+              background: activeTab === tab.id ? "#7C3AED" : "#f0f0f0", color: activeTab === tab.id ? "#fff" : "#555" }}>
+            {tab.label}
           </button>
         ))}
       </div>
 
-      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "24px" }}>
+      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "20px" }}>
 
-        {/* OVERVIEW */}
-        {tab === "overview" && (
-          <div>
+        {/* OVERVIEW TAB */}
+        {activeTab === "overview" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {/* Stats */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px" }}>
               {[
-                { label: "Pending Bookings", value: pending.length, icon: "⏳", color: "#D97706", bg: "#FFF9E6" },
-                { label: "Today's Bookings", value: accepted.length, icon: "📅", color: "#3b82f6", bg: "#EFF6FF" },
-                { label: "This Month", value: `₱${monthEarnings.toLocaleString()}`, icon: "💰", color: "#22c55e", bg: "#F0FDF4" },
-                { label: "Total Rating", value: "4.9 ★", icon: "⭐", color: "#7C3AED", bg: "#F5F3FF" },
+                { label: "Pending", value: pending.length, color: "#D97706", bg: "#FFF9E6" },
+                { label: "Today", value: todayBookings.length, color: "#3b82f6", bg: "#EFF6FF" },
+                { label: "Completed", value: completed.length, color: "#22c55e", bg: "#F0FDF4" },
+                { label: "Earnings", value: `P${Math.round(totalEarnings)}`, color: "#7C3AED", bg: "#F5F3FF" },
               ].map(stat => (
-                <div key={stat.label} style={{ background: stat.bg, borderRadius: "20px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-                  <div style={{ fontSize: "28px", marginBottom: "8px" }}>{stat.icon}</div>
-                  <p style={{ fontWeight: 900, fontSize: "22px", margin: "0 0 4px", color: stat.color }}>{stat.value}</p>
-                  <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{stat.label}</p>
+                <div key={stat.label} style={{ background: stat.bg, borderRadius: "16px", padding: "16px", textAlign: "center" }}>
+                  <p style={{ fontWeight: 900, fontSize: "24px", color: stat.color, margin: "0 0 4px" }}>{stat.value}</p>
+                  <p style={{ color: "#555", fontSize: "12px", margin: 0, fontWeight: 600 }}>{stat.label}</p>
                 </div>
               ))}
             </div>
 
-            {/* Pending Bookings Alert */}
-            {pending.length > 0 && (
-              <div style={{ background: "#FFF9E6", borderRadius: "20px", padding: "20px", marginBottom: "24px", border: "1px solid #FDE68A" }}>
-                <p style={{ fontWeight: 700, margin: "0 0 12px", color: "#D97706" }}>⏳ {pending.length} Booking(s) Waiting for Your Response!</p>
-                {pending.map(b => (
-                  <div key={b.id} style={{ background: "#fff", borderRadius: "12px", padding: "16px", marginBottom: "8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            {/* Recent Bookings */}
+            <div style={{ background: "#fff", borderRadius: "20px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
+                <h3 style={{ fontWeight: 900, margin: 0 }}>Recent Bookings</h3>
+                <button onClick={() => setActiveTab("bookings")} style={{ background: "none", border: "none", color: "#7C3AED", fontWeight: 600, cursor: "pointer", fontSize: "13px" }}>See All</button>
+              </div>
+              {loading ? (
+                <p style={{ color: "#888", textAlign: "center" }}>Loading...</p>
+              ) : bookings.length === 0 ? (
+                <p style={{ color: "#888", textAlign: "center", padding: "24px 0" }}>No bookings yet</p>
+              ) : (
+                bookings.slice(0, 3).map(booking => {
+                  const sc = getStatusColor(booking.status);
+                  return (
+                    <div key={booking.id} onClick={() => setSelectedBooking(booking)}
+                      style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}>
+                      <div>
+                        <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{booking.customer_name}</p>
+                        <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{booking.date} at {booking.time}</p>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <span style={{ background: sc.bg, color: sc.color, padding: "3px 8px", borderRadius: "20px", fontSize: "10px", fontWeight: 700, textTransform: "capitalize", display: "block", marginBottom: "4px" }}>
+                          {booking.status}
+                        </span>
+                        <p style={{ fontWeight: 700, color: "#7C3AED", margin: 0, fontSize: "13px" }}>P{booking.total}</p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* BOOKINGS TAB */}
+        {activeTab === "bookings" && (
+          <div>
+            {/* Filter */}
+            <div style={{ display: "flex", gap: "8px", marginBottom: "16px", overflowX: "auto" }}>
+              {["all", "pending", "accepted", "completed", "declined"].map(f => (
+                <button key={f} onClick={() => setFilterStatus(f)}
+                  style={{ padding: "7px 14px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "11px", textTransform: "capitalize", whiteSpace: "nowrap",
+                    background: filterStatus === f ? "#7C3AED" : "#fff", color: filterStatus === f ? "#fff" : "#555", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+                  {f} {f !== "all" && `(${bookings.filter(b => b.status === f).length})`}
+                </button>
+              ))}
+            </div>
+
+            {loading ? (
+              <div style={{ textAlign: "center", padding: "48px" }}>
+                <p style={{ color: "#888" }}>Loading bookings...</p>
+              </div>
+            ) : filteredBookings.length === 0 ? (
+              <div style={{ background: "#fff", borderRadius: "20px", padding: "48px", textAlign: "center" }}>
+                <p style={{ fontWeight: 700, margin: "0 0 8px" }}>No {filterStatus} bookings</p>
+                <p style={{ color: "#888", fontSize: "13px" }}>New bookings will appear here!</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {filteredBookings.map(booking => {
+                  const sc = getStatusColor(booking.status);
+                  return (
+                    <div key={booking.id} style={{ background: "#fff", borderRadius: "16px", padding: "16px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", cursor: "pointer",
+                      border: booking.status === "pending" ? "2px solid #F59E0B" : "2px solid transparent" }}
+                      onClick={() => setSelectedBooking(booking)}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+                        <div>
+                          <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "15px" }}>{booking.customer_name}</p>
+                          <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>{booking.customer_phone}</p>
+                          <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{booking.date} at {booking.time}</p>
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <span style={{ background: sc.bg, color: sc.color, padding: "3px 8px", borderRadius: "20px", fontSize: "10px", fontWeight: 700, textTransform: "capitalize", display: "block", marginBottom: "4px" }}>
+                            {booking.status}
+                          </span>
+                          <p style={{ fontWeight: 900, color: "#7C3AED", margin: 0, fontSize: "16px" }}>P{booking.total}</p>
+                          <p style={{ color: "#888", fontSize: "10px", margin: 0 }}>Your cut: P{Math.round(booking.total * 0.9)}</p>
+                        </div>
+                      </div>
+                      <p style={{ color: "#555", fontSize: "12px", margin: "0 0 8px" }}>Address: {booking.address}</p>
+                      {booking.notes && <p style={{ color: "#888", fontSize: "11px", margin: "0 0 8px", fontStyle: "italic" }}>Note: {booking.notes}</p>}
+                      {booking.status === "pending" && (
+                        <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
+                          <button onClick={e => { e.stopPropagation(); handleBookingAction(booking.id, "declined"); }} disabled={processing}
+                            style={{ flex: 1, background: "#FEF2F2", color: "#f87171", border: "1px solid #FCA5A5", padding: "10px", borderRadius: "10px", fontWeight: 700, cursor: "pointer", fontSize: "13px" }}>
+                            Decline
+                          </button>
+                          <button onClick={e => { e.stopPropagation(); handleBookingAction(booking.id, "accepted"); }} disabled={processing}
+                            style={{ flex: 2, background: "#22c55e", color: "#fff", border: "none", padding: "10px", borderRadius: "10px", fontWeight: 700, cursor: "pointer", fontSize: "13px" }}>
+                            {processing ? "Processing..." : "Accept Booking"}
+                          </button>
+                        </div>
+                      )}
+                      {booking.status === "accepted" && (
+                        <button onClick={e => { e.stopPropagation(); handleBookingAction(booking.id, "completed"); }} disabled={processing}
+                          style={{ width: "100%", background: "#7C3AED", color: "#fff", border: "none", padding: "10px", borderRadius: "10px", fontWeight: 700, cursor: "pointer", fontSize: "13px", marginTop: "10px" }}>
+                          Mark as Completed
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* EARNINGS TAB */}
+        {activeTab === "earnings" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div style={{ background: "linear-gradient(135deg, #7C3AED, #4F46E5)", borderRadius: "20px", padding: "28px", color: "#fff", textAlign: "center" }}>
+              <p style={{ opacity: 0.8, margin: "0 0 8px", fontSize: "14px" }}>Total Earnings (90%)</p>
+              <p style={{ fontWeight: 900, fontSize: "40px", margin: "0 0 4px" }}>P{Math.round(totalEarnings)}</p>
+              <p style={{ opacity: 0.7, fontSize: "12px", margin: 0 }}>From {completed.length} completed bookings</p>
+            </div>
+            <div style={{ background: "#fff", borderRadius: "20px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <h3 style={{ fontWeight: 900, margin: "0 0 16px" }}>Completed Bookings</h3>
+              {completed.length === 0 ? (
+                <p style={{ color: "#888", textAlign: "center", padding: "24px 0" }}>No completed bookings yet</p>
+              ) : (
+                completed.map(booking => (
+                  <div key={booking.id} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid #f0f0f0" }}>
                     <div>
-                      <p style={{ fontWeight: 700, margin: "0 0 4px" }}>{b.customer}</p>
-                      <p style={{ color: "#888", fontSize: "13px", margin: "0 0 2px" }}>{b.services.join(", ")}</p>
-                      <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>📅 {b.date} at {b.time} • 📍 {b.address}</p>
+                      <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{booking.customer_name}</p>
+                      <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{booking.date}</p>
                     </div>
-                    <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
-                      <button onClick={() => handleDecline(b.id)}
-                        style={{ background: "#fee2e2", color: "#f87171", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer", fontWeight: 600, fontSize: "13px" }}>
-                        Decline
-                      </button>
-                      <button onClick={() => handleAccept(b.id)}
-                        style={{ background: "#7C3AED", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer", fontWeight: 600, fontSize: "13px" }}>
-                        Accept ₱{b.total}
-                      </button>
+                    <div style={{ textAlign: "right" }}>
+                      <p style={{ fontWeight: 700, color: "#22c55e", margin: "0 0 2px" }}>+P{Math.round(booking.total * 0.9)}</p>
+                      <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>Total: P{booking.total}</p>
                     </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* PROFILE TAB */}
+        {activeTab === "profile" && (
+          <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <h3 style={{ fontWeight: 900, margin: "0 0 20px" }}>Your Profile</h3>
+            <div style={{ textAlign: "center", marginBottom: "20px" }}>
+              <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#7C3AED", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", fontSize: "28px", fontWeight: 700 }}>
+                {user?.firstName?.[0] || "A"}
+              </div>
+              <p style={{ fontWeight: 700, fontSize: "18px", margin: "0 0 4px" }}>{user?.fullName || "Artist"}</p>
+              <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{user?.emailAddresses[0]?.emailAddress}</p>
+            </div>
+            <div style={{ background: "#F5F3FF", borderRadius: "12px", padding: "16px", marginBottom: "16px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                {[
+                  { label: "Total Bookings", val: bookings.length },
+                  { label: "Completed", val: completed.length },
+                  { label: "Total Earnings", val: `P${Math.round(totalEarnings)}` },
+                  { label: "Pending", val: pending.length },
+                ].map(item => (
+                  <div key={item.label} style={{ textAlign: "center" }}>
+                    <p style={{ fontWeight: 900, fontSize: "20px", color: "#7C3AED", margin: "0 0 2px" }}>{item.val}</p>
+                    <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>{item.label}</p>
                   </div>
                 ))}
               </div>
-            )}
-
-            {/* Today's Schedule */}
-            <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-              <h3 style={{ fontWeight: 700, margin: "0 0 16px" }}>Today's Schedule</h3>
-              {bookingList.filter(b => b.date === "April 15, 2026" && b.status !== "declined").map(b => (
-                <div key={b.id} onClick={() => setSelectedBooking(b)}
-                  style={{ display: "flex", gap: "16px", padding: "14px 0", borderBottom: "1px solid #F5F3FF", cursor: "pointer" }}>
-                  <div style={{ textAlign: "center", minWidth: "60px" }}>
-                    <p style={{ fontWeight: 700, color: "#7C3AED", margin: 0, fontSize: "14px" }}>{b.time}</p>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ fontWeight: 700, margin: "0 0 2px" }}>{b.customer}</p>
-                    <p style={{ color: "#888", fontSize: "13px", margin: "0 0 4px" }}>{b.services.join(", ")}</p>
-                    <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>📍 {b.address} • 🚗 +₱{b.transport}</p>
-                  </div>
-                  <div>
-                    <span style={{ background: statusColors[b.status].bg, color: statusColors[b.status].color, padding: "4px 10px", borderRadius: "20px", fontSize: "12px", fontWeight: 600 }}>
-                      {statusColors[b.status].label}
-                    </span>
-                    <p style={{ fontWeight: 700, color: "#7C3AED", margin: "6px 0 0", textAlign: "right" }}>₱{(b.total * 0.9).toFixed(0)}</p>
-                  </div>
-                </div>
-              ))}
             </div>
-          </div>
-        )}
-
-        {/* BOOKINGS */}
-        {tab === "bookings" && (
-          <div>
-            <h2 style={{ fontWeight: 900, margin: "0 0 16px" }}>All Bookings</h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {bookingList.map(b => (
-                <div key={b.id} style={{ background: "#fff", borderRadius: "20px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                    <div>
-                      <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "4px" }}>
-                        <p style={{ fontWeight: 700, margin: 0 }}>{b.customer}</p>
-                        <span style={{ color: "#888", fontSize: "12px" }}>• {b.id}</span>
-                      </div>
-                      <p style={{ color: "#888", fontSize: "13px", margin: "0 0 4px" }}>📅 {b.date} at {b.time}</p>
-                      <p style={{ color: "#888", fontSize: "13px", margin: "0 0 8px" }}>📍 {b.address}</p>
-                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                        {b.services.map(s => (
-                          <span key={s} style={{ background: "#F5F3FF", color: "#7C3AED", padding: "3px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: 600 }}>{s}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{ textAlign: "right" }}>
-                      <span style={{ background: statusColors[b.status]?.bg || "#f0f0f0", color: statusColors[b.status]?.color || "#888", padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600 }}>
-                        {statusColors[b.status]?.label || b.status}
-                      </span>
-                      <p style={{ fontWeight: 900, color: "#7C3AED", fontSize: "18px", margin: "8px 0 0" }}>₱{(b.total * 0.9).toFixed(0)}</p>
-                      <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>your earnings</p>
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "12px", borderTop: "1px solid #F5F3FF" }}>
-                    <div style={{ fontSize: "13px", color: "#888" }}>
-                      👥 {b.members} member(s) • 🚗 ₱{b.transport} transport • 💳 {b.payment}
-                    </div>
-                    {b.status === "pending" && (
-                      <div style={{ display: "flex", gap: "8px" }}>
-                        <button onClick={() => handleDecline(b.id)}
-                          style={{ background: "#fee2e2", color: "#f87171", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer", fontWeight: 600, fontSize: "12px" }}>
-                          Decline
-                        </button>
-                        <button onClick={() => handleAccept(b.id)}
-                          style={{ background: "#7C3AED", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer", fontWeight: 600, fontSize: "12px" }}>
-                          Accept
-                        </button>
-                      </div>
-                    )}
-                    {b.status === "accepted" && (
-                      <button style={{ background: "#3b82f6", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer", fontWeight: 600, fontSize: "12px" }}>
-                        📍 Navigate
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* SCHEDULE */}
-        {tab === "schedule" && (
-          <div>
-            <h2 style={{ fontWeight: 900, margin: "0 0 16px" }}>My Schedule</h2>
-            <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", marginBottom: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-              <h3 style={{ fontWeight: 700, margin: "0 0 16px" }}>Working Hours</h3>
-              {["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"].map((day, i) => (
-                <div key={day} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid #F5F3FF" }}>
-                  <span style={{ fontWeight: 600, fontSize: "14px" }}>{day}</span>
-                  <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                    {i < 6 ? (
-                      <>
-                        <select defaultValue="8:00 AM" style={{ padding: "6px 10px", borderRadius: "8px", border: "1px solid #EDE9FE", fontSize: "13px" }}>
-                          {["8:00 AM","9:00 AM","10:00 AM"].map(t => <option key={t}>{t}</option>)}
-                        </select>
-                        <span style={{ color: "#888" }}>to</span>
-                        <select defaultValue="6:00 PM" style={{ padding: "6px 10px", borderRadius: "8px", border: "1px solid #EDE9FE", fontSize: "13px" }}>
-                          {["5:00 PM","6:00 PM","7:00 PM","8:00 PM"].map(t => <option key={t}>{t}</option>)}
-                        </select>
-                      </>
-                    ) : (
-                      <span style={{ color: "#f87171", fontSize: "13px", fontWeight: 600 }}>Day Off</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-              <button style={{ width: "100%", marginTop: "16px", background: "#7C3AED", color: "#fff", padding: "12px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer" }}>
-                Save Schedule
-              </button>
-            </div>
-
-            <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-              <h3 style={{ fontWeight: 700, margin: "0 0 16px" }}>Upcoming Bookings</h3>
-              {bookingList.filter(b => b.status !== "declined" && b.status !== "completed").map(b => (
-                <div key={b.id} style={{ display: "flex", gap: "16px", padding: "12px 0", borderBottom: "1px solid #F5F3FF" }}>
-                  <div style={{ background: "#F5F3FF", borderRadius: "12px", padding: "10px 14px", textAlign: "center", minWidth: "70px" }}>
-                    <p style={{ fontWeight: 700, color: "#7C3AED", margin: 0, fontSize: "12px" }}>{b.date.split(",")[0].replace("April ", "Apr ")}</p>
-                    <p style={{ fontWeight: 700, margin: 0, fontSize: "14px" }}>{b.time}</p>
-                  </div>
-                  <div>
-                    <p style={{ fontWeight: 700, margin: "0 0 2px" }}>{b.customer}</p>
-                    <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{b.services.join(", ")}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* EARNINGS */}
-        {tab === "earnings" && (
-          <div>
-            <h2 style={{ fontWeight: 900, margin: "0 0 16px" }}>My Earnings</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "24px" }}>
-              {[
-                { label: "This Month", value: "₱12,400", sub: "April 2026", color: "#7C3AED", bg: "#F5F3FF" },
-                { label: "Total Earned", value: "₱48,200", sub: "All time", color: "#22c55e", bg: "#F0FDF4" },
-                { label: "Pending Payout", value: "₱3,600", sub: "Within 24hrs", color: "#D97706", bg: "#FFF9E6" },
-                { label: "Bookings Done", value: "64", sub: "This month", color: "#3b82f6", bg: "#EFF6FF" },
-              ].map(stat => (
-                <div key={stat.label} style={{ background: stat.bg, borderRadius: "20px", padding: "20px" }}>
-                  <p style={{ fontWeight: 900, fontSize: "24px", color: stat.color, margin: "0 0 4px" }}>{stat.value}</p>
-                  <p style={{ fontWeight: 600, margin: "0 0 2px", fontSize: "14px" }}>{stat.label}</p>
-                  <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{stat.sub}</p>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", marginBottom: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-              <h3 style={{ fontWeight: 700, margin: "0 0 4px" }}>Commission Breakdown</h3>
-              <p style={{ color: "#888", fontSize: "13px", margin: "0 0 16px" }}>Serviko takes 10% per booking</p>
-              {completed.map(b => (
-                <div key={b.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid #F5F3FF" }}>
-                  <div>
-                    <p style={{ fontWeight: 600, margin: "0 0 2px", fontSize: "14px" }}>{b.customer}</p>
-                    <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{b.date} • {b.services.join(", ")}</p>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>Total: ₱{b.total}</p>
-                    <p style={{ fontWeight: 700, color: "#7C3AED", margin: 0 }}>You: ₱{(b.total * 0.9).toFixed(0)}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ background: "linear-gradient(135deg, #7C3AED, #4F46E5)", borderRadius: "20px", padding: "24px", color: "#fff" }}>
-              <h3 style={{ fontWeight: 700, margin: "0 0 8px" }}>💰 GCash Payout</h3>
-              <p style={{ opacity: 0.8, fontSize: "13px", margin: "0 0 16px" }}>Your earnings are sent to your GCash every 24 hours</p>
-              <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: "12px", padding: "12px 16px", display: "flex", justifyContent: "space-between" }}>
-                <span style={{ fontSize: "14px" }}>📱 GCash: 09XX XXX XXXX</span>
-                <span style={{ fontWeight: 700 }}>₱3,600 pending</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* PROFILE */}
-        {tab === "profile" && (
-          <div>
-            <h2 style={{ fontWeight: 900, margin: "0 0 16px" }}>My Profile</h2>
-            <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", marginBottom: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", display: "flex", flexDirection: "column", gap: "16px" }}>
-              {[
-                { label: "Full Name", value: "Maria Santos", type: "text" },
-                { label: "Email", value: "maria@email.com", type: "email" },
-                { label: "Phone", value: "09123456789", type: "tel" },
-                { label: "Location", value: "Quezon City", type: "text" },
-                { label: "GCash Number", value: "09123456789", type: "tel" },
-                { label: "Years of Experience", value: "5-10 years", type: "text" },
-              ].map(field => (
-                <div key={field.label}>
-                  <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>{field.label}</label>
-                  <input type={field.type} defaultValue={field.value}
-                    style={{ width: "100%", padding: "12px", borderRadius: "12px", border: "1px solid #EDE9FE", fontSize: "14px", boxSizing: "border-box" }} />
-                </div>
-              ))}
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>Bio</label>
-                <textarea defaultValue="Professional massage therapist with 5+ years of experience specializing in full body and hot stone massage." rows={3}
-                  style={{ width: "100%", padding: "12px", borderRadius: "12px", border: "1px solid #EDE9FE", fontSize: "14px", resize: "none", boxSizing: "border-box" }} />
-              </div>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "10px" }}>My Services</label>
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                  {["Full Body Massage", "Hot Stone Massage", "Foot Massage"].map(s => (
-                    <span key={s} style={{ background: "#F5F3FF", color: "#7C3AED", padding: "6px 14px", borderRadius: "20px", fontSize: "13px", fontWeight: 600 }}>{s} ✓</span>
-                  ))}
-                </div>
-              </div>
-              <button style={{ background: "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer", fontSize: "15px" }}>
-                Save Profile
-              </button>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <a href="/register/artist" style={{ display: "block", background: "#F5F3FF", color: "#7C3AED", padding: "12px", borderRadius: "12px", textDecoration: "none", fontWeight: 600, fontSize: "14px", textAlign: "center" }}>
+                Edit Profile
+              </a>
+              <a href="/" style={{ display: "block", background: "#f0f0f0", color: "#555", padding: "12px", borderRadius: "12px", textDecoration: "none", fontWeight: 600, fontSize: "14px", textAlign: "center" }}>
+                Back to Home
+              </a>
             </div>
           </div>
         )}
@@ -357,44 +357,44 @@ export default function ArtistDashboard() {
 
       {/* Booking Detail Modal */}
       {selectedBooking && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "24px" }}>
-          <div style={{ background: "#fff", borderRadius: "24px", padding: "32px", maxWidth: "480px", width: "100%" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 100 }}>
+          <div style={{ background: "#fff", borderRadius: "24px 24px 0 0", padding: "28px 24px", width: "100%", maxWidth: "600px", maxHeight: "80vh", overflowY: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-              <h3 style={{ fontWeight: 900, margin: 0 }}>Booking {selectedBooking.id}</h3>
-              <button onClick={() => setSelectedBooking(null)} style={{ background: "none", border: "none", fontSize: "20px", cursor: "pointer" }}>✕</button>
+              <h3 style={{ fontWeight: 900, margin: 0 }}>Booking Details</h3>
+              <button onClick={() => setSelectedBooking(null)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer" }}>X</button>
             </div>
-            {[
-              ["👤 Customer", selectedBooking.customer],
-              ["📅 Date & Time", `${selectedBooking.date} at ${selectedBooking.time}`],
-              ["📍 Address", selectedBooking.address],
-              ["🚗 Transport", `₱${selectedBooking.transport} (${selectedBooking.distance})`],
-              ["💳 Payment", selectedBooking.payment],
-              ["👥 Members", `${selectedBooking.members} member(s)`],
-            ].map(([label, value]) => (
-              <div key={label} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #F5F3FF", fontSize: "14px" }}>
-                <span style={{ color: "#888" }}>{label}</span>
-                <span style={{ fontWeight: 600 }}>{value}</span>
-              </div>
-            ))}
-            <div style={{ padding: "10px 0", borderBottom: "1px solid #F5F3FF" }}>
-              <p style={{ color: "#888", fontSize: "14px", margin: "0 0 6px" }}>💆 Services</p>
-              {selectedBooking.services.map(s => (
-                <span key={s} style={{ background: "#F5F3FF", color: "#7C3AED", padding: "4px 10px", borderRadius: "20px", fontSize: "12px", fontWeight: 600, marginRight: "6px" }}>{s}</span>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
+              {[
+                { label: "Customer", val: selectedBooking.customer_name },
+                { label: "Phone", val: selectedBooking.customer_phone },
+                { label: "Email", val: selectedBooking.customer_email },
+                { label: "Date", val: selectedBooking.date },
+                { label: "Time", val: selectedBooking.time },
+                { label: "Address", val: selectedBooking.address },
+                { label: "Total", val: `P${selectedBooking.total}` },
+                { label: "Your Cut (90%)", val: `P${Math.round(selectedBooking.total * 0.9)}` },
+              ].map(item => (
+                <div key={item.label} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #f0f0f0" }}>
+                  <span style={{ color: "#888", fontSize: "13px" }}>{item.label}</span>
+                  <span style={{ fontWeight: 600, fontSize: "13px" }}>{item.val}</span>
+                </div>
               ))}
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", padding: "14px 0", fontWeight: 900, fontSize: "16px" }}>
-              <span>Your Earnings</span>
-              <span style={{ color: "#7C3AED" }}>₱{(selectedBooking.total * 0.9).toFixed(0)}</span>
+              {selectedBooking.notes && (
+                <div style={{ background: "#FFF9E6", borderRadius: "10px", padding: "10px" }}>
+                  <p style={{ fontWeight: 600, margin: "0 0 4px", fontSize: "12px" }}>Customer Notes:</p>
+                  <p style={{ color: "#555", margin: 0, fontSize: "13px" }}>{selectedBooking.notes}</p>
+                </div>
+              )}
             </div>
             {selectedBooking.status === "pending" && (
-              <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
-                <button onClick={() => handleDecline(selectedBooking.id)}
-                  style={{ flex: 1, background: "#fee2e2", color: "#f87171", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button onClick={() => handleBookingAction(selectedBooking.id, "declined")} disabled={processing}
+                  style={{ flex: 1, background: "#FEF2F2", color: "#f87171", border: "1px solid #FCA5A5", padding: "14px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
                   Decline
                 </button>
-                <button onClick={() => handleAccept(selectedBooking.id)}
-                  style={{ flex: 2, background: "#7C3AED", color: "#fff", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
-                  Accept Booking
+                <button onClick={() => handleBookingAction(selectedBooking.id, "accepted")} disabled={processing}
+                  style={{ flex: 2, background: "#22c55e", color: "#fff", border: "none", padding: "14px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
+                  {processing ? "Processing..." : "Accept Booking"}
                 </button>
               </div>
             )}
