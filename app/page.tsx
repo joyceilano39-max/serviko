@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
@@ -53,7 +53,7 @@ type Artist = {
   id: number; name: string; bio: string; experience: string;
   services: string[]; location: string; is_available: boolean;
   rating: string; total_reviews: number;
-  distance_text?: string; distance_km?: number; transport_fee?: number;
+  distance_text?: string; distance_km?: number; transport_fee?: number; profile_photo?: string;
 };
 
 export default function HomePage() {
@@ -245,7 +245,7 @@ export default function HomePage() {
         <button onClick={() => setShowAddressModal(true)}
           style={{ display: "flex", alignItems: "center", gap: "6px", background: "#FFF0F6", border: "none", padding: "8px 12px", borderRadius: "20px", cursor: "pointer", flex: 1, maxWidth: "200px", margin: "0 12px" }}>
           <span style={{ fontSize: "12px", fontWeight: 600, color: "#E61D72", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{savedAddress || "Set Location"}</span>
-          <span style={{ color: "#E61D72", fontSize: "10px" }}>▼</span>
+          <span style={{ color: "#E61D72", fontSize: "10px" }}>â–¼</span>
         </button>
         <div style={{ display: "flex", gap: "8px" }}>
           <Link href="/vouchers" style={{ background: "#FFF0F6", color: "#E61D72", padding: "7px 12px", borderRadius: "20px", textDecoration: "none", fontSize: "12px", fontWeight: 600 }}>Vouchers</Link>
@@ -355,7 +355,7 @@ export default function HomePage() {
                         {artist.distance_text && (
                           <p style={{ color: "#E61D72", fontSize: "11px", margin: "0 0 2px", fontWeight: 600 }}>{artist.distance_text}</p>
                         )}
-                        <p style={{ fontSize: "11px", margin: 0 }}>★ {parseFloat(artist.rating).toFixed(1)} ({artist.total_reviews} reviews)</p>
+                        <p style={{ fontSize: "11px", margin: 0 }}>â˜… {parseFloat(artist.rating).toFixed(1)} ({artist.total_reviews} reviews)</p>
                       </div>
                     </div>
                     <div style={{ position: "absolute", top: "12px", right: "12px" }}>
@@ -466,3 +466,4 @@ export default function HomePage() {
     </div>
   );
 }
+
