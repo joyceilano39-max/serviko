@@ -107,7 +107,7 @@ export default function ArtistRegisterPage() {
 
         <div style={{ textAlign: "center", marginBottom: "24px" }}>
           <Link href="/register" style={{ color: "#888", fontSize: "13px", textDecoration: "none" }}>â† Back</Link>
-          <p style={{ color: "#7C3AED", fontWeight: 900, fontSize: "24px", margin: "8px 0 4px" }}>ðŸŽ¨ Serviko</p>
+          <p style={{ color: "#7C3AED", fontWeight: 900, fontSize: "24px", margin: "8px 0 4px" }}>Serviko</p>
           <h1 style={{ fontSize: "20px", fontWeight: 900, margin: "0 0 4px" }}>Become a Serviko Artist</h1>
           <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>Quick & easy â€” takes only 3 minutes!</p>
         </div>
@@ -368,5 +368,6 @@ export default function ArtistRegisterPage() {
     </div>
   );
 }
+
 
 
