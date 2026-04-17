@@ -1,7 +1,6 @@
 ﻿"use client";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 const ADMIN_EMAILS = [
   "penasjoyce5@gmail.com",
@@ -11,39 +10,30 @@ const ADMIN_EMAILS = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoaded } = useUser();
-  const router = useRouter();
-  const [allowed, setAllowed] = useState(false);
+  const [status, setStatus] = useState("loading");
 
   useEffect(() => {
     if (!isLoaded) return;
-    if (!user) {
-      router.replace("/sign-in?redirect_url=/admin");
-      return;
-    }
+    if (!user) { setStatus("no-user"); return; }
     const email = user.emailAddresses[0]?.emailAddress?.toLowerCase().trim() || "";
     const isAdmin = ADMIN_EMAILS.map(e => e.toLowerCase().trim()).includes(email);
-    if (isAdmin) {
-      setAllowed(true);
-    }
+    setStatus(isAdmin ? "allowed" : "denied");
   }, [user, isLoaded]);
 
-  if (!isLoaded || (user && !allowed)) {
+  if (status === "loading") {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Arial, sans-serif" }}>
-        <p style={{ color: "#888" }}>Loading...</p>
+        <p style={{ color: "#888" }}>Loading admin...</p>
       </div>
     );
   }
 
-  if (!user) {
-    return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Arial, sans-serif" }}>
-        <p style={{ color: "#888" }}>Redirecting to sign in...</p>
-      </div>
-    );
+  if (status === "no-user") {
+    if (typeof window !== "undefined") window.location.href = "/sign-in";
+    return null;
   }
 
-  if (!allowed) {
+  if (status === "denied") {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f8f8f8", fontFamily: "Arial, sans-serif" }}>
         <div style={{ background: "#fff", borderRadius: "24px", padding: "48px 32px", textAlign: "center", maxWidth: "400px", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
