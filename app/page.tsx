@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
@@ -35,7 +35,8 @@ const getArtistLabel = (services: string[]) => {
 
 const getStartingPrice = (services: string[]) => {
   const prices: Record<string, number> = {
-    
+    "hair": 350, "color": 1000, "rebond": 1800, "massage": 700,
+    "facial": 500, "manicure": 200, "pedicure": 250, "lash": 800,
     "makeup": 800, "clean": 800, "garden": 500, "wax": 200, "eyebrow": 150,
   };
   if (!services) return 300;
@@ -52,7 +53,7 @@ type Artist = {
   id: number; name: string; bio: string; experience: string;
   services: string[]; location: string; is_available: boolean;
   rating: string; total_reviews: number;
-  distance_text?: string; distance_km?: number; transport_fee?: number; profile_photo?: string;
+  distance_text?: string; distance_km?: number; transport_fee?: number;
 };
 
 export default function HomePage() {
@@ -139,7 +140,7 @@ export default function HomePage() {
 
               <a href="/map-pin" style={{ display: "flex", alignItems: "center", gap: "10px", background: "#F5F3FF", borderRadius: "12px", padding: "14px 16px", cursor: "pointer", textDecoration: "none" }}>
                 <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#7C3AED", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "11px", flexShrink: 0 }}>MAP</div>
-                <span style={{ fontWeight: 600, color: "#7C3AED", fontSize: "14px" }}>Pin My Location on Map</span>
+                <span style={{ fontWeight: 600, color: "#7C3AED", fontSize: "14px" }}>Pin on Map (Grab Style)</span>
               </a>
 
               <input type="text" value={address} onChange={e => setAddress(e.target.value)}
@@ -244,7 +245,7 @@ export default function HomePage() {
         <button onClick={() => setShowAddressModal(true)}
           style={{ display: "flex", alignItems: "center", gap: "6px", background: "#FFF0F6", border: "none", padding: "8px 12px", borderRadius: "20px", cursor: "pointer", flex: 1, maxWidth: "200px", margin: "0 12px" }}>
           <span style={{ fontSize: "12px", fontWeight: 600, color: "#E61D72", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{savedAddress || "Set Location"}</span>
-          <span style={{ color: "#E61D72", fontSize: "10px" }}>â–¼</span>
+          <span style={{ color: "#E61D72", fontSize: "10px" }}>▼</span>
         </button>
         <div style={{ display: "flex", gap: "8px" }}>
           <Link href="/vouchers" style={{ background: "#FFF0F6", color: "#E61D72", padding: "7px 12px", borderRadius: "20px", textDecoration: "none", fontSize: "12px", fontWeight: 600 }}>Vouchers</Link>
@@ -354,7 +355,7 @@ export default function HomePage() {
                         {artist.distance_text && (
                           <p style={{ color: "#E61D72", fontSize: "11px", margin: "0 0 2px", fontWeight: 600 }}>{artist.distance_text}</p>
                         )}
-                        <p style={{ fontSize: "11px", margin: 0 }}>â˜… {parseFloat(artist.rating).toFixed(1)} ({artist.total_reviews} reviews)</p>
+                        <p style={{ fontSize: "11px", margin: 0 }}>★ {parseFloat(artist.rating).toFixed(1)} ({artist.total_reviews} reviews)</p>
                       </div>
                     </div>
                     <div style={{ position: "absolute", top: "12px", right: "12px" }}>
@@ -465,7 +466,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-
-
-
