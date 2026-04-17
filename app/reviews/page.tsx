@@ -1,174 +1,205 @@
-"use client";
-import { useState } from "react";
+﻿"use client";
+import { useState, useEffect } from "react";
 
-const reviews = [
-  { id: 1, customer: "Joyce Ilano", laborer: "Maria Santos", service: "Full Body Massage", rating: 5, comment: "Amazing service! Very professional and skilled. Will definitely book again!", date: "April 12, 2026", avatar: "J", verified: true },
-  { id: 2, customer: "Maria Reyes", laborer: "Ana Reyes", service: "Haircut & Styling", rating: 5, comment: "Best haircut I've ever had! Very attentive to what I wanted.", date: "April 11, 2026", avatar: "M", verified: true },
-  { id: 3, customer: "Liza Santos", laborer: "Joy Dela Cruz", service: "Manicure & Pedicure", rating: 4, comment: "Great job! Very thorough and gentle. Nails look perfect.", date: "April 10, 2026", avatar: "L", verified: true },
-  { id: 4, customer: "Ana Cruz", laborer: "Maria Santos", service: "Hot Stone Massage", rating: 5, comment: "Absolutely relaxing! The best massage I've had in years.", date: "April 9, 2026", avatar: "A", verified: true },
-  { id: 5, customer: "Rose Dela Cruz", laborer: "Liza Cruz", service: "Facial Treatment", rating: 4, comment: "My skin feels so much better! Will come back for sure.", date: "April 8, 2026", avatar: "R", verified: false },
-  { id: 6, customer: "Joy Santos", laborer: "Ana Reyes", service: "Hair Coloring", rating: 3, comment: "Good job overall but took a bit longer than expected.", date: "April 7, 2026", avatar: "J", verified: true },
-];
-
-const ratingColors: Record<number, string> = { 5: "#22c55e", 4: "#3b82f6", 3: "#D97706", 2: "#f87171", 1: "#ef4444" };
+type Review = {
+  id: number;
+  customer: string;
+  artist: string;
+  service: string;
+  rating: number;
+  comment: string;
+  photo?: string;
+  created_at: string;
+};
 
 export default function ReviewsPage() {
-  const [filter, setFilter] = useState(0);
-  const [sortBy, setSortBy] = useState("latest");
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [newReview, setNewReview] = useState({ service: "", laborer: "", rating: 5, comment: "" });
-  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({ customer: "", artist: "", service: "", rating: 5, comment: "" });
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [filterRating, setFilterRating] = useState(0);
 
-  const filtered = reviews
-    .filter(r => filter === 0 || r.rating === filter)
-    .sort((a, b) => sortBy === "highest" ? b.rating - a.rating : sortBy === "lowest" ? a.rating - b.rating : b.id - a.id);
+  useEffect(() => { fetchReviews(); }, []);
 
-  const avgRating = (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1);
-  const ratingCounts = [5, 4, 3, 2, 1].map(r => ({ rating: r, count: reviews.filter(rv => rv.rating === r).length }));
-
-  const handleSubmit = () => {
-    if (!newReview.service || !newReview.comment) { alert("Please fill in all fields."); return; }
-    setSubmitted(true);
-    setShowForm(false);
+  const fetchReviews = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/reviews");
+      const data = await res.json();
+      setReviews(data.reviews || []);
+    } catch { setReviews([]); }
+    setLoading(false);
   };
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPhoto(file);
+      const reader = new FileReader();
+      reader.onload = (e) => setPhotoPreview(e.target?.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!form.customer || !form.artist || !form.comment) return;
+    setSubmitting(true);
+    let photoUrl = "";
+    if (photo) {
+      const formData = new FormData();
+      formData.append("file", photo);
+      formData.append("folder", "reviews");
+      const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
+      const uploadData = await uploadRes.json();
+      photoUrl = uploadData.url || "";
+    }
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, photo: photoUrl }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSuccessMsg("Review submitted! Thank you!");
+        setTimeout(() => setSuccessMsg(""), 3000);
+        setForm({ customer: "", artist: "", service: "", rating: 5, comment: "" });
+        setPhoto(null); setPhotoPreview(""); setShowForm(false);
+        fetchReviews();
+      }
+    } catch { alert("Failed to submit review."); }
+    setSubmitting(false);
+  };
+
+  const avgRating = reviews.length > 0 ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1) : "0.0";
+  const ratingCounts = [5,4,3,2,1].map(r => ({ rating: r, count: reviews.filter(rev => rev.rating === r).length, percent: reviews.length > 0 ? (reviews.filter(rev => rev.rating === r).length / reviews.length) * 100 : 0 }));
+  const filteredReviews = filterRating === 0 ? reviews : reviews.filter(r => r.rating === filterRating);
+
   return (
-    <div style={{ minHeight: "100vh", background: "#FFF0F6" }}>
-      {/* Hero */}
-      <div style={{ background: "linear-gradient(135deg, #E61D72 0%, #C01660 100%)", padding: "48px 32px", color: "#fff", textAlign: "center" }}>
-        <h1 style={{ fontSize: "36px", fontWeight: 900, margin: "0 0 8px" }}>Reviews & Ratings</h1>
-        <p style={{ opacity: 0.8, margin: "0 0 24px" }}>What our customers say about Serviko</p>
-        <div style={{ display: "flex", gap: "32px", justifyContent: "center", flexWrap: "wrap" }}>
-          <div style={{ textAlign: "center" }}>
-            <p style={{ fontSize: "48px", fontWeight: 900, margin: 0 }}>{avgRating}</p>
-            <div style={{ fontSize: "24px" }}>{"★".repeat(Math.round(Number(avgRating)))}</div>
-            <p style={{ opacity: 0.8, fontSize: "13px", margin: 0 }}>Average Rating</p>
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <p style={{ fontSize: "48px", fontWeight: 900, margin: 0 }}>{reviews.length}</p>
-            <p style={{ opacity: 0.8, fontSize: "13px", margin: 0 }}>Total Reviews</p>
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <p style={{ fontSize: "48px", fontWeight: 900, margin: 0 }}>{reviews.filter(r => r.verified).length}</p>
-            <p style={{ opacity: 0.8, fontSize: "13px", margin: 0 }}>Verified Reviews</p>
-          </div>
-        </div>
+    <div style={{ minHeight: "100vh", background: "#FFF0F6", fontFamily: "Arial, sans-serif" }}>
+      <div style={{ background: "linear-gradient(135deg, #E61D72, #7C3AED)", padding: "20px 24px", color: "#fff" }}>
+        <a href="/" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "13px" }}>Back to Home</a>
+        <h1 style={{ fontSize: "22px", fontWeight: 900, margin: "8px 0 4px" }}>Customer Reviews</h1>
+        <p style={{ opacity: 0.8, margin: 0, fontSize: "13px" }}>Real reviews from real customers</p>
       </div>
-
-      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "32px" }}>
-
-        {/* Rating Breakdown */}
-        <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", marginBottom: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-          <h3 style={{ fontWeight: 700, margin: "0 0 16px" }}>Rating Breakdown</h3>
-          {ratingCounts.map(({ rating, count }) => (
-            <div key={rating} style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
-              <span style={{ fontSize: "13px", fontWeight: 600, minWidth: "30px" }}>{rating}★</span>
-              <div style={{ flex: 1, background: "#FFE4F0", borderRadius: "10px", height: "10px" }}>
-                <div style={{ background: ratingColors[rating], borderRadius: "10px", height: "10px", width: `${(count / reviews.length) * 100}%` }} />
+      {successMsg && <div style={{ background: "#22c55e", color: "#fff", padding: "12px 24px", textAlign: "center", fontWeight: 700 }}>{successMsg}</div>}
+      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
+        <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", marginBottom: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "24px", alignItems: "center" }}>
+            <div style={{ textAlign: "center" }}>
+              <p style={{ fontWeight: 900, fontSize: "48px", color: "#E61D72", margin: "0 0 4px" }}>{avgRating}</p>
+              <div style={{ display: "flex", gap: "2px", justifyContent: "center", marginBottom: "4px" }}>
+                {[1,2,3,4,5].map(s => <span key={s} style={{ color: parseFloat(avgRating) >= s ? "#FFD700" : "#ddd", fontSize: "16px" }}>★</span>)}
               </div>
-              <span style={{ fontSize: "13px", color: "#888", minWidth: "20px" }}>{count}</span>
+              <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{reviews.length} reviews</p>
             </div>
-          ))}
-        </div>
-
-        {/* Controls */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            {[0, 5, 4, 3, 2, 1].map((r) => (
-              <button key={r} onClick={() => setFilter(r)}
-                style={{ padding: "8px 16px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "13px",
-                  background: filter === r ? "#E61D72" : "#fff", color: filter === r ? "#fff" : "#888", boxShadow: "0 2px 4px rgba(0,0,0,0.06)" }}>
-                {r === 0 ? "All" : `${r}★`}
-              </button>
-            ))}
-          </div>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-              style={{ padding: "8px 16px", borderRadius: "20px", border: "1px solid #FFD6E7", fontSize: "13px", background: "#fff" }}>
-              <option value="latest">Latest</option>
-              <option value="highest">Highest Rated</option>
-              <option value="lowest">Lowest Rated</option>
-            </select>
-            <button onClick={() => setShowForm(!showForm)}
-              style={{ padding: "8px 20px", borderRadius: "20px", border: "none", background: "#E61D72", color: "#fff", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}>
-              + Write Review
-            </button>
+            <div>
+              {ratingCounts.map(({ rating, count, percent }) => (
+                <div key={rating} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                  <span style={{ fontSize: "12px", fontWeight: 600, minWidth: "8px" }}>{rating}</span>
+                  <span style={{ color: "#FFD700", fontSize: "12px" }}>★</span>
+                  <div style={{ flex: 1, height: "8px", background: "#f0f0f0", borderRadius: "4px", overflow: "hidden" }}>
+                    <div style={{ height: "100%", background: "#E61D72", borderRadius: "4px", width: `${percent}%` }} />
+                  </div>
+                  <span style={{ fontSize: "11px", color: "#888", minWidth: "20px" }}>{count}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Write Review Form */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+          <div style={{ display: "flex", gap: "6px" }}>
+            <button onClick={() => setFilterRating(0)} style={{ padding: "6px 12px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "11px", background: filterRating === 0 ? "#E61D72" : "#fff", color: filterRating === 0 ? "#fff" : "#555" }}>All</button>
+            {[5,4,3,2,1].map(r => <button key={r} onClick={() => setFilterRating(filterRating === r ? 0 : r)} style={{ padding: "6px 12px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "11px", background: filterRating === r ? "#E61D72" : "#fff", color: filterRating === r ? "#fff" : "#555" }}>{r}★</button>)}
+          </div>
+          <button onClick={() => setShowForm(!showForm)} style={{ background: "#E61D72", color: "#fff", border: "none", padding: "10px 16px", borderRadius: "20px", cursor: "pointer", fontWeight: 700, fontSize: "13px" }}>Write Review</button>
+        </div>
+
         {showForm && (
-          <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", marginBottom: "24px", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
-            <h3 style={{ fontWeight: 700, margin: "0 0 16px" }}>Write a Review</h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", marginBottom: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <h3 style={{ fontWeight: 900, margin: "0 0 16px" }}>Write a Review</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {[{ label: "Your Name", key: "customer", ph: "e.g. Maria Santos" }, { label: "Artist Name", key: "artist", ph: "e.g. Lance Arnold Penas" }, { label: "Service", key: "service", ph: "e.g. Haircut & Styling" }].map(f => (
+                <div key={f.key}>
+                  <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "4px" }}>{f.label}</label>
+                  <input type="text" placeholder={f.ph} value={(form as any)[f.key]} onChange={e => setForm({ ...form, [f.key]: e.target.value })}
+                    style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "1px solid #FFD6E7", fontSize: "14px", boxSizing: "border-box" }} />
+                </div>
+              ))}
               <div>
-                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>Service</label>
-                <select value={newReview.service} onChange={(e) => setNewReview({ ...newReview, service: e.target.value })}
-                  style={{ width: "100%", padding: "12px", borderRadius: "12px", border: "1px solid #FFD6E7", fontSize: "14px" }}>
-                  <option value="">-- Select service --</option>
-                  {["Haircut & Styling", "Full Body Massage", "Facial Treatment", "Manicure & Pedicure", "Hair Coloring", "Hot Stone Massage"].map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>Rating</label>
-                <div style={{ display: "flex", gap: "8px" }}>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button key={star} onClick={() => setNewReview({ ...newReview, rating: star })}
-                      style={{ fontSize: "28px", background: "none", border: "none", cursor: "pointer", color: star <= newReview.rating ? "#FFD700" : "#ddd" }}>★</button>
-                  ))}
+                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "8px" }}>Rating</label>
+                <div style={{ display: "flex", gap: "6px" }}>
+                  {[1,2,3,4,5].map(s => <button key={s} onClick={() => setForm({ ...form, rating: s })} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "28px", color: form.rating >= s ? "#FFD700" : "#ddd" }}>★</button>)}
                 </div>
               </div>
               <div>
-                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>Your Review</label>
-                <textarea value={newReview.comment} onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
-                  placeholder="Share your experience..." rows={3}
-                  style={{ width: "100%", padding: "12px", borderRadius: "12px", border: "1px solid #FFD6E7", fontSize: "14px", resize: "none" }} />
+                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "4px" }}>Your Review</label>
+                <textarea value={form.comment} onChange={e => setForm({ ...form, comment: e.target.value })} rows={3} placeholder="Share your experience..."
+                  style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "1px solid #FFD6E7", fontSize: "14px", resize: "none", boxSizing: "border-box" }} />
               </div>
-              <button onClick={handleSubmit}
-                style={{ background: "#E61D72", color: "#fff", padding: "12px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer" }}>
-                Submit Review
+              <div>
+                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "8px" }}>Add Photo (Optional)</label>
+                {photoPreview ? (
+                  <div style={{ position: "relative", display: "inline-block" }}>
+                    <img src={photoPreview} alt="Preview" style={{ width: "120px", height: "120px", objectFit: "cover", borderRadius: "12px" }} />
+                    <button onClick={() => { setPhoto(null); setPhotoPreview(""); }} style={{ position: "absolute", top: "4px", right: "4px", background: "#f87171", color: "#fff", border: "none", borderRadius: "50%", width: "22px", height: "22px", cursor: "pointer", fontSize: "12px" }}>X</button>
+                  </div>
+                ) : (
+                  <label style={{ display: "inline-block", background: "#FFF0F6", border: "2px dashed #FFD6E7", borderRadius: "12px", padding: "16px 24px", cursor: "pointer", fontSize: "13px", color: "#E61D72", fontWeight: 600 }}>
+                    + Add Photo
+                    <input type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: "none" }} />
+                  </label>
+                )}
+              </div>
+              <button onClick={handleSubmit} disabled={submitting || !form.customer || !form.artist || !form.comment}
+                style={{ background: submitting || !form.customer || !form.artist || !form.comment ? "#ccc" : "#E61D72", color: "#fff", border: "none", padding: "14px", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontSize: "15px" }}>
+                {submitting ? "Submitting..." : "Submit Review"}
               </button>
             </div>
           </div>
         )}
 
-        {submitted && (
-          <div style={{ background: "#F0FDF4", borderRadius: "16px", padding: "16px", marginBottom: "24px", border: "1px solid #86EFAC", display: "flex", alignItems: "center", gap: "12px" }}>
-            <span style={{ fontSize: "24px" }}>✅</span>
-            <p style={{ fontWeight: 600, color: "#22c55e", margin: 0 }}>Review submitted successfully! Thank you for your feedback.</p>
+        {loading ? (
+          <div style={{ textAlign: "center", padding: "48px" }}><p style={{ color: "#888" }}>Loading reviews...</p></div>
+        ) : filteredReviews.length === 0 ? (
+          <div style={{ background: "#fff", borderRadius: "20px", padding: "48px", textAlign: "center" }}>
+            <p style={{ fontWeight: 700, margin: "0 0 8px" }}>No reviews yet</p>
+            <p style={{ color: "#888", fontSize: "13px", margin: "0 0 16px" }}>Be the first to leave a review!</p>
+            <button onClick={() => setShowForm(true)} style={{ background: "#E61D72", color: "#fff", border: "none", padding: "12px 24px", borderRadius: "20px", cursor: "pointer", fontWeight: 700 }}>Write First Review</button>
           </div>
-        )}
-
-        {/* Reviews List */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          {filtered.map((review) => (
-            <div key={review.id} style={{ background: "#fff", borderRadius: "20px", padding: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <div style={{ width: "44px", height: "44px", borderRadius: "50%", background: "#E61D72", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: "18px" }}>{review.avatar}</div>
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <p style={{ fontWeight: 700, margin: 0 }}>{review.customer}</p>
-                      {review.verified && <span style={{ background: "#F0FDF4", color: "#22c55e", padding: "2px 8px", borderRadius: "10px", fontSize: "11px", fontWeight: 600 }}>✓ Verified</span>}
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            {filteredReviews.map(review => (
+              <div key={review.id} style={{ background: "#fff", borderRadius: "20px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+                  <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                    <div style={{ width: "44px", height: "44px", borderRadius: "50%", background: "#E61D72", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "16px", flexShrink: 0 }}>
+                      {review.customer[0]?.toUpperCase()}
                     </div>
-                    <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{review.service} • {review.laborer}</p>
+                    <div>
+                      <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{review.customer}</p>
+                      <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>Booked: {review.artist}</p>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ display: "flex", gap: "1px", justifyContent: "flex-end", marginBottom: "2px" }}>
+                      {[1,2,3,4,5].map(s => <span key={s} style={{ color: review.rating >= s ? "#FFD700" : "#ddd", fontSize: "14px" }}>★</span>)}
+                    </div>
+                    <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>{new Date(review.created_at).toLocaleDateString("en-PH")}</p>
                   </div>
                 </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ color: "#FFD700", fontSize: "18px" }}>{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</div>
-                  <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{review.date}</p>
-                </div>
+                {review.service && <span style={{ background: "#FFF0F6", color: "#E61D72", padding: "3px 8px", borderRadius: "20px", fontSize: "11px", fontWeight: 600, display: "inline-block", marginBottom: "10px" }}>{review.service}</span>}
+                <p style={{ color: "#555", fontSize: "13px", margin: "0 0 12px", lineHeight: 1.6 }}>{review.comment}</p>
+                {review.photo && <img src={review.photo} alt="Review" style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "12px" }} />}
               </div>
-              <p style={{ color: "#555", fontSize: "14px", margin: "0 0 12px", lineHeight: 1.6 }}>{review.comment}</p>
-              <div style={{ display: "flex", gap: "12px" }}>
-                <button style={{ background: "#FFF0F6", color: "#E61D72", border: "none", padding: "6px 14px", borderRadius: "20px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>👍 Helpful</button>
-                <button style={{ background: "#f8f8f8", color: "#888", border: "none", padding: "6px 14px", borderRadius: "20px", fontSize: "12px", cursor: "pointer" }}>Reply</button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
