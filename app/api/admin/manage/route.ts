@@ -18,8 +18,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
     if (action === "remove_artist") {
-      await sql`DELETE FROM artist_services WHERE artist_id = ${artistId}`;
-      await sql`DELETE FROM artists WHERE id = ${artistId}`;
+      try {
+        await sql`DELETE FROM artist_services WHERE artist_id = ${artistId}`;
+      } catch {}
+      await sql`UPDATE artists SET verification_status = 'removed', is_available = false WHERE id = ${artistId}`;
+      await sql`UPDATE users SET role = 'removed' WHERE id IN (SELECT user_id FROM artists WHERE id = ${artistId})`;
       return NextResponse.json({ success: true });
     }
     if (action === "unban_customer") {
@@ -29,6 +32,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Action failed" }, { status: 500 });
+    return NextResponse.json({ error: String(error) }, { status: 500 });
   }
 }
