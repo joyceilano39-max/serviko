@@ -22,7 +22,7 @@ export default function ArtistProfilePage() {
     try {
       const [artistRes, svcRes, portRes, revRes] = await Promise.all([
         fetch("/api/artists/" + artistId),
-        fetch("/api/artist/services?artistId=" + artistId),
+        fetch("/api/artist-services?artistId=" + artistId),
         fetch("/api/portfolio?artistId=" + artistId),
         fetch("/api/reviews?artistId=" + artistId),
       ]);
