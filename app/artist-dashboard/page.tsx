@@ -108,7 +108,7 @@ export default function ArtistDashboardPage() {
           <div>
             <p style={{ opacity: 0.8, fontSize: "13px", margin: "0 0 4px" }}>Artist Dashboard</p>
             <h1 style={{ fontSize: "22px", fontWeight: 900, margin: "0 0 4px" }}>
-              Welcome, {user?.firstName || "Artist"}!
+              Welcome, {artist?.name?.split(" ")[0] || user?.firstName || "Artist"}!
             </h1>
             <p style={{ opacity: 0.8, fontSize: "13px", margin: 0 }}>
               {pending.length > 0 ? `${pending.length} pending booking(s)!` : "No pending bookings"}
@@ -404,4 +404,5 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
 
