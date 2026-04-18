@@ -19,11 +19,54 @@ type Booking = {
   members: any;
 };
 
-type TabType = "overview" | "bookings" | "earnings" | "profile";
+type TabType = "overview" | "bookings" | "earnings" | "profile" | "portfolio";
 
 export default function ArtistDashboardPage() {
   const [dbName, setDbName] = useState<string>("");
   const [profilePhoto, setProfilePhoto] = useState<string>("");
+  const [portfolioPhotos, setPortfolioPhotos] = useState<any[]>([]);
+  const [portfolioCaption, setPortfolioCaption] = useState<string>("");
+  const [artistId, setArtistId] = useState<number | null>(null);
+  const [uploadingPortfolio, setUploadingPortfolio] = useState(false);
+
+  const fetchPortfolio = async (id: number) => {
+    const res = await fetch(`/api/portfolio?artistId=${id}`);
+    const data = await res.json();
+    setPortfolioPhotos(data.photos || []);
+  };
+
+  const handlePortfolioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !artistId) return;
+    setUploadingPortfolio(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", "portfolio");
+    formData.append("email", user?.emailAddresses[0]?.emailAddress || "");
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.url) {
+        await fetch("/api/portfolio", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ artistId, imageUrl: data.url, caption: portfolioCaption }),
+        });
+        setPortfolioCaption("");
+        fetchPortfolio(artistId);
+      }
+    } catch {}
+    setUploadingPortfolio(false);
+  };
+
+  const deletePortfolioPhoto = async (id: number) => {
+    await fetch("/api/portfolio", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (artistId) fetchPortfolio(artistId);
+  };
   const [uploading, setUploading] = useState(false);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +98,7 @@ export default function ArtistDashboardPage() {
     fetchBookings();
     fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id}`)
       .then(r => r.json())
-      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); if (d.name) setDbName(d.name.split(" ")[0]); });
+      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); if (d.name) setDbName(d.name.split(" ")[0]); if (d.artistId) { setArtistId(d.artistId); fetchPortfolio(d.artistId); } });
   }, [user]);
 
   const [artistProfile, setArtistProfile] = useState<any>(null);
@@ -95,7 +138,7 @@ export default function ArtistDashboardPage() {
         fetchBookings();
     fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id}`)
       .then(r => r.json())
-      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); if (d.name) setDbName(d.name.split(" ")[0]); });
+      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); if (d.name) setDbName(d.name.split(" ")[0]); if (d.artistId) { setArtistId(d.artistId); fetchPortfolio(d.artistId); } });
         setSelectedBooking(null);
       }
     } catch {
@@ -185,6 +228,7 @@ export default function ArtistDashboardPage() {
           { id: "bookings", label: `Bookings ${pending.length > 0 ? `(${pending.length})` : ""}` },
           { id: "earnings", label: "Earnings" },
           { id: "profile", label: "Profile" },
+          { id: "portfolio", label: "Portfolio" },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id as TabType)}
             style={{ padding: "8px 16px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "12px", whiteSpace: "nowrap",
@@ -396,7 +440,40 @@ export default function ArtistDashboardPage() {
         )}
       </div>
 
-      {/* Booking Detail Modal */}
+      {/* PORTFOLIO TAB */}
+        {activeTab === "portfolio" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div style={{ background: "#fff", borderRadius: "20px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <h3 style={{ fontWeight: 900, margin: "0 0 16px" }}>Upload Work Photo</h3>
+              <input type="text" value={portfolioCaption} onChange={e => setPortfolioCaption(e.target.value)}
+                placeholder="Add a caption (optional)..."
+                style={{ width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px", marginBottom: "10px", boxSizing: "border-box" }} />
+              <label style={{ display: "block", background: "#7C3AED", color: "#fff", padding: "12px", borderRadius: "12px", textAlign: "center", fontWeight: 700, cursor: "pointer", fontSize: "14px" }}>
+                {uploadingPortfolio ? "Uploading..." : "Choose Photo to Upload"}
+                <input type="file" accept="image/*" style={{ display: "none" }} onChange={handlePortfolioUpload} disabled={uploadingPortfolio} />
+              </label>
+            </div>
+            <div style={{ background: "#fff", borderRadius: "20px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <h3 style={{ fontWeight: 900, margin: "0 0 16px" }}>My Work ({portfolioPhotos.length})</h3>
+              {portfolioPhotos.length === 0 ? (
+                <p style={{ color: "#888", textAlign: "center", padding: "24px 0" }}>No photos yet. Upload your work!</p>
+              ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}>
+                  {portfolioPhotos.map(photo => (
+                    <div key={photo.id} style={{ position: "relative", borderRadius: "12px", overflow: "hidden" }}>
+                      <img src={photo.image_url} alt={photo.caption || "Work"} style={{ width: "100%", height: "140px", objectFit: "cover" }} />
+                      {photo.caption && <p style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "rgba(0,0,0,0.5)", color: "#fff", fontSize: "11px", padding: "6px 8px", margin: 0 }}>{photo.caption}</p>}
+                      <button onClick={() => deletePortfolioPhoto(photo.id)}
+                        style={{ position: "absolute", top: "6px", right: "6px", background: "rgba(255,0,0,0.7)", color: "#fff", border: "none", borderRadius: "50%", width: "24px", height: "24px", cursor: "pointer", fontWeight: 700, fontSize: "12px" }}>X</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Booking Detail Modal */}
       {selectedBooking && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 100 }}>
           <div style={{ background: "#fff", borderRadius: "24px 24px 0 0", padding: "28px 24px", width: "100%", maxWidth: "600px", maxHeight: "80vh", overflowY: "auto" }}>
@@ -445,6 +522,9 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
+
+
 
 
 
