@@ -1,9 +1,1 @@
-import { SignIn } from '@clerk/nextjs';
-
-export default function Page() {
-  return (
-    <main style={{minHeight:'100vh',background:'#FFF0F6',display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <SignIn />
-    </main>
-  );
-}
+import { SignIn } from "@clerk/nextjs"; import Link from "next/link"; export default function CustomerSignInPage() { return ( <div style={{ minHeight: "100vh", background: "#FFF0F6", fontFamily: "Arial, sans-serif", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px" }}> <div style={{ width: "100%", maxWidth: "480px" }}> <div style={{ textAlign: "center", marginBottom: "24px" }}> <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "linear-gradient(135deg, #E61D72, #7C3AED)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", fontWeight: 900, fontSize: "24px" }}>S</div> <h1 style={{ fontWeight: 900, fontSize: "22px", margin: "0 0 4px", color: "#333" }}>Welcome to Serviko</h1> <p style={{ color: "#888", margin: "0 0 8px", fontSize: "14px" }}>Book beauty and home services near you</p> <div style={{ display: "inline-block", background: "#FFF0F6", border: "2px solid #E61D72", borderRadius: "20px", padding: "4px 16px" }}><span style={{ color: "#E61D72", fontWeight: 700, fontSize: "13px" }}>Customer Login</span></div> </div> <SignIn fallbackRedirectUrl="/auth-redirect" /> <div style={{ textAlign: "center", marginTop: "20px", padding: "16px", background: "#fff", borderRadius: "16px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}> <p style={{ color: "#888", fontSize: "13px", margin: "0 0 10px" }}>Are you a service provider?</p> <Link href="/artist-login" style={{ display: "inline-block", background: "linear-gradient(135deg, #7C3AED, #4F46E5)", color: "#fff", padding: "10px 24px", borderRadius: "20px", textDecoration: "none", fontWeight: 700, fontSize: "14px" }}>Sign in as Artist</Link> </div> </div> </div> ); }
