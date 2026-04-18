@@ -67,40 +67,6 @@ export default function ArtistDashboardPage() {
     });
     if (artistId) fetchMyServices(artistId);
   };
-  const [myServices, setMyServices] = useState<any[]>([]);
-  const [newServiceName, setNewServiceName] = useState("");
-  const [newServicePrice, setNewServicePrice] = useState("");
-  const [newServiceDuration, setNewServiceDuration] = useState("");
-  const [newServiceDesc, setNewServiceDesc] = useState("");
-  const [addingService, setAddingService] = useState(false);
-
-  const fetchMyServices = async (id: number) => {
-    const res = await fetch(`/api/artist-services?artistId=${id}`);
-    const data = await res.json();
-    setMyServices(data.services || []);
-  };
-
-  const addService = async () => {
-    if (!newServiceName || !newServicePrice || !artistId) return;
-    setAddingService(true);
-    await fetch("/api/artist-services", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ artistId, serviceName: newServiceName, price: parseInt(newServicePrice), duration: newServiceDuration, description: newServiceDesc }),
-    });
-    setNewServiceName(""); setNewServicePrice(""); setNewServiceDuration(""); setNewServiceDesc("");
-    fetchMyServices(artistId);
-    setAddingService(false);
-  };
-
-  const deleteService = async (id: number) => {
-    await fetch("/api/artist-services", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-    if (artistId) fetchMyServices(artistId);
-  };
 
   const fetchPortfolio = async (id: number) => {
     const res = await fetch(`/api/portfolio?artistId=${id}`);
@@ -698,6 +664,7 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
 
 
 
