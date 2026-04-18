@@ -339,9 +339,9 @@ export default function ArtistDashboardPage() {
             <h3 style={{ fontWeight: 900, margin: "0 0 20px" }}>Your Profile</h3>
             <div style={{ textAlign: "center", marginBottom: "20px" }}>
               <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#7C3AED", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", fontSize: "28px", fontWeight: 700 }}>
-                {user?.firstName?.[0] || "A"}
+                {dbName?.[0] || user?.firstName?.[0] || "A"}
               </div>
-              <p style={{ fontWeight: 700, fontSize: "18px", margin: "0 0 4px" }}>{user?.fullName || "Artist"}</p>
+              <p style={{ fontWeight: 700, fontSize: "18px", margin: "0 0 4px" }}>{dbName || user?.fullName || "Artist"}</p>
               <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{user?.emailAddresses[0]?.emailAddress}</p>
             </div>
             <div style={{ background: "#F5F3FF", borderRadius: "12px", padding: "16px", marginBottom: "16px" }}>
@@ -420,6 +420,7 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
 
 
 
