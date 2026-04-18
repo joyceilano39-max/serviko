@@ -3,6 +3,13 @@ import Link from "next/link";
 
 export default function ArtistLoginPage() {
   return (
+    <div style={{ minHeight: "100vh", background: "linear-gradient(135
+$artistSignIn = @'
+import { SignIn } from "@clerk/nextjs";
+import Link from "next/link";
+
+export default function ArtistLoginPage() {
+  return (
     <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #F5F3FF 0%, #fff 100%)", fontFamily: "Arial, sans-serif", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px" }}>
       <div style={{ width: "100%", maxWidth: "480px" }}>
         <div style={{ textAlign: "center", marginBottom: "24px" }}>
@@ -21,7 +28,7 @@ export default function ArtistLoginPage() {
             </div>
           ))}
         </div>
-        <SignIn afterSignInUrl="/auth-redirect" afterSignUpUrl="/auth-redirect" />
+        <SignIn fallbackRedirectUrl="/auth-redirect" />
         <div style={{ textAlign: "center", marginTop: "20px", padding: "16px", background: "#fff", borderRadius: "16px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
           <p style={{ color: "#888", fontSize: "13px", margin: "0 0 10px" }}>New artist? Register your profile first!</p>
           <Link href="/register/artist" style={{ display: "inline-block", background: "linear-gradient(135deg, #7C3AED, #4F46E5)", color: "#fff", padding: "10px 24px", borderRadius: "20px", textDecoration: "none", fontWeight: 700, fontSize: "14px" }}>
