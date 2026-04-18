@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 
@@ -404,3 +404,4 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
