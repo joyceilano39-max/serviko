@@ -8,13 +8,13 @@ export async function GET(req: NextRequest) {
   try {
     let user: any[] = [];
     if (email) {
-      user = await sql`SELECT u.id, u.role, u.name, a.id as artist_id FROM users u LEFT JOIN artists a ON a.user_id = u.id WHERE u.email = ${email} LIMIT 1`;
+      user = await sql`SELECT u.id, u.role, u.name, a.id as artist_id, a.profile_photo FROM users u LEFT JOIN artists a ON a.user_id = u.id WHERE u.email = ${email} LIMIT 1`;
     }
     if (user.length === 0 && clerkId) {
-      user = await sql`SELECT u.id, u.role, u.name, a.id as artist_id FROM users u LEFT JOIN artists a ON a.user_id = u.id WHERE u.clerk_id = ${clerkId} LIMIT 1`;
+      user = await sql`SELECT u.id, u.role, u.name, a.id as artist_id, a.profile_photo FROM users u LEFT JOIN artists a ON a.user_id = u.id WHERE u.clerk_id = ${clerkId} LIMIT 1`;
     }
     if (user.length === 0) return NextResponse.json({ role: "customer", name: null });
-    return NextResponse.json({ role: user[0].role, name: user[0].name, artistId: user[0].artist_id });
+    return NextResponse.json({ role: user[0].role, name: user[0].name, artistId: user[0].artist_id, profilePhoto: user[0].profile_photo });
   } catch (error) {
     return NextResponse.json({ role: "customer", name: null });
   }

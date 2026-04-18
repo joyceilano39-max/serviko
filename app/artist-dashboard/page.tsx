@@ -23,6 +23,24 @@ type TabType = "overview" | "bookings" | "earnings" | "profile";
 
 export default function ArtistDashboardPage() {
   const [dbName, setDbName] = useState<string>("");
+  const [profilePhoto, setProfilePhoto] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", "profile");
+    formData.append("email", user?.emailAddresses[0]?.emailAddress || "");
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.url) setProfilePhoto(data.url);
+    } catch {}
+    setUploading(false);
+  };
   const { user } = useUser();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +54,8 @@ export default function ArtistDashboardPage() {
   useEffect(() => {
     fetchBookings();
     fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id}`)
+      .then(r => r.json())
+      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); })
       .then(r => r.json())
       .then(d => { if (d.name) setDbName(d.name.split(" ")[0]); });
   }, [user]);
@@ -76,6 +96,8 @@ export default function ArtistDashboardPage() {
         setTimeout(() => setSuccessMsg(""), 3000);
         fetchBookings();
     fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id}`)
+      .then(r => r.json())
+      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); })
       .then(r => r.json())
       .then(d => { if (d.name) setDbName(d.name.split(" ")[0]); });
         setSelectedBooking(null);
@@ -338,9 +360,16 @@ export default function ArtistDashboardPage() {
           <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
             <h3 style={{ fontWeight: 900, margin: "0 0 20px" }}>Your Profile</h3>
             <div style={{ textAlign: "center", marginBottom: "20px" }}>
-              <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#7C3AED", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", fontSize: "28px", fontWeight: 700 }}>
-                {dbName?.[0] || user?.firstName?.[0] || "A"}
+              <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#7C3AED", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", fontSize: "28px", fontWeight: 700, overflow: "hidden", position: "relative", cursor: "pointer" }}
+                onClick={() => document.getElementById("photoInput")?.click()}>
+                {profilePhoto ? (
+                  <img src={profilePhoto} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <span>{dbName?.[0] || user?.firstName?.[0] || "A"}</span>
+                )}
+                {uploading && <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" }}>...</div>}
               </div>
+              <input id="photoInput" type="file" accept="image/*" style={{ display: "none" }} onChange={handlePhotoUpload} />
               <p style={{ fontWeight: 700, fontSize: "18px", margin: "0 0 4px" }}>{dbName || user?.fullName || "Artist"}</p>
               <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{user?.emailAddresses[0]?.emailAddress}</p>
             </div>
@@ -420,6 +449,8 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
+
 
 
 
