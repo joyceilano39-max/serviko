@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -39,8 +39,8 @@ export default function RootLayout({
     <ClerkProvider
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/dashboard"
-      signUpFallbackRedirectUrl="/dashboard"
+      signInFallbackRedirectUrl="/auth-redirect"
+      signUpFallbackRedirectUrl="/auth-redirect"
     >
       <html lang="en">
         <head><link rel="apple-touch-icon" href="/icon-192.png" /></head><body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -50,4 +50,5 @@ export default function RootLayout({
     </ClerkProvider>
   );
 }
+
 
