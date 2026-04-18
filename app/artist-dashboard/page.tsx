@@ -22,6 +22,7 @@ type Booking = {
 type TabType = "overview" | "bookings" | "earnings" | "profile";
 
 export default function ArtistDashboardPage() {
+  const [dbName, setDbName] = useState<string>("");
   const { user } = useUser();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,8 +35,20 @@ export default function ArtistDashboardPage() {
 
   useEffect(() => {
     fetchBookings();
+    fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}`)
+      .then(r => r.json())
+      .then(d => { if (d.name) setDbName(d.name.split(" ")[0]); });
   }, [user]);
 
+  const [artistProfile, setArtistProfile] = useState<any>(null);
+  const fetchArtistProfile = async () => {
+    try {
+      const email = user?.emailAddresses[0]?.emailAddress;
+      const res = await fetch(`/api/auth/role?email=${email}`);
+      const data = await res.json();
+      if (data.artist) setArtistProfile(data.artist);
+    } catch {}
+  };
   const fetchBookings = async () => {
     setLoading(true);
     try {
@@ -62,6 +75,9 @@ export default function ArtistDashboardPage() {
         setSuccessMsg(status === "accepted" ? "Booking accepted!" : "Booking declined!");
         setTimeout(() => setSuccessMsg(""), 3000);
         fetchBookings();
+    fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}`)
+      .then(r => r.json())
+      .then(d => { if (d.name) setDbName(d.name.split(" ")[0]); });
         setSelectedBooking(null);
       }
     } catch {
@@ -108,7 +124,7 @@ export default function ArtistDashboardPage() {
           <div>
             <p style={{ opacity: 0.8, fontSize: "13px", margin: "0 0 4px" }}>Artist Dashboard</p>
             <h1 style={{ fontSize: "22px", fontWeight: 900, margin: "0 0 4px" }}>
-              Welcome, {artist?.name?.split(" ")[0] || user?.firstName || "Artist"}!
+              Welcome, {dbName || user?.firstName || "Artist"}!
             </h1>
             <p style={{ opacity: 0.8, fontSize: "13px", margin: 0 }}>
               {pending.length > 0 ? `${pending.length} pending booking(s)!` : "No pending bookings"}
@@ -404,5 +420,7 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
+
 
 
