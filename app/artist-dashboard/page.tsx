@@ -19,7 +19,7 @@ type Booking = {
   members: any;
 };
 
-type TabType = "overview" | "bookings" | "earnings" | "profile" | "portfolio";
+type TabType = "overview" | "bookings" | "earnings" | "profile" | "portfolio" | "services";
 
 export default function ArtistDashboardPage() {
   const [dbName, setDbName] = useState<string>("");
@@ -664,6 +664,7 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
 
 
 
