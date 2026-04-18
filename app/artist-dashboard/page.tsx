@@ -35,7 +35,7 @@ export default function ArtistDashboardPage() {
 
   useEffect(() => {
     fetchBookings();
-    fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}`)
+    fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id}`)
       .then(r => r.json())
       .then(d => { if (d.name) setDbName(d.name.split(" ")[0]); });
   }, [user]);
@@ -75,7 +75,7 @@ export default function ArtistDashboardPage() {
         setSuccessMsg(status === "accepted" ? "Booking accepted!" : "Booking declined!");
         setTimeout(() => setSuccessMsg(""), 3000);
         fetchBookings();
-    fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}`)
+    fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id}`)
       .then(r => r.json())
       .then(d => { if (d.name) setDbName(d.name.split(" ")[0]); });
         setSelectedBooking(null);
@@ -420,6 +420,7 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
 
 
 
