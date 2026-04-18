@@ -381,7 +381,7 @@ export default function HomePage() {
                       </div>
                       {artist.is_available ? (
                         <div style={{ display: "flex", gap: "6px" }}>
-                          <Link href={`/artist/${artist.name.toLowerCase().replace(/ /g, "-")}`}
+                          <Link href={`/artist/${artist.id}`}
                             style={{ background: "#FFF0F6", color: "#E61D72", padding: "8px 10px", borderRadius: "20px", textDecoration: "none", fontSize: "11px", fontWeight: 600 }}>
                             Profile
                           </Link>
@@ -466,4 +466,5 @@ export default function HomePage() {
     </div>
   );
 }
+
 
