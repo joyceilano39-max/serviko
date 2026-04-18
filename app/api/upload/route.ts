@@ -13,24 +13,20 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file") as File;
     const type = formData.get("type") as string;
     const email = formData.get("email") as string;
-
     if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
-
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
-
-    const result = await cloudinary.uploader.upload(base64, {
+    const b64 = buffer.toString("base64");
+    const dataUri = "data:" + file.type + ";base64," + b64;
+    const result = await cloudinary.uploader.upload(dataUri, {
       folder: "serviko/" + type,
       public_id: email + "_" + Date.now(),
     });
-
     if (type === "profile") {
       const { neon } = await import("@neondatabase/serverless");
       const sql = neon(process.env.DATABASE_URL!);
       await sql`UPDATE artists SET profile_photo = ${result.secure_url} WHERE user_id = (SELECT id FROM users WHERE email = ${email})`;
     }
-
     return NextResponse.json({ url: result.secure_url });
   } catch (error) {
     console.error(error);
