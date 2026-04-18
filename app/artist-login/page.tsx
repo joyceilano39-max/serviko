@@ -1,10 +1,3 @@
-﻿import { SignIn } from "@clerk/nextjs";
-import Link from "next/link";
-
-export default function ArtistLoginPage() {
-  return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(135
-$artistSignIn = @'
 import { SignIn } from "@clerk/nextjs";
 import Link from "next/link";
 
