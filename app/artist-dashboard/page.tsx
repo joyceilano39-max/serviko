@@ -33,6 +33,74 @@ export default function ArtistDashboardPage() {
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
+  const [myServices, setMyServices] = useState<any[]>([]);
+  const [newServiceName, setNewServiceName] = useState("");
+  const [newServicePrice, setNewServicePrice] = useState("");
+  const [newServiceDuration, setNewServiceDuration] = useState("");
+  const [newServiceDesc, setNewServiceDesc] = useState("");
+  const [addingService, setAddingService] = useState(false);
+
+  const fetchMyServices = async (id: number) => {
+    const res = await fetch(`/api/artist-services?artistId=${id}`);
+    const data = await res.json();
+    setMyServices(data.services || []);
+  };
+
+  const addService = async () => {
+    if (!newServiceName || !newServicePrice || !artistId) return;
+    setAddingService(true);
+    await fetch("/api/artist-services", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ artistId, serviceName: newServiceName, price: parseInt(newServicePrice), duration: newServiceDuration, description: newServiceDesc }),
+    });
+    setNewServiceName(""); setNewServicePrice(""); setNewServiceDuration(""); setNewServiceDesc("");
+    fetchMyServices(artistId);
+    setAddingService(false);
+  };
+
+  const deleteService = async (id: number) => {
+    await fetch("/api/artist-services", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (artistId) fetchMyServices(artistId);
+  };
+  const [myServices, setMyServices] = useState<any[]>([]);
+  const [newServiceName, setNewServiceName] = useState("");
+  const [newServicePrice, setNewServicePrice] = useState("");
+  const [newServiceDuration, setNewServiceDuration] = useState("");
+  const [newServiceDesc, setNewServiceDesc] = useState("");
+  const [addingService, setAddingService] = useState(false);
+
+  const fetchMyServices = async (id: number) => {
+    const res = await fetch(`/api/artist-services?artistId=${id}`);
+    const data = await res.json();
+    setMyServices(data.services || []);
+  };
+
+  const addService = async () => {
+    if (!newServiceName || !newServicePrice || !artistId) return;
+    setAddingService(true);
+    await fetch("/api/artist-services", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ artistId, serviceName: newServiceName, price: parseInt(newServicePrice), duration: newServiceDuration, description: newServiceDesc }),
+    });
+    setNewServiceName(""); setNewServicePrice(""); setNewServiceDuration(""); setNewServiceDesc("");
+    fetchMyServices(artistId);
+    setAddingService(false);
+  };
+
+  const deleteService = async (id: number) => {
+    await fetch("/api/artist-services", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (artistId) fetchMyServices(artistId);
+  };
 
   const fetchPortfolio = async (id: number) => {
     const res = await fetch(`/api/portfolio?artistId=${id}`);
@@ -103,7 +171,7 @@ export default function ArtistDashboardPage() {
     fetchBookings();
     fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id}`)
       .then(r => r.json())
-      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); if (d.name) setDbName(d.name.split(" ")[0]); if (d.artistId) { setArtistId(d.artistId); fetchPortfolio(d.artistId); } });
+      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); if (d.name) setDbName(d.name.split(" ")[0]); if (d.artistId) { setArtistId(d.artistId); fetchPortfolio(d.artistId); fetchMyServices(d.artistId); } });
   }, [user]);
 
   const [artistProfile, setArtistProfile] = useState<any>(null);
@@ -143,7 +211,7 @@ export default function ArtistDashboardPage() {
         fetchBookings();
     fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id}`)
       .then(r => r.json())
-      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); if (d.name) setDbName(d.name.split(" ")[0]); if (d.artistId) { setArtistId(d.artistId); fetchPortfolio(d.artistId); } });
+      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); if (d.name) setDbName(d.name.split(" ")[0]); if (d.artistId) { setArtistId(d.artistId); fetchPortfolio(d.artistId); fetchMyServices(d.artistId); } });
         setSelectedBooking(null);
       }
     } catch {
@@ -234,6 +302,7 @@ export default function ArtistDashboardPage() {
           { id: "earnings", label: "Earnings" },
           { id: "profile", label: "Profile" },
           { id: "portfolio", label: "Portfolio" },
+          { id: "services", label: "My Services" },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id as TabType)}
             style={{ padding: "8px 16px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "12px", whiteSpace: "nowrap",
@@ -451,7 +520,55 @@ export default function ArtistDashboardPage() {
         )}
       </div>
 
-      {/* PORTFOLIO TAB */}
+      {/* SERVICES TAB */}
+        {activeTab === "services" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div style={{ background: "#fff", borderRadius: "20px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <h3 style={{ fontWeight: 900, margin: "0 0 16px" }}>Add New Service</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <input value={newServiceName} onChange={e => setNewServiceName(e.target.value)} placeholder="Service name (e.g. Haircut & Styling)"
+                  style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px" }} />
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                  <input value={newServicePrice} onChange={e => setNewServicePrice(e.target.value)} placeholder="Price (₱)" type="number"
+                    style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px" }} />
+                  <input value={newServiceDuration} onChange={e => setNewServiceDuration(e.target.value)} placeholder="Duration (e.g. 1 hour)"
+                    style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px" }} />
+                </div>
+                <input value={newServiceDesc} onChange={e => setNewServiceDesc(e.target.value)} placeholder="Description (optional)"
+                  style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px" }} />
+                <button onClick={addService} disabled={addingService || !newServiceName || !newServicePrice}
+                  style={{ background: "#7C3AED", color: "#fff", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontSize: "14px", opacity: (!newServiceName || !newServicePrice) ? 0.5 : 1 }}>
+                  {addingService ? "Adding..." : "+ Add Service"}
+                </button>
+              </div>
+            </div>
+            <div style={{ background: "#fff", borderRadius: "20px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <h3 style={{ fontWeight: 900, margin: "0 0 16px" }}>My Services ({myServices.length})</h3>
+              {myServices.length === 0 ? (
+                <p style={{ color: "#888", textAlign: "center", padding: "24px 0" }}>No services yet. Add your first service!</p>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {myServices.map(service => (
+                    <div key={service.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px", background: "#F5F3FF", borderRadius: "12px" }}>
+                      <div>
+                        <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{service.service_name}</p>
+                        {service.duration && <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>{service.duration}</p>}
+                        {service.description && <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>{service.description}</p>}
+                      </div>
+                      <div style={{ textAlign: "right", display: "flex", alignItems: "center", gap: "10px" }}>
+                        <p style={{ fontWeight: 900, color: "#7C3AED", fontSize: "16px", margin: 0 }}>₱{service.price}</p>
+                        <button onClick={() => deleteService(service.id)}
+                          style={{ background: "#FEF2F2", color: "#f87171", border: "none", borderRadius: "8px", padding: "6px 10px", cursor: "pointer", fontWeight: 700, fontSize: "12px" }}>Del</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* PORTFOLIO TAB */}
         {activeTab === "portfolio" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div style={{ background: "#fff", borderRadius: "20px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
@@ -581,6 +698,12 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
+
+
+
+
+
 
 
 
