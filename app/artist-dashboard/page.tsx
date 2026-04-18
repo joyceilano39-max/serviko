@@ -107,6 +107,21 @@ export default function ArtistDashboardPage() {
     if (artistId) fetchPortfolio(artistId);
   };
   const [uploading, setUploading] = useState(false);
+  const [editingBio, setEditingBio] = useState(false);
+  const [bioText, setBioText] = useState("");
+  const [savingBio, setSavingBio] = useState(false);
+
+  const saveBio = async () => {
+    if (!artistId) return;
+    setSavingBio(true);
+    await fetch("/api/artist/profile", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ artistId, bio: bioText }),
+    });
+    setSavingBio(false);
+    setEditingBio(false);
+  };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -664,6 +679,8 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
+
 
 
 
