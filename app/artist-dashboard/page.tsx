@@ -55,9 +55,7 @@ export default function ArtistDashboardPage() {
     fetchBookings();
     fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id}`)
       .then(r => r.json())
-      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); })
-      .then(r => r.json())
-      .then(d => { if (d.name) setDbName(d.name.split(" ")[0]); });
+      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); if (d.name) setDbName(d.name.split(" ")[0]); });
   }, [user]);
 
   const [artistProfile, setArtistProfile] = useState<any>(null);
@@ -97,9 +95,7 @@ export default function ArtistDashboardPage() {
         fetchBookings();
     fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id}`)
       .then(r => r.json())
-      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); })
-      .then(r => r.json())
-      .then(d => { if (d.name) setDbName(d.name.split(" ")[0]); });
+      .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); if (d.name) setDbName(d.name.split(" ")[0]); });
         setSelectedBooking(null);
       }
     } catch {
@@ -449,6 +445,7 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
 
 
 
