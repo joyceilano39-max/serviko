@@ -187,7 +187,7 @@ export default function ArtistDashboardPage() {
                 { label: "Pending", value: pending.length, color: "#D97706", bg: "#FFF9E6" },
                 { label: "Today", value: todayBookings.length, color: "#3b82f6", bg: "#EFF6FF" },
                 { label: "Completed", value: completed.length, color: "#22c55e", bg: "#F0FDF4" },
-                { label: "Earnings", value: `P${Math.round(totalEarnings)}`, color: "#7C3AED", bg: "#F5F3FF" },
+                { label: "Earnings", value: `₱${Math.round(totalEarnings)}`, color: "#7C3AED", bg: "#F5F3FF" },
               ].map(stat => (
                 <div key={stat.label} style={{ background: stat.bg, borderRadius: "16px", padding: "16px", textAlign: "center" }}>
                   <p style={{ fontWeight: 900, fontSize: "24px", color: stat.color, margin: "0 0 4px" }}>{stat.value}</p>
@@ -349,7 +349,7 @@ export default function ArtistDashboardPage() {
                 {[
                   { label: "Total Bookings", val: bookings.length },
                   { label: "Completed", val: completed.length },
-                  { label: "Total Earnings", val: `P${Math.round(totalEarnings)}` },
+                  { label: "Total Earnings", val: `₱${Math.round(totalEarnings)}` },
                   { label: "Pending", val: pending.length },
                 ].map(item => (
                   <div key={item.label} style={{ textAlign: "center" }}>
@@ -420,6 +420,7 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
 
 
 
