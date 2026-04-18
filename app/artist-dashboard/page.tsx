@@ -28,6 +28,11 @@ export default function ArtistDashboardPage() {
   const [portfolioCaption, setPortfolioCaption] = useState<string>("");
   const [artistId, setArtistId] = useState<number | null>(null);
   const [uploadingPortfolio, setUploadingPortfolio] = useState(false);
+  const [reviewBooking, setReviewBooking] = useState<Booking | null>(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewSuccess, setReviewSuccess] = useState(false);
 
   const fetchPortfolio = async (id: number) => {
     const res = await fetch(`/api/portfolio?artistId=${id}`);
@@ -357,6 +362,12 @@ export default function ArtistDashboardPage() {
                           Mark as Completed
                         </button>
                       )}
+                      {booking.status === "completed" && (
+                        <button onClick={e => { e.stopPropagation(); setReviewBooking(booking); }}
+                          style={{ width: "100%", background: "#FFF9E6", color: "#D97706", border: "1px solid #FCD34D", padding: "10px", borderRadius: "10px", fontWeight: 700, cursor: "pointer", fontSize: "13px", marginTop: "10px" }}>
+                          ⭐ Leave Review
+                        </button>
+                      )}
                     </div>
                   );
                 })}
@@ -473,7 +484,55 @@ export default function ArtistDashboardPage() {
           </div>
         )}
 
-        {/* Booking Detail Modal */}
+        {/* REVIEW MODAL */}
+      {reviewBooking && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "24px" }}>
+          <div style={{ background: "#fff", borderRadius: "24px", padding: "28px", maxWidth: "400px", width: "100%", textAlign: "center" }}>
+            {reviewSuccess ? (
+              <>
+                <div style={{ fontSize: "48px", marginBottom: "12px" }}>⭐</div>
+                <h3 style={{ fontWeight: 900, margin: "0 0 8px", color: "#22c55e" }}>Review Submitted!</h3>
+                <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>Thank you for your feedback!</p>
+                <button onClick={() => { setReviewBooking(null); setReviewSuccess(false); setReviewComment(""); setReviewRating(5); }}
+                  style={{ width: "100%", background: "#7C3AED", color: "#fff", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>Done</button>
+              </>
+            ) : (
+              <>
+                <h3 style={{ fontWeight: 900, margin: "0 0 4px" }}>Rate this Booking</h3>
+                <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>How was {reviewBooking.customer_name}?</p>
+                <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginBottom: "16px" }}>
+                  {[1,2,3,4,5].map(star => (
+                    <button key={star} onClick={() => setReviewRating(star)}
+                      style={{ background: "none", border: "none", fontSize: "32px", cursor: "pointer", opacity: star <= reviewRating ? 1 : 0.3 }}>⭐</button>
+                  ))}
+                </div>
+                <textarea value={reviewComment} onChange={e => setReviewComment(e.target.value)}
+                  placeholder="Leave a comment about this booking..."
+                  style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px", marginBottom: "16px", minHeight: "80px", boxSizing: "border-box", resize: "none" }} />
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button onClick={() => setReviewBooking(null)}
+                    style={{ flex: 1, background: "#f0f0f0", color: "#555", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>Skip</button>
+                  <button onClick={async () => {
+                    setReviewSubmitting(true);
+                    await fetch("/api/reviews", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ artistId, customerName: reviewBooking.customer_name, customerEmail: reviewBooking.customer_email, bookingId: reviewBooking.id, rating: reviewRating, comment: reviewComment }),
+                    });
+                    setReviewSubmitting(false);
+                    setReviewSuccess(true);
+                  }} disabled={reviewSubmitting}
+                    style={{ flex: 2, background: "#7C3AED", color: "#fff", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
+                    {reviewSubmitting ? "Submitting..." : "Submit Review"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Booking Detail Modal */}
       {selectedBooking && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 100 }}>
           <div style={{ background: "#fff", borderRadius: "24px 24px 0 0", padding: "28px 24px", width: "100%", maxWidth: "600px", maxHeight: "80vh", overflowY: "auto" }}>
@@ -522,6 +581,9 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
+
+
 
 
 
