@@ -376,8 +376,8 @@ export default function HomePage() {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div>
                         <p style={{ color: "#888", fontSize: "10px", margin: 0 }}>Starting at</p>
-                        <p style={{ fontWeight: 900, color: "#E61D72", fontSize: "18px", margin: 0 }}>P{getStartingPrice(artist.services)}</p>
-                        {artist.transport_fee && <p style={{ color: "#888", fontSize: "10px", margin: 0 }}>+P{artist.transport_fee} transport</p>}
+                        <p style={{ fontWeight: 900, color: "#E61D72", fontSize: "18px", margin: 0 }}>₱{artist.starting_price || getStartingPrice(artist.services)}</p>
+                        {artist.transport_fee && <p style={{ color: "#888", fontSize: "10px", margin: 0 }}>+₱{artist.transport_fee} transport</p>}
                       </div>
                       {artist.is_available ? (
                         <div style={{ display: "flex", gap: "6px" }}>
