@@ -291,7 +291,7 @@ function BookingContent() {
                     </div>
                     {mIdx > 0 && <button onClick={() => removeMember(mIdx)} style={{ background: "#fee2e2", color: "#f87171", border: "none", padding: "4px 10px", borderRadius: "20px", cursor: "pointer", fontSize: "11px" }}>Remove</button>}
                   </div>
-                  {(selectedArtist.services || []).map(serviceName => {
+                  {(artistServices.length > 0 ? artistServices.map(s => s.name) : (selectedArtist.services || [])).map(serviceName => {
                     const price = getRealPrice(serviceName);
                     const sel = member.services.find(s => s.name === serviceName);
                     return (
