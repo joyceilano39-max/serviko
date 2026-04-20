@@ -48,6 +48,7 @@ function BookingContent() {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(artistIdParam ? 2 : 1);
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
+  const [artistServices, setArtistServices] = useState<Array<{ name: string; price: number }>>([]);
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([{ name: "Myself", services: [] }]);
   const [date, setDate] = useState(getToday());
   const [time, setTime] = useState(getCurrentTime());
@@ -75,7 +76,7 @@ function BookingContent() {
         setLoading(false);
         if (artistIdParam) {
           const found = list.find((a: Artist) => a.id === parseInt(artistIdParam));
-          if (found) setSelectedArtist(found);
+          if (found) { setSelectedArtist(found); fetchArtistServices(found.id); }
           else if (artistNameParam) {
             setSelectedArtist({ id: parseInt(artistIdParam), name: decodeURIComponent(artistNameParam), services: [], location: "", is_available: true, rating: "5.00" });
           }
@@ -98,8 +99,23 @@ function BookingContent() {
   const removeMember = (idx: number) => { if (familyMembers.length > 1) setFamilyMembers(familyMembers.filter((_, i) => i !== idx)); };
   const updateMemberName = (idx: number, n: string) => { const u = [...familyMembers]; u[idx].name = n; setFamilyMembers(u); };
 
+  const fetchArtistServices = async (artistId: number) => {
+    try {
+      const res = await fetch("/api/artist-services?artistId=" + artistId);
+      const data = await res.json();
+      if (data.services) {
+        setArtistServices(data.services.map((s: any) => ({ name: s.service_name, price: parseFloat(s.price) })));
+      }
+    } catch {}
+  };
+
+  const getRealPrice = (serviceName: string): number => {
+    const match = artistServices.find(s => s.name === serviceName);
+    return match ? match.price : 300;
+  };
+
   const toggleService = (mIdx: number, serviceName: string) => {
-    const price = getServicePrice(serviceName);
+    const price = getRealPrice(serviceName);
     const u = [...familyMembers];
     const exists = u[mIdx].services.find(s => s.name === serviceName);
     u[mIdx].services = exists ? u[mIdx].services.filter(s => s.name !== serviceName) : [...u[mIdx].services, { name: serviceName, price }];
@@ -276,7 +292,7 @@ function BookingContent() {
                     {mIdx > 0 && <button onClick={() => removeMember(mIdx)} style={{ background: "#fee2e2", color: "#f87171", border: "none", padding: "4px 10px", borderRadius: "20px", cursor: "pointer", fontSize: "11px" }}>Remove</button>}
                   </div>
                   {(selectedArtist.services || []).map(serviceName => {
-                    const price = getServicePrice(serviceName);
+                    const price = getRealPrice(serviceName);
                     const sel = member.services.find(s => s.name === serviceName);
                     return (
                       <div key={serviceName} onClick={() => toggleService(mIdx, serviceName)}
@@ -288,7 +304,7 @@ function BookingContent() {
                           </div>
                           <p style={{ margin: 0, fontWeight: 600, fontSize: "13px" }}>{serviceName}</p>
                         </div>
-                        <span style={{ fontWeight: 700, color: "#E61D72", fontSize: "13px" }}>P{price}</span>
+                        <span style={{ fontWeight: 700, color: "#E61D72", fontSize: "13px" }}>₱{price}</span>
                       </div>
                     );
                   })}
@@ -476,7 +492,7 @@ function BookingContent() {
                 {member.services.map(s => (
                   <div key={s.name} style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", paddingLeft: "8px", marginBottom: "2px" }}>
                     <span style={{ color: "#555" }}>â€¢ {s.name}</span>
-                    <span style={{ fontWeight: 600 }}>P{s.price}</span>
+                    <span style={{ fontWeight: 600 }}>₱{s.price}</span>
                   </div>
                 ))}
               </div>
