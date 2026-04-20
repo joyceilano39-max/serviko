@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
@@ -355,7 +355,7 @@ export default function HomePage() {
                         {artist.distance_text && (
                           <p style={{ color: "#E61D72", fontSize: "11px", margin: "0 0 2px", fontWeight: 600 }}>{artist.distance_text}</p>
                         )}
-                        <p style={{ fontSize: "11px", margin: 0 }}>â˜… {parseFloat(artist.rating).toFixed(1)} ({artist.total_reviews} reviews)</p>
+                        <p style={{ fontSize: "11px", margin: 0 }}>⭐ {parseFloat(artist.rating).toFixed(1)} ({artist.total_reviews} reviews)</p>
                       </div>
                     </div>
                     <div style={{ position: "absolute", top: "12px", right: "12px" }}>
