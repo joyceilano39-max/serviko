@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
           return {
             ...artist,
             distance_km: Math.round(distance * 10) / 10,
-            distance_text: distance < 1 ? `m away` : ` km away`,
+            distance_text: distance < 1 ? Math.round(distance * 1000) + "m away" : (Math.round(distance * 10) / 10) + " km away",
             transport_fee: distance <= 3 ? 50 : distance <= 7 ? 100 : distance <= 15 ? 150 : distance <= 30 ? 200 : 300,
           };
         }
