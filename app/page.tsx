@@ -53,7 +53,7 @@ type Artist = {
   id: number; name: string; bio: string; experience: string;
   services: string[]; location: string; is_available: boolean;
   rating: string; total_reviews: number;
-  distance_text?: string; distance_km?: number; transport_fee?: number; profile_photo?: string;
+  distance_text?: string; distance_km?: number; transport_fee?: number; profile_photo?: string; starting_price?: number; real_services?: Array<{name: string; price: number}>;
 };
 
 export default function HomePage() {
