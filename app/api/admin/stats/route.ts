@@ -9,10 +9,9 @@ export async function GET() {
     const totalBookings = await sql`SELECT COUNT(*) as count FROM bookings`;
     const completedBookings = await sql`SELECT COUNT(*) as count FROM bookings WHERE status = 'completed'`;
     const pendingBookings = await sql`SELECT COUNT(*) as count FROM bookings WHERE status = 'pending'`;
-    const totalRevenue = await sql`SELECT COALESCE(SUM(total_amount), 0) as total FROM bookings WHERE status = 'completed'`;
-    const commission = await sql`SELECT COALESCE(SUM(total_amount * 0.10), 0) as total FROM bookings WHERE status = 'completed'`;
+    const totalRevenue = await sql`SELECT COALESCE(SUM(total), 0) as total FROM bookings WHERE status = 'completed'`;
+    const commission = await sql`SELECT COALESCE(SUM(total * 0.10), 0) as total FROM bookings WHERE status = 'completed'`;
     const recentBookings = await sql`SELECT COUNT(*) as count FROM bookings WHERE created_at > NOW() - INTERVAL '7 days'`;
-    
     return NextResponse.json({
       customers: parseInt(customers[0].count),
       artists: parseInt(artists[0].count),
