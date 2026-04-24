@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useUser } from "@clerk/nextjs";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,8 @@ export default function DashboardRedirectPage() {
     fetch(`/api/auth/role?email=${email}`)
       .then(r => r.json())
       .then(data => {
-        if (data.role === "artist") router.push("/artist-dashboard");
+        if (data.role === "admin") router.push("/admin");
+        else if (data.role === "artist") router.push("/artist-dashboard");
         else router.push("/dashboard");
       })
       .catch(() => router.push("/dashboard"));
