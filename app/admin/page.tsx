@@ -42,14 +42,14 @@ export default function AdminPage() {
   const value = { fontSize: "28px", fontWeight: 900, color: "#111827", margin: 0 };
 
   const tabs: { id: Tab; label: string; icon: string }[] = [
-    { id: "overview", label: "Overview", icon: "ðŸ“Š" },
-    { id: "finance", label: "Finance", icon: "ðŸ’°" },
-    { id: "tax", label: "Taxes (BIR)", icon: "ðŸ“‹" },
-    { id: "users", label: "Users", icon: "ðŸ‘¥" },
-    { id: "bookings", label: "Bookings", icon: "ðŸ“…" },
-    { id: "vouchers", label: "Vouchers", icon: "ðŸŽŸï¸" },
-    { id: "expenses", label: "Expenses", icon: "ðŸ’³" },
-    { id: "analytics", label: "Analytics", icon: "ðŸ“ˆ" }
+    { id: "overview", label: "Overview",  },
+    { id: "finance", label: "Finance",  },
+    { id: "tax", label: "Taxes (BIR)",  },
+    { id: "users", label: "Users",  },
+    { id: "bookings", label: "Bookings",  },
+    { id: "vouchers", label: "Vouchers",  },
+    { id: "expenses", label: "Expenses",  },
+    { id: "analytics", label: "Analytics",  }
   ];
 
   if (loading) return <div style={{ padding: "40px", textAlign: "center", color: "#6B7280" }}>Loading dashboard...</div>;

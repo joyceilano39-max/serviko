@@ -9,41 +9,37 @@ export default function LoginPage() {
           <Link href="/" style={{ color: "#E61D72", fontWeight: 900, fontSize: "36px", textDecoration: "none" }}>Serviko</Link>
           <p style={{ color: "#888", fontSize: "14px", marginTop: "4px" }}>Para sa Pilipino</p>
         </div>
-
         <div style={{ background: "#fff", borderRadius: "24px", boxShadow: "0 4px 24px rgba(0,0,0,0.08)", padding: "28px" }}>
           <h2 style={{ margin: "0 0 8px", fontSize: "22px", fontWeight: 700, textAlign: "center" }}>Welcome to Serviko</h2>
           <p style={{ color: "#888", fontSize: "13px", textAlign: "center", margin: "0 0 24px" }}>How would you like to continue?</p>
 
-          <Link href="/customer-login" style={{ display: "block", background: "#E61D72", color: "#fff", padding: "18px", borderRadius: "16px", textDecoration: "none", marginBottom: "12px", boxShadow: "0 4px 12px rgba(230, 29, 114, 0.25)" }}>
+          <Link href="/customer-login" style={{ display: "block", background: "#E61D72", color: "#fff", padding: "18px", borderRadius: "16px", textDecoration: "none", marginBottom: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-              <div style={{ fontSize: "32px" }}>ðŸ‘¤</div>
+              <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", fontWeight: 900 }}>C</div>
               <div style={{ flex: 1 }}>
                 <p style={{ margin: 0, fontSize: "15px", fontWeight: 700 }}>Continue as Customer</p>
                 <p style={{ margin: "2px 0 0", fontSize: "11px", opacity: 0.9 }}>Book home services near you</p>
               </div>
-              <div style={{ fontSize: "20px" }}>â†’</div>
             </div>
           </Link>
 
-          <Link href="/artist-login" style={{ display: "block", background: "#7C3AED", color: "#fff", padding: "18px", borderRadius: "16px", textDecoration: "none", marginBottom: "12px", boxShadow: "0 4px 12px rgba(124, 58, 237, 0.25)" }}>
+          <Link href="/artist-login" style={{ display: "block", background: "#7C3AED", color: "#fff", padding: "18px", borderRadius: "16px", textDecoration: "none", marginBottom: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-              <div style={{ fontSize: "32px" }}>ðŸ’¼</div>
+              <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", fontWeight: 900 }}>A</div>
               <div style={{ flex: 1 }}>
                 <p style={{ margin: 0, fontSize: "15px", fontWeight: 700 }}>Continue as Artist</p>
                 <p style={{ margin: "2px 0 0", fontSize: "11px", opacity: 0.9 }}>Earn by offering your services</p>
               </div>
-              <div style={{ fontSize: "20px" }}>â†’</div>
             </div>
           </Link>
 
-          <Link href="/admin-login" style={{ display: "block", background: "#1F2937", color: "#fff", padding: "18px", borderRadius: "16px", textDecoration: "none", boxShadow: "0 4px 12px rgba(31, 41, 55, 0.25)" }}>
+          <Link href="/admin-login" style={{ display: "block", background: "#1F2937", color: "#fff", padding: "18px", borderRadius: "16px", textDecoration: "none" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-              <div style={{ fontSize: "32px" }}>ðŸ”</div>
+              <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", fontWeight: 900 }}>O</div>
               <div style={{ flex: 1 }}>
-                <p style={{ margin: 0, fontSize: "15px", fontWeight: 700 }}>Continue as Admin</p>
+                <p style={{ margin: 0, fontSize: "15px", fontWeight: 700 }}>Continue as Owner</p>
                 <p style={{ margin: "2px 0 0", fontSize: "11px", opacity: 0.9 }}>Manage platform & artists</p>
               </div>
-              <div style={{ fontSize: "20px" }}>â†’</div>
             </div>
           </Link>
 
