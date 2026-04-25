@@ -5,8 +5,8 @@ envContent.split(/\r?\n/).forEach(line => { line = line.trim(); if (!line || lin
 const { neon } = require('@neondatabase/serverless');
 const sql = neon(process.env.DATABASE_URL);
 (async () => {
-  const cols = await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'artists' ORDER BY ordinal_position`;
-  console.log('Artists columns:', cols.map(c => c.column_name));
-  const artists = await sql`SELECT * FROM artists ORDER BY id`;
-  console.log('Artists:', JSON.stringify(artists, null, 2));
+  const users = await sql`SELECT id, name, role FROM users ORDER BY id`;
+  console.log('Users:', JSON.stringify(users, null, 2));
+  const artists = await sql`SELECT id, user_id, name FROM artists ORDER BY id`;
+  console.log('Artists table:', JSON.stringify(artists, null, 2));
 })();

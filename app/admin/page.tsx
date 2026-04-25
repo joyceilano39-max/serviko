@@ -36,7 +36,7 @@ export default function AdminPage() {
     setLoading(false);
   }
 
-  const peso = (n: number) => "ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â±" + Math.round(n || 0).toLocaleString();
+  const peso = (n: number) => "PHP " + Math.round(n || 0).toLocaleString();
   const card = { background: "#fff", padding: "20px", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" };
   const label = { color: "#6B7280", fontSize: "12px", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: "0.05em", margin: "0 0 8px" };
   const value = { fontSize: "28px", fontWeight: 900, color: "#111827", margin: 0 };
