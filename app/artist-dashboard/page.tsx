@@ -232,7 +232,7 @@ export default function ArtistDashboardPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8f8f8", fontFamily: "Arial, sans-serif" }}>`n      {/* Logout Bar */}`n      <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>`n        <h1 style={{ fontSize: "20px", fontWeight: 700, margin: 0 }}>Artist Dashboard</h1>`n        <UserButton afterSignOutUrl="/login" />`n      </div>
+    <div style={{ minHeight: "100vh", background: "#f8f8f8", fontFamily: "Arial, sans-serif" }}>`n      {/* Logout Bar */}`n      <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>`n        <h1 style={{ fontSize: "20px", fontWeight: 700, margin: 0 }}>Artist Dashboard</h1>`n        <UserButton  />`n      </div>
       {/* Header */}
       <div style={{ background: "linear-gradient(135deg, #7C3AED, #4F46E5)", padding: "20px 24px", color: "#fff" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -304,7 +304,7 @@ export default function ArtistDashboardPage() {
                 { label: "Pending", value: pending.length, color: "#D97706", bg: "#FFF9E6" },
                 { label: "Today", value: todayBookings.length, color: "#3b82f6", bg: "#EFF6FF" },
                 { label: "Completed", value: completed.length, color: "#22c55e", bg: "#F0FDF4" },
-                { label: "Earnings", value: `₱${Math.round(totalEarnings)}`, color: "#7C3AED", bg: "#F5F3FF" },
+                { label: "Earnings", value: `â‚±${Math.round(totalEarnings)}`, color: "#7C3AED", bg: "#F5F3FF" },
               ].map(stat => (
                 <div key={stat.label} style={{ background: stat.bg, borderRadius: "16px", padding: "16px", textAlign: "center" }}>
                   <p style={{ fontWeight: 900, fontSize: "24px", color: stat.color, margin: "0 0 4px" }}>{stat.value}</p>
@@ -415,7 +415,7 @@ export default function ArtistDashboardPage() {
                       {booking.status === "completed" && (
                         <button onClick={e => { e.stopPropagation(); setReviewBooking(booking); }}
                           style={{ width: "100%", background: "#FFF9E6", color: "#D97706", border: "1px solid #FCD34D", padding: "10px", borderRadius: "10px", fontWeight: 700, cursor: "pointer", fontSize: "13px", marginTop: "10px" }}>
-                          ⭐ Leave Review
+                          â­ Leave Review
                         </button>
                       )}
                     </div>
@@ -479,7 +479,7 @@ export default function ArtistDashboardPage() {
                 {[
                   { label: "Total Bookings", val: bookings.length },
                   { label: "Completed", val: completed.length },
-                  { label: "Total Earnings", val: `₱${Math.round(totalEarnings)}` },
+                  { label: "Total Earnings", val: `â‚±${Math.round(totalEarnings)}` },
                   { label: "Pending", val: pending.length },
                 ].map(item => (
                   <div key={item.label} style={{ textAlign: "center" }}>
@@ -510,7 +510,7 @@ export default function ArtistDashboardPage() {
                 <input value={newServiceName} onChange={e => setNewServiceName(e.target.value)} placeholder="Service name (e.g. Haircut & Styling)"
                   style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px" }} />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                  <input value={newServicePrice} onChange={e => setNewServicePrice(e.target.value)} placeholder="Price (₱)" type="number"
+                  <input value={newServicePrice} onChange={e => setNewServicePrice(e.target.value)} placeholder="Price (â‚±)" type="number"
                     style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px" }} />
                   <input value={newServiceDuration} onChange={e => setNewServiceDuration(e.target.value)} placeholder="Duration (e.g. 1 hour)"
                     style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px" }} />
@@ -537,7 +537,7 @@ export default function ArtistDashboardPage() {
                         {service.description && <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>{service.description}</p>}
                       </div>
                       <div style={{ textAlign: "right", display: "flex", alignItems: "center", gap: "10px" }}>
-                        <p style={{ fontWeight: 900, color: "#7C3AED", fontSize: "16px", margin: 0 }}>₱{service.price}</p>
+                        <p style={{ fontWeight: 900, color: "#7C3AED", fontSize: "16px", margin: 0 }}>â‚±{service.price}</p>
                         <button onClick={() => deleteService(service.id)}
                           style={{ background: "#FEF2F2", color: "#f87171", border: "none", borderRadius: "8px", padding: "6px 10px", cursor: "pointer", fontWeight: 700, fontSize: "12px" }}>Del</button>
                       </div>
@@ -588,7 +588,7 @@ export default function ArtistDashboardPage() {
           <div style={{ background: "#fff", borderRadius: "24px", padding: "28px", maxWidth: "400px", width: "100%", textAlign: "center" }}>
             {reviewSuccess ? (
               <>
-                <div style={{ fontSize: "48px", marginBottom: "12px" }}>⭐</div>
+                <div style={{ fontSize: "48px", marginBottom: "12px" }}>â­</div>
                 <h3 style={{ fontWeight: 900, margin: "0 0 8px", color: "#22c55e" }}>Review Submitted!</h3>
                 <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>Thank you for your feedback!</p>
                 <button onClick={() => { setReviewBooking(null); setReviewSuccess(false); setReviewComment(""); setReviewRating(5); }}
@@ -601,7 +601,7 @@ export default function ArtistDashboardPage() {
                 <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginBottom: "16px" }}>
                   {[1,2,3,4,5].map(star => (
                     <button key={star} onClick={() => setReviewRating(star)}
-                      style={{ background: "none", border: "none", fontSize: "32px", cursor: "pointer", opacity: star <= reviewRating ? 1 : 0.3 }}>⭐</button>
+                      style={{ background: "none", border: "none", fontSize: "32px", cursor: "pointer", opacity: star <= reviewRating ? 1 : 0.3 }}>â­</button>
                   ))}
                 </div>
                 <textarea value={reviewComment} onChange={e => setReviewComment(e.target.value)}
