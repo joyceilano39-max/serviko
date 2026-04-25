@@ -31,7 +31,7 @@ export default function ArtistLoginPage() {
         <div style={{ textAlign: "center", marginTop: "12px" }}>
           <Link href="/" style={{ color: "#888", fontSize: "13px", textDecoration: "none" }}>Back to Home</Link>
           <span style={{ color: "#ddd", margin: "0 8px" }}>|</span>
-          <Link href="/sign-in" style={{ color: "#E61D72", fontSize: "13px", textDecoration: "none", fontWeight: 600 }}>Customer Login</Link>
+          <Link href="/customer-login" style={{ color: "#E61D72", fontSize: "13px", textDecoration: "none", fontWeight: 600 }}>Customer Login</Link>
         </div>
       </div>
     </div>
