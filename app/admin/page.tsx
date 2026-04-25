@@ -36,7 +36,7 @@ export default function AdminPage() {
     setLoading(false);
   }
 
-  const peso = (n: number) => "â‚±" + Math.round(n || 0).toLocaleString();
+  const peso = (n: number) => "Ã¢â€šÂ±" + Math.round(n || 0).toLocaleString();
   const card = { background: "#fff", padding: "20px", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" };
   const label = { color: "#6B7280", fontSize: "12px", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: "0.05em", margin: "0 0 8px" };
   const value = { fontSize: "28px", fontWeight: 900, color: "#111827", margin: 0 };
@@ -60,7 +60,7 @@ export default function AdminPage() {
       <aside style={{ width: "220px", background: "#fff", borderRight: "1px solid #E5E7EB", padding: "20px 12px" }}>
         {tabs.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)} style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "10px 12px", border: "none", background: tab === t.id ? "#F3F4F6" : "transparent", color: tab === t.id ? "#111827" : "#6B7280", borderRadius: "8px", cursor: "pointer", fontSize: "14px", fontWeight: tab === t.id ? 700 : 500, textAlign: "left", marginBottom: "2px" }}>
-            <span>{t.icon}</span>{t.label}
+            {t.label}
           </button>
         ))}
       </aside>
