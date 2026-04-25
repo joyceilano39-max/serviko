@@ -1,4 +1,4 @@
-﻿import { neon } from "@neondatabase/serverless";
+import { neon } from "@neondatabase/serverless";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -6,31 +6,54 @@ export async function POST(req: NextRequest) {
   const { name, email, phone, address, bio, experience, services, gcash, clerkId, profilePhoto, validId } = await req.json();
 
   try {
-    const existing = await sql`SELECT id FROM users WHERE email = ${email}`;
+    const existing = await sql`SELECT id, clerk_id FROM users WHERE email = ${email}`;
+    let userId;
+
     if (existing.length > 0) {
-      return NextResponse.json({ error: "Email already registered" }, { status: 400 });
+      // User exists in database - update with Clerk ID if missing
+      userId = existing[0].id;
+      if (!existing[0].clerk_id && clerkId) {
+        await sql`UPDATE users SET clerk_id = ${clerkId}, name = ${name}, phone = ${phone}, address = ${address} WHERE id = ${userId}`;
+      } else if (existing[0].clerk_id) {
+        return NextResponse.json({ error: "Email already registered" }, { status: 400 });
+      }
+    } else {
+      // New user - insert
+      const userResult = await sql`
+        INSERT INTO users (clerk_id, name, email, phone, role, address)
+        VALUES (${clerkId}, ${name}, ${email}, ${phone}, 'artist', ${address})
+        RETURNING id
+      `;
+      userId = userResult[0].id;
     }
 
-    const userResult = await sql`
-      INSERT INTO users (clerk_id, name, email, phone, role, address)
-      VALUES (${clerkId}, ${name}, ${email}, ${phone}, 'artist', ${address})
-      RETURNING id
-    `;
+    const artistResult = await sql`SELECT id FROM artists WHERE user_id = ${userId}`;
+    let artistId;
 
-    const userId = userResult[0].id;
+    if (artistResult.length > 0) {
+      artistId = artistResult[0].id;
+      await sql`
+        UPDATE artists SET
+          bio = ${bio},
+          experience = ${experience},
+          services = ${services},
+          gcash_number = ${gcash},
+          profile_photo = ${profilePhoto},
+          valid_id = ${validId},
+          verification_status = 'pending'
+        WHERE id = ${artistId}
+      `;
+    } else {
+      const newArtist = await sql`
+        INSERT INTO artists (user_id, bio, experience, services, gcash_number, profile_photo, valid_id, verification_status)
+        VALUES (${userId}, ${bio}, ${experience}, ${services}, ${gcash}, ${profilePhoto}, ${validId}, 'pending')
+        RETURNING id
+      `;
+      artistId = newArtist[0].id;
+    }
 
-    await sql`ALTER TABLE artists ADD COLUMN IF NOT EXISTS profile_photo TEXT`;
-    await sql`ALTER TABLE artists ADD COLUMN IF NOT EXISTS valid_id TEXT`;
-    await sql`ALTER TABLE artists ADD COLUMN IF NOT EXISTS verification_status TEXT DEFAULT 'pending'`;
-
-    await sql`
-      INSERT INTO artists (user_id, bio, experience, services, gcash_number, location, profile_photo, valid_id, verification_status)
-      VALUES (${userId}, ${bio}, ${experience}, ${services}, ${gcash}, ${address}, ${profilePhoto || ''}, ${validId || ''}, 'pending')
-    `;
-
-    return NextResponse.json({ success: true, message: "Artist registered! Pending verification." });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Registration failed" }, { status: 500 });
+    return NextResponse.json({ success: true, userId, artistId });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
