@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 import { useState, useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useUser, UserButton } from "@clerk/nextjs";
 
 type Booking = {
   id: number;
@@ -232,7 +232,7 @@ export default function ArtistDashboardPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8f8f8", fontFamily: "Arial, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#f8f8f8", fontFamily: "Arial, sans-serif" }}>`n      {/* Logout Bar */}`n      <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>`n        <h1 style={{ fontSize: "20px", fontWeight: 700, margin: 0 }}>Artist Dashboard</h1>`n        <UserButton afterSignOutUrl="/login" />`n      </div>
       {/* Header */}
       <div style={{ background: "linear-gradient(135deg, #7C3AED, #4F46E5)", padding: "20px 24px", color: "#fff" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
