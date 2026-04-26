@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef } from "react";`nimport { useSignUp } from "@clerk/nextjs";
 import Link from "next/link";
 
 const allServices = [
@@ -16,7 +16,7 @@ const allServices = [
 
 type FilePreview = { file: File; preview: string } | null;
 
-export default function ArtistRegisterPage() {
+export default function ArtistRegisterPage() {`n  const { signUp, setActive } = useSignUp();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -71,7 +71,7 @@ export default function ArtistRegisterPage() {
         body: JSON.stringify({
           name: form.name, email: form.email, phone: form.phone,
           address: form.city, bio: form.bio, experience: form.experience,
-          services: selectedServices, gcash: form.gcash, clerkId: null,
+          services: selectedServices, gcash: form.gcash, clerkId: clerkId,
           profilePhoto: profilePhotoUrl,
           validId: validIdUrl,
         }),
@@ -182,7 +182,7 @@ export default function ArtistRegisterPage() {
                   {profilePhoto ? (
                     <div style={{ position: "relative", display: "inline-block" }}>
                       <img src={profilePhoto.preview} alt="Profile" style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%", border: "3px solid #7C3AED" }} />
-                      <div style={{ position: "absolute", bottom: 0, right: 0, background: "#22c55e", color: "#fff", borderRadius: "50%", width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" }}>âœ“</div>
+                      <div style={{ position: "absolute", bottom: 0, right: 0, background: "#22c55e", color: "#fff", borderRadius: "50%", width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" }}>Ã¢Å“â€œ</div>
                     </div>
                   ) : (
                     <>
@@ -212,7 +212,7 @@ export default function ArtistRegisterPage() {
                   {validId ? (
                     <div style={{ position: "relative" }}>
                       <img src={validId.preview} alt="ID" style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "8px" }} />
-                      <div style={{ position: "absolute", top: "8px", right: "8px", background: "#22c55e", color: "#fff", borderRadius: "50%", width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" }}>âœ“</div>
+                      <div style={{ position: "absolute", top: "8px", right: "8px", background: "#22c55e", color: "#fff", borderRadius: "50%", width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" }}>Ã¢Å“â€œ</div>
                     </div>
                   ) : (
                     <>
@@ -256,7 +256,7 @@ export default function ArtistRegisterPage() {
                     style={{ padding: "7px 14px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "12px",
                       background: selectedServices.includes(s) ? "#7C3AED" : "#EDE9FE",
                       color: selectedServices.includes(s) ? "#fff" : "#7C3AED" }}>
-                    {selectedServices.includes(s) ? "âœ“ " : ""}{s}
+                    {selectedServices.includes(s) ? "Ã¢Å“â€œ " : ""}{s}
                   </button>
                 ))}
               </div>
@@ -330,7 +330,7 @@ export default function ArtistRegisterPage() {
                     "Background check consent - NBI/PNP verification for customer safety",
                   ].map((t, i) => (
                     <div key={i} style={{ display: "flex", gap: "8px" }}>
-                      <span style={{ color: "#22c55e", fontWeight: 700, flexShrink: 0 }}>âœ“</span>
+                      <span style={{ color: "#22c55e", fontWeight: 700, flexShrink: 0 }}>Ã¢Å“â€œ</span>
                       <span>{t}</span>
                     </div>
                   ))}
@@ -346,7 +346,7 @@ export default function ArtistRegisterPage() {
                 <p style={{ fontWeight: 700, color: "#7C3AED", margin: "0 0 8px", fontSize: "13px" }}>Artist Benefits</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                   {["Keep 90%", "GCash payout daily", "Set own schedule", "Free profile listing", "Work permit included"].map(b => (
-                    <span key={b} style={{ background: "#fff", color: "#7C3AED", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: 600 }}>âœ“ {b}</span>
+                    <span key={b} style={{ background: "#fff", color: "#7C3AED", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: 600 }}>Ã¢Å“â€œ {b}</span>
                   ))}
                 </div>
               </div>
