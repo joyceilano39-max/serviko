@@ -82,7 +82,7 @@ export default function ArtistRegisterPage() {
       }
       
       const clerkId = (clerkResult as any).createdUserId || (clerkResult as any).id || "";
-      await setActive?.({ session: (clerkResult as any).createdSessionId });
+      if ((clerkResult as any).createdSessionId) { await setActive?.({ session: (clerkResult as any).createdSessionId }); }
 
       // Step 2: Upload photos
       let profilePhotoUrl = "";
