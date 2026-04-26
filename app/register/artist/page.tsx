@@ -1,5 +1,6 @@
 "use client";
-import { useState, useRef } from "react";`nimport { useSignUp } from "@clerk/nextjs";
+import { useState, useRef } from "react";
+import { useSignUp, useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 
 const allServices = [
@@ -16,7 +17,9 @@ const allServices = [
 
 type FilePreview = { file: File; preview: string } | null;
 
-export default function ArtistRegisterPage() {`n  const { signUp, setActive } = useSignUp();
+export default function ArtistRegisterPage() {
+  const { signUp } = useSignUp();
+  const { setActive } = useClerk();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -57,32 +60,77 @@ export default function ArtistRegisterPage() {`n  const { signUp, setActive } = 
 
   const handleSubmit = async () => {
     if (!agreed) { setError("Please agree to the terms."); return; }
+    if (!form.password || form.password.length < 8) { 
+      setError("Password must be at least 8 characters."); 
+      return; 
+    }
+    
     setLoading(true);
     setError("");
+    
     try {
+      // Step 1: Create Clerk account
+      const clerkResult = await signUp?.create({
+        emailAddress: form.email,
+        password: form.password,
+      });
+      
+      if (!clerkResult) { 
+        setError("Failed to create account"); 
+        setLoading(false); 
+        return; 
+      }
+      
+      const clerkId = (clerkResult as any).createdUserId || (clerkResult as any).id || "";
+      await setActive?.({ session: (clerkResult as any).createdSessionId });
+
+      // Step 2: Upload photos
       let profilePhotoUrl = "";
       let validIdUrl = "";
-      try { if (profilePhoto?.file) { profilePhotoUrl = await uploadToCloudinary(profilePhoto.file, "selfies"); } } catch {}
-      try { if (validId?.file) { validIdUrl = await uploadToCloudinary(validId.file, "ids"); } } catch {}
+      
+      try { 
+        if (profilePhoto?.file) { 
+          profilePhotoUrl = await uploadToCloudinary(profilePhoto.file, "selfies"); 
+        } 
+      } catch {}
+      
+      try { 
+        if (validId?.file) { 
+          validIdUrl = await uploadToCloudinary(validId.file, "ids"); 
+        } 
+      } catch {}
 
+      // Step 3: Register in database
       const res = await fetch("/api/register/artist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: form.name, email: form.email, phone: form.phone,
-          address: form.city, bio: form.bio, experience: form.experience,
-          services: selectedServices, gcash: form.gcash, clerkId: clerkId,
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          address: form.city,
+          bio: form.bio,
+          experience: form.experience,
+          services: selectedServices,
+          gcash: form.gcash,
+          clerkId: clerkId,
           profilePhoto: profilePhotoUrl,
           validId: validIdUrl,
         }),
       });
+      
       const data = await res.json();
-      if (data.error) { setError(data.error); setLoading(false); return; }
+      if (data.error) { 
+        setError(data.error); 
+        setLoading(false); 
+        return; 
+      }
+      
       setSuccess(true);
-    } catch {
-      setError("Registration failed. Please try again.");
+    } catch (err: any) {
+      setError(err.message || "Registration failed. Please try again.");
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   if (success) {
@@ -92,279 +140,120 @@ export default function ArtistRegisterPage() {`n  const { signUp, setActive } = 
           <div style={{ width: "72px", height: "72px", borderRadius: "50%", background: "#7C3AED", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: "28px", fontWeight: 900 }}>OK</div>
           <h1 style={{ fontWeight: 900, color: "#7C3AED", margin: "0 0 8px" }}>Application Submitted!</h1>
           <p style={{ color: "#888", margin: "0 0 20px" }}>We will verify your account within 24 hours.</p>
-          <div style={{ background: "#F5F3FF", borderRadius: "16px", padding: "16px", marginBottom: "24px", textAlign: "left" }}>
-            {["ID verification (24 hrs)", "Background check", "Email confirmation", "Start earning!"].map((t, i) => (
-              <div key={i} style={{ display: "flex", gap: "8px", marginBottom: "6px", fontSize: "13px" }}>
-                <span style={{ color: "#7C3AED", fontWeight: 700 }}>{i + 1}.</span>
-                <span style={{ color: "#555" }}>{t}</span>
-              </div>
-            ))}
-          </div>
-          <Link href="/artist-dashboard" style={{ display: "block", background: "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", textDecoration: "none", fontWeight: 700 }}>
-            Go to Dashboard
-          </Link>
+          <Link href="/artist-login" style={{ display: "inline-block", background: "#7C3AED", color: "#fff", padding: "12px 32px", borderRadius: "12px", textDecoration: "none", fontWeight: 700 }}>Go to Login</Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #F5F3FF 0%, #fff 100%)", padding: "24px", fontFamily: "Arial, sans-serif" }}>
-      <div style={{ maxWidth: "520px", margin: "0 auto" }}>
-
-        <div style={{ textAlign: "center", marginBottom: "24px" }}>
-          <Link href="/register" style={{ color: "#888", fontSize: "13px", textDecoration: "none" }}>Back</Link>
-          <p style={{ color: "#7C3AED", fontWeight: 900, fontSize: "24px", margin: "8px 0 4px" }}>Serviko</p>
-          <h1 style={{ fontSize: "20px", fontWeight: 900, margin: "0 0 4px" }}>Become a Serviko Artist</h1>
-          <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>Quick and easy - takes only 3 minutes!</p>
+    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #F5F3FF 0%, #fff 100%)", padding: "20px", fontFamily: "Arial, sans-serif" }}>
+      <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: "32px" }}>
+          <Link href="/" style={{ color: "#7C3AED", fontWeight: 900, fontSize: "28px", textDecoration: "none" }}>Serviko</Link>
+          <p style={{ color: "#888", fontSize: "14px", marginTop: "4px" }}>Artist Registration</p>
         </div>
 
         {/* Progress */}
-        <div style={{ display: "flex", gap: "6px", marginBottom: "8px" }}>
+        <div style={{ display: "flex", gap: "8px", marginBottom: "24px" }}>
           {[1, 2, 3, 4].map(s => (
-            <div key={s} style={{ flex: 1, height: "4px", borderRadius: "4px", background: s <= step ? "#7C3AED" : "#EDE9FE" }} />
-          ))}
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-          {["Basic Info", "Photo & ID", "Services", "Confirm"].map((label, i) => (
-            <span key={label} style={{ fontSize: "10px", color: i + 1 === step ? "#7C3AED" : "#aaa", fontWeight: i + 1 === step ? 700 : 400 }}>{label}</span>
+            <div key={s} style={{ flex: 1, height: "4px", borderRadius: "2px", background: step >= s ? "#7C3AED" : "#E5E7EB" }} />
           ))}
         </div>
 
-        <div style={{ background: "#fff", borderRadius: "24px", padding: "28px", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
-
-          {/* STEP 1: Basic Info */}
+        <div style={{ background: "#fff", borderRadius: "20px", padding: "32px", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+          {/* Step 1 */}
           {step === 1 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-              <h3 style={{ fontWeight: 700, margin: 0, fontSize: "16px" }}>Basic Information</h3>
-              {[
-                { label: "Full Name", key: "name", type: "text", ph: "Maria Santos" },
-                { label: "Email", key: "email", type: "email", ph: "maria@email.com" },
-                { label: "Phone Number", key: "phone", type: "tel", ph: "09XX XXX XXXX" },
-                { label: "Password", key: "password", type: "password", ph: "Min. 8 characters" },
-                { label: "City / Area", key: "city", type: "text", ph: "e.g. Quezon City, Makati" },
-              ].map(f => (
-                <div key={f.key}>
-                  <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "5px" }}>{f.label}</label>
-                  <input type={f.type} placeholder={f.ph} value={(form as any)[f.key]} onChange={e => setForm({ ...form, [f.key]: e.target.value })}
-                    style={{ width: "100%", padding: "11px 14px", borderRadius: "10px", border: "1px solid #EDE9FE", fontSize: "14px", boxSizing: "border-box" }} />
-                </div>
-              ))}
-              {error && <p style={{ color: "#f87171", fontSize: "13px", margin: 0 }}>{error}</p>}
-              <button onClick={() => {
-                if (!form.name || !form.email || !form.phone || !form.password || !form.city) {
-                  setError("Please fill in all fields."); return;
-                }
-                setError(""); setStep(2);
-              }} style={{ background: "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer", fontSize: "15px" }}>
-                Continue
-              </button>
+            <div>
+              <h2 style={{ fontWeight: 900, marginBottom: "20px" }}>Personal Information</h2>
+              <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Full Name" style={{ width: "100%", padding: "14px", marginBottom: "12px", border: "2px solid #E5E7EB", borderRadius: "10px", fontSize: "15px" }} />
+              <input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="Email" type="email" style={{ width: "100%", padding: "14px", marginBottom: "12px", border: "2px solid #E5E7EB", borderRadius: "10px", fontSize: "15px" }} />
+              <input value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="Password (min 8 characters)" type="password" style={{ width: "100%", padding: "14px", marginBottom: "12px", border: "2px solid #E5E7EB", borderRadius: "10px", fontSize: "15px" }} />
+              <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="Phone Number" style={{ width: "100%", padding: "14px", marginBottom: "12px", border: "2px solid #E5E7EB", borderRadius: "10px", fontSize: "15px" }} />
+              <input value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} placeholder="City/Address" style={{ width: "100%", padding: "14px", marginBottom: "12px", border: "2px solid #E5E7EB", borderRadius: "10px", fontSize: "15px" }} />
+              <button onClick={() => setStep(2)} disabled={!form.name || !form.email || !form.password || !form.phone} style={{ width: "100%", background: "#7C3AED", color: "#fff", padding: "16px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer", fontSize: "16px" }}>Next</button>
             </div>
           )}
 
-          {/* STEP 2: Photo & ID */}
+          {/* Step 2 */}
           {step === 2 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div>
-                <h3 style={{ fontWeight: 700, margin: "0 0 4px", fontSize: "16px" }}>Photo & ID Verification</h3>
-                <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>For customer safety and trust - takes 30 seconds!</p>
-              </div>
-
-              {/* Selfie */}
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "8px" }}>
-                  Selfie Photo <span style={{ color: "#f87171" }}>*</span>
-                  <span style={{ color: "#888", fontWeight: 400 }}> - Clear face, no filters</span>
-                </label>
-                <input ref={profileRef} type="file" accept="image/*" capture="user" style={{ display: "none" }} onChange={e => handleFile(e, setProfilePhoto)} />
-                <div onClick={() => profileRef.current?.click()}
-                  style={{ border: "2px dashed #EDE9FE", borderRadius: "14px", padding: "20px", textAlign: "center", cursor: "pointer", background: profilePhoto ? "#F5F3FF" : "#fafafa" }}>
-                  {profilePhoto ? (
-                    <div style={{ position: "relative", display: "inline-block" }}>
-                      <img src={profilePhoto.preview} alt="Profile" style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%", border: "3px solid #7C3AED" }} />
-                      <div style={{ position: "absolute", bottom: 0, right: 0, background: "#22c55e", color: "#fff", borderRadius: "50%", width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" }}>Ã¢Å“â€œ</div>
-                    </div>
-                  ) : (
-                    <>
-                      <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "#EDE9FE", margin: "0 auto 8px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "#7C3AED" }}>CAM</div>
-                      <p style={{ fontWeight: 600, color: "#7C3AED", margin: "0 0 4px", fontSize: "14px" }}>Tap to take or upload selfie</p>
-                      <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>JPG, PNG - Max 5MB</p>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Valid ID */}
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "8px" }}>
-                  Valid Government ID <span style={{ color: "#f87171" }}>*</span>
-                </label>
-                <select value={form.idType} onChange={e => setForm({ ...form, idType: e.target.value })}
-                  style={{ width: "100%", padding: "11px 14px", borderRadius: "10px", border: "1px solid #EDE9FE", fontSize: "14px", marginBottom: "10px" }}>
-                  <option value="">Select ID Type</option>
-                  {["PhilSys National ID", "Passport", "Driver's License", "SSS ID", "GSIS ID", "Pag-IBIG ID", "PhilHealth ID", "Voter's ID", "Postal ID"].map(id => (
-                    <option key={id}>{id}</option>
-                  ))}
-                </select>
-                <input ref={idRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => handleFile(e, setValidId)} />
-                <div onClick={() => idRef.current?.click()}
-                  style={{ border: "2px dashed #EDE9FE", borderRadius: "14px", padding: "16px", textAlign: "center", cursor: "pointer", background: validId ? "#F5F3FF" : "#fafafa" }}>
-                  {validId ? (
-                    <div style={{ position: "relative" }}>
-                      <img src={validId.preview} alt="ID" style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "8px" }} />
-                      <div style={{ position: "absolute", top: "8px", right: "8px", background: "#22c55e", color: "#fff", borderRadius: "50%", width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" }}>Ã¢Å“â€œ</div>
-                    </div>
-                  ) : (
-                    <>
-                      <div style={{ width: "48px", height: "48px", borderRadius: "8px", background: "#EDE9FE", margin: "0 auto 8px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "#7C3AED", fontSize: "11px" }}>ID</div>
-                      <p style={{ fontWeight: 600, color: "#7C3AED", margin: "0 0 2px", fontSize: "13px" }}>Upload photo of your ID</p>
-                      <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>Front side only - Clear and readable</p>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ background: "#FFFBEB", borderRadius: "12px", padding: "12px" }}>
-                <p style={{ color: "#555", fontSize: "12px", margin: 0, lineHeight: 1.6 }}>
-                  Your ID is encrypted and used only for identity verification under <strong>RA 10173 (Data Privacy Act)</strong>. It will never be shared publicly.
-                </p>
-              </div>
-
-              {error && <p style={{ color: "#f87171", fontSize: "13px", margin: 0 }}>{error}</p>}
+            <div>
+              <h2 style={{ fontWeight: 900, marginBottom: "20px" }}>Professional Details</h2>
+              <textarea value={form.bio} onChange={e => setForm({ ...form, bio: e.target.value })} placeholder="Tell us about yourself..." rows={4} style={{ width: "100%", padding: "14px", marginBottom: "12px", border: "2px solid #E5E7EB", borderRadius: "10px", fontSize: "15px", resize: "vertical" }} />
+              <select value={form.experience} onChange={e => setForm({ ...form, experience: e.target.value })} style={{ width: "100%", padding: "14px", marginBottom: "12px", border: "2px solid #E5E7EB", borderRadius: "10px", fontSize: "15px" }}>
+                <option value="">Select Experience</option>
+                <option value="0-1 years">0-1 years</option>
+                <option value="1-3 years">1-3 years</option>
+                <option value="3-5 years">3-5 years</option>
+                <option value="5-10 years">5-10 years</option>
+                <option value="10+ years">10+ years</option>
+              </select>
+              <input value={form.gcash} onChange={e => setForm({ ...form, gcash: e.target.value })} placeholder="GCash Number" style={{ width: "100%", padding: "14px", marginBottom: "20px", border: "2px solid #E5E7EB", borderRadius: "10px", fontSize: "15px" }} />
               <div style={{ display: "flex", gap: "10px" }}>
                 <button onClick={() => setStep(1)} style={{ flex: 1, background: "#fff", color: "#7C3AED", padding: "14px", borderRadius: "12px", border: "2px solid #7C3AED", fontWeight: 700, cursor: "pointer" }}>Back</button>
-                <button onClick={() => {
-                  if (!profilePhoto || !validId || !form.idType) { setError("Please upload your selfie and valid ID."); return; }
-                  setError(""); setStep(3);
-                }} style={{ flex: 2, background: "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer" }}>
-                  Continue
-                </button>
+                <button onClick={() => setStep(3)} disabled={!form.bio || !form.experience || !form.gcash} style={{ flex: 2, background: "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer" }}>Next</button>
               </div>
             </div>
           )}
 
-          {/* STEP 3: Services */}
+          {/* Step 3 */}
           {step === 3 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-              <div>
-                <h3 style={{ fontWeight: 700, margin: "0 0 4px", fontSize: "16px" }}>Your Services</h3>
-                <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>Select what you offer (choose all that apply)</p>
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            <div>
+              <h2 style={{ fontWeight: 900, marginBottom: "12px" }}>Select Your Services</h2>
+              <p style={{ color: "#888", fontSize: "13px", marginBottom: "16px" }}>Choose all that apply</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "20px" }}>
                 {allServices.map(s => (
-                  <button key={s} onClick={() => toggleService(s)}
-                    style={{ padding: "7px 14px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "12px",
-                      background: selectedServices.includes(s) ? "#7C3AED" : "#EDE9FE",
-                      color: selectedServices.includes(s) ? "#fff" : "#7C3AED" }}>
-                    {selectedServices.includes(s) ? "Ã¢Å“â€œ " : ""}{s}
-                  </button>
+                  <button key={s} onClick={() => toggleService(s)} style={{ padding: "10px 16px", borderRadius: "20px", border: "2px solid", borderColor: selectedServices.includes(s) ? "#7C3AED" : "#E5E7EB", background: selectedServices.includes(s) ? "#F5F3FF" : "#fff", color: selectedServices.includes(s) ? "#7C3AED" : "#6B7280", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}>{s}</button>
                 ))}
               </div>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>Experience</label>
-                <select value={form.experience} onChange={e => setForm({ ...form, experience: e.target.value })}
-                  style={{ width: "100%", padding: "11px", borderRadius: "10px", border: "1px solid #EDE9FE", fontSize: "14px" }}>
-                  <option value="">Select years of experience</option>
-                  <option>Less than 1 year</option>
-                  <option>1-2 years</option>
-                  <option>3-5 years</option>
-                  <option>5-10 years</option>
-                  <option>10+ years</option>
-                </select>
-              </div>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>Short Bio <span style={{ color: "#888", fontWeight: 400 }}>(optional)</span></label>
-                <textarea value={form.bio} onChange={e => setForm({ ...form, bio: e.target.value })} rows={2}
-                  placeholder="e.g. Professional massage therapist with 5 years experience..."
-                  style={{ width: "100%", padding: "11px", borderRadius: "10px", border: "1px solid #EDE9FE", fontSize: "13px", resize: "none", boxSizing: "border-box" }} />
-              </div>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "13px", display: "block", marginBottom: "6px" }}>GCash Number <span style={{ color: "#888", fontWeight: 400 }}>(for payouts)</span></label>
-                <input type="tel" placeholder="09XX XXX XXXX" value={form.gcash} onChange={e => setForm({ ...form, gcash: e.target.value })}
-                  style={{ width: "100%", padding: "11px", borderRadius: "10px", border: "1px solid #EDE9FE", fontSize: "14px", boxSizing: "border-box" }} />
-              </div>
-              {error && <p style={{ color: "#f87171", fontSize: "13px", margin: 0 }}>{error}</p>}
               <div style={{ display: "flex", gap: "10px" }}>
                 <button onClick={() => setStep(2)} style={{ flex: 1, background: "#fff", color: "#7C3AED", padding: "14px", borderRadius: "12px", border: "2px solid #7C3AED", fontWeight: 700, cursor: "pointer" }}>Back</button>
-                <button onClick={() => {
-                  if (selectedServices.length === 0 || !form.experience) { setError("Please select services and experience."); return; }
-                  setError(""); setStep(4);
-                }} style={{ flex: 2, background: "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer" }}>Continue</button>
+                <button onClick={() => setStep(4)} disabled={selectedServices.length === 0} style={{ flex: 2, background: "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer" }}>Next</button>
               </div>
             </div>
           )}
 
-          {/* STEP 4: Confirm */}
+          {/* Step 4 */}
           {step === 4 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <h3 style={{ fontWeight: 700, margin: 0, fontSize: "16px" }}>Almost Done!</h3>
-
-              <div style={{ background: "#F5F3FF", borderRadius: "14px", padding: "16px" }}>
-                <p style={{ fontWeight: 700, color: "#7C3AED", margin: "0 0 10px" }}>Your Application Summary</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px" }}>
-                  {[
-                    { label: "Name", val: form.name },
-                    { label: "Location", val: form.city },
-                    { label: "ID Type", val: form.idType },
-                    { label: "Experience", val: form.experience },
-                  ].map(item => (
-                    <div key={item.label} style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ color: "#888" }}>{item.label}</span>
-                      <span style={{ fontWeight: 600 }}>{item.val}</span>
-                    </div>
-                  ))}
-                  <div>
-                    <span style={{ color: "#888" }}>Services: </span>
-                    <span style={{ fontWeight: 600 }}>{selectedServices.slice(0, 3).join(", ")}{selectedServices.length > 3 ? ` +${selectedServices.length - 3} more` : ""}</span>
-                  </div>
-                </div>
+            <div>
+              <h2 style={{ fontWeight: 900, marginBottom: "12px" }}>Upload Documents</h2>
+              <p style={{ color: "#888", fontSize: "13px", marginBottom: "16px" }}>Profile photo & Valid ID required</p>
+              
+              <div style={{ marginBottom: "16px" }}>
+                <p style={{ fontWeight: 600, marginBottom: "8px", fontSize: "14px" }}>Profile Photo</p>
+                <input ref={profileRef} type="file" accept="image/*" onChange={e => handleFile(e, setProfilePhoto)} style={{ display: "none" }} />
+                <button onClick={() => profileRef.current?.click()} style={{ width: "100%", padding: "14px", border: "2px dashed #E5E7EB", borderRadius: "12px", background: "#F9FAFB", cursor: "pointer", fontWeight: 600, color: "#6B7280" }}>
+                  {profilePhoto ? "Change Photo" : "Upload Photo"}
+                </button>
+                {profilePhoto && <img src={profilePhoto.preview} style={{ width: "100%", marginTop: "10px", borderRadius: "12px", maxHeight: "200px", objectFit: "cover" }} alt="Preview" />}
               </div>
 
-              <div style={{ background: "#FFFBEB", borderRadius: "14px", padding: "16px", border: "1px solid #FDE68A" }}>
-                <p style={{ fontWeight: 700, color: "#D97706", margin: "0 0 10px" }}>By submitting, you agree to:</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "12px", color: "#555", marginBottom: "14px" }}>
-                  {[
-                    "Serviko Terms & Conditions - professional conduct & 10% commission",
-                    "Data Privacy Act (RA 10173) - your data is safe & protected",
-                    "Independent Contractor Agreement - you work on your own schedule",
-                    "Background check consent - NBI/PNP verification for customer safety",
-                  ].map((t, i) => (
-                    <div key={i} style={{ display: "flex", gap: "8px" }}>
-                      <span style={{ color: "#22c55e", fontWeight: 700, flexShrink: 0 }}>Ã¢Å“â€œ</span>
-                      <span>{t}</span>
-                    </div>
-                  ))}
-                </div>
-                <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
-                  <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)}
-                    style={{ width: "18px", height: "18px", accentColor: "#7C3AED", flexShrink: 0 }} />
-                  <span style={{ fontWeight: 600, fontSize: "13px", color: "#555" }}>I agree to all terms and conditions</span>
-                </label>
+              <div style={{ marginBottom: "20px" }}>
+                <p style={{ fontWeight: 600, marginBottom: "8px", fontSize: "14px" }}>Valid ID</p>
+                <input ref={idRef} type="file" accept="image/*" onChange={e => handleFile(e, setValidId)} style={{ display: "none" }} />
+                <button onClick={() => idRef.current?.click()} style={{ width: "100%", padding: "14px", border: "2px dashed #E5E7EB", borderRadius: "12px", background: "#F9FAFB", cursor: "pointer", fontWeight: 600, color: "#6B7280" }}>
+                  {validId ? "Change ID" : "Upload Valid ID"}
+                </button>
+                {validId && <img src={validId.preview} style={{ width: "100%", marginTop: "10px", borderRadius: "12px", maxHeight: "200px", objectFit: "cover" }} alt="Preview" />}
               </div>
 
-              <div style={{ background: "#F5F3FF", borderRadius: "14px", padding: "14px" }}>
-                <p style={{ fontWeight: 700, color: "#7C3AED", margin: "0 0 8px", fontSize: "13px" }}>Artist Benefits</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                  {["Keep 90%", "GCash payout daily", "Set own schedule", "Free profile listing", "Work permit included"].map(b => (
-                    <span key={b} style={{ background: "#fff", color: "#7C3AED", padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: 600 }}>Ã¢Å“â€œ {b}</span>
-                  ))}
-                </div>
-              </div>
+              <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", marginBottom: "16px" }}>
+                <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} style={{ width: "18px", height: "18px", accentColor: "#7C3AED" }} />
+                <span style={{ fontWeight: 600, fontSize: "13px", color: "#555" }}>I agree to all terms and conditions</span>
+              </label>
 
-              {error && <p style={{ color: "#f87171", fontSize: "13px", margin: 0 }}>{error}</p>}
+              {error && <p style={{ color: "#f87171", fontSize: "13px", marginBottom: "12px" }}>{error}</p>}
+              
               <div style={{ display: "flex", gap: "10px" }}>
                 <button onClick={() => setStep(3)} style={{ flex: 1, background: "#fff", color: "#7C3AED", padding: "14px", borderRadius: "12px", border: "2px solid #7C3AED", fontWeight: 700, cursor: "pointer" }}>Back</button>
-                <button onClick={handleSubmit} disabled={loading || !agreed}
-                  style={{ flex: 2, background: loading || !agreed ? "#ccc" : "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: loading || !agreed ? "not-allowed" : "pointer", fontSize: "15px" }}>
+                <button onClick={handleSubmit} disabled={loading || !agreed || !profilePhoto || !validId} style={{ flex: 2, background: loading || !agreed ? "#ccc" : "#7C3AED", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: loading || !agreed ? "not-allowed" : "pointer", fontSize: "15px" }}>
                   {loading ? "Submitting..." : "Submit Application"}
                 </button>
               </div>
             </div>
           )}
-
         </div>
       </div>
     </div>
   );
 }
-
