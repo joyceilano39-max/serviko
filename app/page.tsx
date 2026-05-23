@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
@@ -26,17 +26,17 @@ type Artist = {
 };
 
 const services = [
-  { id: "all", name: "All", icon: "⭐" },
-  { id: "hair", name: "Hair", icon: "💇" },
-  { id: "nails", name: "Nails", icon: "💅" },
-  { id: "massage", name: "Massage", icon: "💆" },
-  { id: "skin", name: "Skin", icon: "✨" },
-  { id: "lash", name: "Lash", icon: "👁️" },
-  { id: "makeup", name: "Makeup", icon: "💄" },
-  { id: "cleaning", name: "Cleaning", icon: "🧹" },
-  { id: "garden", name: "Garden", icon: "🌿" },
-  { id: "painting", name: "Painting", icon: "🎨" },
-  { id: "repair", name: "Repair", icon: "🔧" },
+  { id: "all", name: "All", icon: "â­" },
+  { id: "hair", name: "Hair", icon: "ðŸ’‡" },
+  { id: "nails", name: "Nails", icon: "ðŸ’…" },
+  { id: "massage", name: "Massage", icon: "ðŸ’†" },
+  { id: "skin", name: "Skin", icon: "âœ¨" },
+  { id: "lash", name: "Lash", icon: "ðŸ‘ï¸" },
+  { id: "makeup", name: "Makeup", icon: "ðŸ’„" },
+  { id: "cleaning", name: "Cleaning", icon: "ðŸ§¹" },
+  { id: "garden", name: "Garden", icon: "ðŸŒ¿" },
+  { id: "painting", name: "Painting", icon: "ðŸŽ¨" },
+  { id: "repair", name: "Repair", icon: "ðŸ”§" },
 ];
 
 export default function HomePage() {
@@ -87,7 +87,7 @@ export default function HomePage() {
     selectedService === "all"
       ? artists
       : artists.filter((a) =>
-          a.service.toLowerCase().includes(selectedService.toLowerCase())
+          a.service?.toLowerCase().includes(selectedService.toLowerCase())
         );
 
   const topVouchers = vouchers.slice(0, 3);
@@ -121,7 +121,7 @@ export default function HomePage() {
           {isSignedIn ? (
             <div>
               <h1 style={{ fontSize: "32px", fontWeight: 900, margin: "0 0 8px" }}>
-                Welcome back, {user?.firstName}! 👋
+                Welcome back, {user?.firstName}! ðŸ‘‹
               </h1>
               <p style={{ opacity: 0.9, fontSize: "16px", margin: "0 0 24px" }}>
                 Ready to book your next service?
@@ -144,7 +144,7 @@ export default function HomePage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                    <span style={{ fontSize: "24px" }}>🎟️</span>
+                    <span style={{ fontSize: "24px" }}>ðŸŽŸï¸</span>
                     <p style={{ fontWeight: 900, fontSize: "18px", margin: 0 }}>
                       {topVouchers[currentPromo]?.code}
                     </p>
@@ -171,7 +171,7 @@ export default function HomePage() {
 
           {!isSignedIn && (
             <Link href="/register/customer" style={{ display: "inline-block", background: "#fff", color: "#E61D72", padding: "14px 32px", borderRadius: "24px", textDecoration: "none", fontWeight: 700, fontSize: "15px", marginTop: "20px" }}>
-              Sign Up & Get ₱50 Off! 🎁
+              Sign Up & Get â‚±50 Off! ðŸŽ
             </Link>
           )}
         </div>
@@ -193,7 +193,7 @@ export default function HomePage() {
         {/* Flash Deal Banner */}
         <div style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", borderRadius: "20px", padding: "20px 24px", marginBottom: "32px", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
-            <p style={{ fontWeight: 900, fontSize: "18px", margin: "0 0 4px" }}>⚡ Flash Deal Today!</p>
+            <p style={{ fontWeight: 900, fontSize: "18px", margin: "0 0 4px" }}>âš¡ Flash Deal Today!</p>
             <p style={{ opacity: 0.9, fontSize: "13px", margin: 0 }}>Massage services 15% off until 6PM</p>
           </div>
           <Link href="/services?category=massage" style={{ background: "#fff", color: "#D97706", padding: "10px 20px", borderRadius: "20px", textDecoration: "none", fontWeight: 700, fontSize: "13px" }}>
@@ -206,7 +206,7 @@ export default function HomePage() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
             <h2 style={{ fontWeight: 900, margin: 0, fontSize: "20px" }}>Featured Professionals</h2>
             <Link href="/services" style={{ color: "#E61D72", textDecoration: "none", fontWeight: 600, fontSize: "14px" }}>
-              See All →
+              See All â†’
             </Link>
           </div>
 
@@ -233,7 +233,7 @@ export default function HomePage() {
                     {artist.photo ? (
                       <img src={artist.photo} alt={artist.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     ) : (
-                      "👤"
+                      "ðŸ‘¤"
                     )}
                   </div>
                   <p style={{ fontWeight: 700, fontSize: "16px", margin: "0 0 4px", color: "#333" }}>
@@ -244,17 +244,17 @@ export default function HomePage() {
                   </p>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                      <span style={{ color: "#F59E0B" }}>⭐</span>
+                      <span style={{ color: "#F59E0B" }}>â­</span>
                       <span style={{ fontWeight: 600, fontSize: "13px" }}>
                         {artist.rating} ({artist.reviews})
                       </span>
                     </div>
                     <p style={{ fontWeight: 700, color: "#E61D72", margin: 0, fontSize: "15px" }}>
-                      ₱{artist.hourly_rate}/hr
+                      â‚±{artist.hourly_rate}/hr
                     </p>
                   </div>
                   <p style={{ color: "#888", fontSize: "12px", margin: "8px 0 0" }}>
-                    📍 {artist.location}
+                    ðŸ“ {artist.location}
                   </p>
                 </Link>
               ))}
@@ -267,7 +267,7 @@ export default function HomePage() {
           <Link href="/referral" style={{ display: "block", background: "linear-gradient(135deg, #22c55e, #16a34a)", borderRadius: "20px", padding: "24px", marginBottom: "32px", textDecoration: "none", color: "#fff" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-                <p style={{ fontWeight: 900, fontSize: "18px", margin: "0 0 4px" }}>🎁 Refer & Earn ₱100</p>
+                <p style={{ fontWeight: 900, fontSize: "18px", margin: "0 0 4px" }}>ðŸŽ Refer & Earn â‚±100</p>
                 <p style={{ opacity: 0.9, fontSize: "13px", margin: 0 }}>Share Serviko with friends and both get rewards!</p>
               </div>
               <div style={{ background: "rgba(255,255,255,0.2)", padding: "10px 20px", borderRadius: "20px", fontWeight: 700, fontSize: "13px" }}>
@@ -283,7 +283,7 @@ export default function HomePage() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
               <h2 style={{ fontWeight: 900, margin: 0, fontSize: "20px" }}>Active Promos</h2>
               <Link href="/vouchers" style={{ color: "#E61D72", textDecoration: "none", fontWeight: 600, fontSize: "14px" }}>
-                View All →
+                View All â†’
               </Link>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "12px" }}>
@@ -301,7 +301,7 @@ export default function HomePage() {
                           {v.description}
                         </p>
                         <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>
-                          {v.min_order > 0 ? `Min. ₱${v.min_order}` : "No minimum"} • {v.expiry_date}
+                          {v.min_order > 0 ? `Min. â‚±${v.min_order}` : "No minimum"} â€¢ {v.expiry_date}
                         </p>
                       </div>
                       <button onClick={() => {
@@ -325,7 +325,7 @@ export default function HomePage() {
           <h2 style={{ fontSize: "28px", fontWeight: 900, margin: "0 0 12px" }}>Ready to get started?</h2>
           <p style={{ opacity: 0.9, fontSize: "16px", margin: "0 0 24px" }}>Join thousands of satisfied customers</p>
           <Link href="/register/customer" style={{ background: "#fff", color: "#E61D72", padding: "14px 32px", borderRadius: "24px", textDecoration: "none", fontWeight: 700, fontSize: "15px", display: "inline-block" }}>
-            Sign Up Now - Get ₱50 Off
+            Sign Up Now - Get â‚±50 Off
           </Link>
         </div>
       )}
