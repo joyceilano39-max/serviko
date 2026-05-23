@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
@@ -261,7 +261,7 @@ function BookingContent() {
               )}
               <button onClick={() => selectedArtist && setStep(2)} disabled={!selectedArtist}
                 style={{ width: "100%", marginTop: "16px", background: selectedArtist ? "#E61D72" : "#ccc", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: selectedArtist ? "pointer" : "not-allowed", fontSize: "15px" }}>
-                Continue with {selectedArtist?.name || "Artist"} â†’
+                Continue with {selectedArtist?.name || "Artist"} Ã¢â€ â€™
               </button>
             </div>
           )}
@@ -300,11 +300,11 @@ function BookingContent() {
                           background: sel ? "#FFF0F6" : "#f8f8f8", border: sel ? "1px solid #E61D72" : "1px solid transparent" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                           <div style={{ width: "16px", height: "16px", borderRadius: "50%", border: `2px solid ${sel ? "#E61D72" : "#ccc"}`, background: sel ? "#E61D72" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            {sel && <span style={{ color: "#fff", fontSize: "9px" }}>âœ“</span>}
+                            {sel && <span style={{ color: "#fff", fontSize: "9px" }}>Ã¢Å“â€œ</span>}
                           </div>
                           <p style={{ margin: 0, fontWeight: 600, fontSize: "13px" }}>{serviceName}</p>
                         </div>
-                        <span style={{ fontWeight: 700, color: "#E61D72", fontSize: "13px" }}>₱{price}</span>
+                        <span style={{ fontWeight: 700, color: "#E61D72", fontSize: "13px" }}>â‚±{price}</span>
                       </div>
                     );
                   })}
@@ -317,7 +317,7 @@ function BookingContent() {
                 {!artistIdParam && <button onClick={() => setStep(1)} style={{ flex: 1, background: "#fff", color: "#E61D72", padding: "14px", borderRadius: "12px", border: "2px solid #E61D72", fontWeight: 700, cursor: "pointer" }}>Back</button>}
                 <button onClick={() => allServices.length > 0 && setStep(3)} disabled={allServices.length === 0}
                   style={{ flex: 2, background: allServices.length > 0 ? "#E61D72" : "#ccc", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: allServices.length > 0 ? "pointer" : "not-allowed" }}>
-                  Continue â†’
+                  Continue Ã¢â€ â€™
                 </button>
               </div>
             </div>
@@ -414,10 +414,6 @@ function BookingContent() {
                     </div>
                     {voucherMsg && <p style={{ fontSize: "12px", color: voucherMsg.includes("Saved") ? "#22c55e" : "#f87171", margin: "0 0 8px" }}>{voucherMsg}</p>}
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                      {["FIRST50", "SUMMER20", "REFER100", "WELCOME50"].map(code => (
-                        <button key={code} onClick={() => setVoucherCode(code)}
-                          style={{ background: "#FFF0F6", color: "#E61D72", border: "1px solid #FFD6E7", padding: "5px 10px", borderRadius: "20px", cursor: "pointer", fontSize: "11px", fontWeight: 600 }}>
-                          {code}
                         </button>
                       ))}
                     </div>
@@ -491,8 +487,8 @@ function BookingContent() {
                 <p style={{ fontWeight: 600, fontSize: "11px", margin: "0 0 3px", color: "#E61D72" }}>{member.name}</p>
                 {member.services.map(s => (
                   <div key={s.name} style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", paddingLeft: "8px", marginBottom: "2px" }}>
-                    <span style={{ color: "#555" }}>â€¢ {s.name}</span>
-                    <span style={{ fontWeight: 600 }}>₱{s.price}</span>
+                    <span style={{ color: "#555" }}>Ã¢â‚¬Â¢ {s.name}</span>
+                    <span style={{ fontWeight: 600 }}>â‚±{s.price}</span>
                   </div>
                 ))}
               </div>
@@ -572,6 +568,8 @@ export default function BookingPage() {
     </Suspense>
   );
 }
+
+
 
 
 

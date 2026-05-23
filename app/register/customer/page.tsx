@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import Link from "next/link";
 
@@ -37,15 +37,15 @@ export default function CustomerRegisterPage() {
     return (
       <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #FFF0F6 0%, #fff 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: "32px" }}>
         <div style={{ background: "#fff", borderRadius: "24px", padding: "48px 32px", textAlign: "center", maxWidth: "400px", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
-          <div style={{ fontSize: "72px", marginBottom: "16px" }}>🎉</div>
+          <div style={{ fontSize: "72px", marginBottom: "16px" }}>ðŸŽ‰</div>
           <h1 style={{ fontWeight: 900, color: "#E61D72", margin: "0 0 8px" }}>Welcome to Serviko!</h1>
           <p style={{ color: "#888", margin: "0 0 24px" }}>Your account has been created successfully!</p>
           <div style={{ background: "#FFF0F6", borderRadius: "16px", padding: "16px", marginBottom: "24px", textAlign: "left" }}>
-            <p style={{ fontWeight: 700, margin: "0 0 8px", color: "#E61D72" }}>🎁 Welcome Gift!</p>
-            <p style={{ color: "#555", fontSize: "13px", margin: 0 }}>Use code <strong>FIRST50</strong> for ₱50 off your first booking!</p>
+            <p style={{ fontWeight: 700, margin: "0 0 8px", color: "#E61D72" }}>ðŸŽ Welcome Gift!</p>
+            
           </div>
           <Link href="/booking" style={{ display: "block", background: "#E61D72", color: "#fff", padding: "14px", borderRadius: "12px", textDecoration: "none", fontWeight: 700, fontSize: "15px", marginBottom: "12px" }}>
-            Book a Service Now →
+            Book a Service Now â†’
           </Link>
           <Link href="/dashboard" style={{ display: "block", background: "#f0f0f0", color: "#555", padding: "14px", borderRadius: "12px", textDecoration: "none", fontWeight: 700, fontSize: "14px" }}>
             Go to Dashboard
@@ -60,8 +60,8 @@ export default function CustomerRegisterPage() {
       <div style={{ width: "100%", maxWidth: "480px" }}>
 
         <div style={{ textAlign: "center", marginBottom: "24px" }}>
-          <Link href="/register" style={{ color: "#888", fontSize: "13px", textDecoration: "none" }}>← Back</Link>
-          <p style={{ color: "#E61D72", fontWeight: 900, fontSize: "24px", margin: "8px 0 4px" }}>🌸 Serviko</p>
+          <Link href="/register" style={{ color: "#888", fontSize: "13px", textDecoration: "none" }}>â† Back</Link>
+          <p style={{ color: "#E61D72", fontWeight: 900, fontSize: "24px", margin: "8px 0 4px" }}>ðŸŒ¸ Serviko</p>
           <h1 style={{ fontSize: "20px", fontWeight: 900, margin: "0 0 4px" }}>Create Customer Account</h1>
           <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>Book beauty & wellness services near you</p>
         </div>
@@ -76,7 +76,7 @@ export default function CustomerRegisterPage() {
         <div style={{ background: "#fff", borderRadius: "24px", padding: "32px", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
           {step === 1 ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <h3 style={{ fontWeight: 700, margin: "0 0 4px" }}>Step 1 — Personal Info</h3>
+              <h3 style={{ fontWeight: 700, margin: "0 0 4px" }}>Step 1 â€” Personal Info</h3>
               {[
                 { label: "Full Name", key: "name", type: "text", placeholder: "Joyce Ilano" },
                 { label: "Email", key: "email", type: "email", placeholder: "joyce@email.com" },
@@ -95,12 +95,12 @@ export default function CustomerRegisterPage() {
                 if (!form.name || !form.email || !form.phone) { setError("Please fill in all fields."); return; }
                 setError(""); setStep(2);
               }} style={{ background: "#E61D72", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: "pointer", fontSize: "15px" }}>
-                Continue →
+                Continue â†’
               </button>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <h3 style={{ fontWeight: 700, margin: "0 0 4px" }}>Step 2 — Additional Info</h3>
+              <h3 style={{ fontWeight: 700, margin: "0 0 4px" }}>Step 2 â€” Additional Info</h3>
               {[
                 { label: "Home Address", key: "address", type: "text", placeholder: "e.g. Quezon City, Metro Manila" },
                 { label: "Birthdate", key: "birthdate", type: "date", placeholder: "" },
@@ -113,15 +113,15 @@ export default function CustomerRegisterPage() {
                 </div>
               ))}
               <div style={{ background: "#FFF0F6", borderRadius: "12px", padding: "16px", fontSize: "13px" }}>
-                <p style={{ fontWeight: 600, margin: "0 0 4px", color: "#E61D72" }}>🎁 Welcome Gift!</p>
-                <p style={{ margin: 0, color: "#555" }}>Get <strong>₱50 OFF</strong> your first booking!</p>
+                <p style={{ fontWeight: 600, margin: "0 0 4px", color: "#E61D72" }}>ðŸŽ Welcome Gift!</p>
+                <p style={{ margin: 0, color: "#555" }}>Get <strong>â‚±50 OFF</strong> your first booking!</p>
               </div>
               {error && <p style={{ color: "#f87171", fontSize: "13px", margin: 0 }}>{error}</p>}
               <div style={{ display: "flex", gap: "12px" }}>
-                <button onClick={() => setStep(1)} style={{ flex: 1, background: "#fff", color: "#E61D72", padding: "14px", borderRadius: "12px", border: "2px solid #E61D72", fontWeight: 700, cursor: "pointer" }}>← Back</button>
+                <button onClick={() => setStep(1)} style={{ flex: 1, background: "#fff", color: "#E61D72", padding: "14px", borderRadius: "12px", border: "2px solid #E61D72", fontWeight: 700, cursor: "pointer" }}>â† Back</button>
                 <button onClick={handleSubmit} disabled={loading}
                   style={{ flex: 2, background: loading ? "#ccc" : "#E61D72", color: "#fff", padding: "14px", borderRadius: "12px", border: "none", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", fontSize: "15px" }}>
-                  {loading ? "Creating Account..." : "Create Account 🎉"}
+                  {loading ? "Creating Account..." : "Create Account ðŸŽ‰"}
                 </button>
               </div>
             </div>
@@ -136,3 +136,4 @@ export default function CustomerRegisterPage() {
     </div>
   );
 }
+
