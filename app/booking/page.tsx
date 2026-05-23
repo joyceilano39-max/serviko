@@ -415,8 +415,6 @@ function BookingContent() {
                     {voucherMsg && <p style={{ fontSize: "12px", color: voucherMsg.includes("Saved") ? "#22c55e" : "#f87171", margin: "0 0 8px" }}>{voucherMsg}</p>}
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
                         </button>
-                      ))}
-                    </div>
                   </>
                 )}
               </div>
