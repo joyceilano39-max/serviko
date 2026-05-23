@@ -81,6 +81,7 @@ export default function ArtistRegisterPage() {
         return; 
       }
       
+      console.log("Clerk result:", clerkResult);
       const clerkId = (clerkResult as any).createdUserId || (clerkResult as any).id || "";
       if ((clerkResult as any).createdSessionId) { await setActive?.({ session: (clerkResult as any).createdSessionId }); }
 

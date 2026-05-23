@@ -149,6 +149,7 @@ export default function ArtistDashboardPage() {
   const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
+    if (!user || !user.emailAddresses || !user.emailAddresses[0]) return;
     fetchBookings();
     fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id}`)
       .then(r => r.json())
@@ -679,6 +680,7 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
 
 
 

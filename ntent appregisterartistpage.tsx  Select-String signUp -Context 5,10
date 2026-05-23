@@ -1,0 +1,10 @@
+[33m1a6f938[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m Add session check before setActive call
+[33m6b5ae80[m Fix artist registration with Clerk integration
+[33m9781a1d[m Fix artist registration to create Clerk accounts properly
+[33mb909660[m Fix artist registration to update existing users with Clerk ID
+[33m3ceb947[m Fix artist login page - link to customer-login instead of sign-in
+[33m0011140[m Remove invalid afterSignOutUrl prop from UserButton
+[33m26f3c74[m Add logout buttons to customer and artist dashboards
+[33m747d274[m Use PHP instead of peso symbol to avoid encoding issues
+[33ma2c7b15[m Fix peso symbol encoding in admin dashboard
+[33ma104123[m Fix admin dashboard - remove broken emoji icons
