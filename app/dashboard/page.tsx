@@ -60,7 +60,7 @@ export default function CustomerDashboardPage() {
   const fetchVouchers = async () => {
     try {
       const res = await fetch("/api/vouchers");
-      const data = await res.json();
+      // const data = await res.json();
       setVouchers(data.vouchers || []);
     } catch {
       setVouchers([]);
@@ -70,7 +70,7 @@ export default function CustomerDashboardPage() {
   const fetchNearbyArtists = async () => {
     try {
       const res = await fetch("/api/artists");
-      const data = await res.json();
+      // const data = await res.json();
       setArtists((data.artists || []).slice(0, 6));
     } catch {
       setArtists([]);
@@ -85,9 +85,9 @@ export default function CustomerDashboardPage() {
         setLoading(false);
         return;
       }
-      const res = await fetch(`/api/customer/bookings?email=${email}`);
-      const data = await res.json();
-      setBookings(data.bookings || []);
+      // const res = await fetch(`/api/customer/bookings?email=${email}`);
+      // const data = await res.json();
+      setBookings([]);
     } catch {
       setBookings([]);
     }
