@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 import { useState } from "react";
 
 const categories = [
   {
     id: "hair",
-    icon: "ðŸ’‡",
+    icon: "💇",
     name: "Hair Services",
     color: "#E61D72",
     bg: "#FFF0F6",
@@ -61,7 +61,7 @@ const categories = [
   },
   {
     id: "nails",
-    icon: "ðŸ’…",
+    icon: "💅",
     name: "Nail Services",
     color: "#7C3AED",
     bg: "#F5F3FF",
@@ -80,15 +80,15 @@ const categories = [
       },
       {
         name: "Pedicure",
-        desc: "Foot and nail care â€” includes special care options",
+        desc: "Foot and nail care — includes special care options",
         variants: [
           { name: "Basic Pedicure", price: 250, duration: "30 mins" },
           { name: "Gel Pedicure", price: 500, duration: "45 mins" },
           { name: "Spa Pedicure", price: 650, duration: "60 mins" },
           { name: "Foot Scrub + Pedicure", price: 750, duration: "75 mins" },
-          { name: "ðŸ©º Senior Citizen Pedicure (60+)", price: 400, duration: "60 mins", warning: "senior" },
-          { name: "ðŸ©º Diabetic-Safe Pedicure", price: 500, duration: "75 mins", warning: "diabetic" },
-          { name: "ðŸ©º Medical Pedicure (Special Needs)", price: 600, duration: "90 mins", warning: "medical" },
+          { name: "🩺 Senior Citizen Pedicure (60+)", price: 400, duration: "60 mins", warning: "senior" },
+          { name: "🩺 Diabetic-Safe Pedicure", price: 500, duration: "75 mins", warning: "diabetic" },
+          { name: "🩺 Medical Pedicure (Special Needs)", price: 600, duration: "90 mins", warning: "medical" },
         ],
       },
       {
@@ -98,14 +98,14 @@ const categories = [
           { name: "Basic Mani + Pedi", price: 400, duration: "60 mins" },
           { name: "Gel Mani + Pedi", price: 850, duration: "90 mins" },
           { name: "Spa Mani + Pedi", price: 1100, duration: "2 hrs" },
-          { name: "ðŸ©º Senior Citizen Mani + Pedi", price: 700, duration: "2 hrs", warning: "senior" },
+          { name: "🩺 Senior Citizen Mani + Pedi", price: 700, duration: "2 hrs", warning: "senior" },
         ],
       },
     ],
   },
   {
     id: "massage",
-    icon: "ðŸ’†",
+    icon: "💆",
     name: "Massage & Wellness",
     color: "#22c55e",
     bg: "#F0FDF4",
@@ -120,8 +120,8 @@ const categories = [
           { name: "Hot Stone Massage", price: 1000, duration: "90 mins" },
           { name: "Aromatherapy Massage", price: 850, duration: "60 mins" },
           { name: "Couples Massage (2 pax)", price: 1600, duration: "60 mins" },
-          { name: "ðŸ©º Senior Citizen Massage", price: 700, duration: "60 mins", warning: "senior" },
-          { name: "ðŸ©º Prenatal Massage", price: 900, duration: "60 mins", warning: "prenatal" },
+          { name: "🩺 Senior Citizen Massage", price: 700, duration: "60 mins", warning: "senior" },
+          { name: "🩺 Prenatal Massage", price: 900, duration: "60 mins", warning: "prenatal" },
         ],
       },
       {
@@ -137,7 +137,7 @@ const categories = [
   },
   {
     id: "skin",
-    icon: "ðŸ§–",
+    icon: "🧖",
     name: "Skin Care",
     color: "#F59E0B",
     bg: "#FFFBEB",
@@ -167,7 +167,7 @@ const categories = [
   },
   {
     id: "lash",
-    icon: "ðŸ‘ï¸",
+    icon: "👁️",
     name: "Lash & Brow",
     color: "#3b82f6",
     bg: "#EFF6FF",
@@ -196,7 +196,7 @@ const categories = [
   },
   {
     id: "makeup",
-    icon: "ðŸ’„",
+    icon: "💄",
     name: "Makeup",
     color: "#EC4899",
     bg: "#FDF2F8",
@@ -216,7 +216,7 @@ const categories = [
   },
   {
     id: "cleaning",
-    icon: "ðŸ§¹",
+    icon: "🧹",
     name: "Home Cleaning",
     color: "#06B6D4",
     bg: "#ECFEFF",
@@ -261,7 +261,7 @@ const categories = [
   },
   {
     id: "gardening",
-    icon: "ðŸŒ¿",
+    icon: "🌿",
     name: "Gardening",
     color: "#16A34A",
     bg: "#F0FDF4",
@@ -293,7 +293,7 @@ const categories = [
   },
   {
     id: "painting",
-    icon: "ðŸŽ¨",
+    icon: "🎨",
     name: "Painting",
     color: "#D97706",
     bg: "#FFFBEB",
@@ -334,7 +334,7 @@ const categories = [
   },
   {
     id: "repair",
-    icon: "ðŸ”§",
+    icon: "🔧",
     name: "Home Repair",
     color: "#64748B",
     bg: "#F8FAFC",
@@ -375,25 +375,25 @@ const categories = [
 
 const warningMessages: Record<string, { title: string; message: string; color: string; bg: string }> = {
   diabetic: {
-    title: "âš ï¸ Diabetic Foot Care Notice",
+    title: "⚠️ Diabetic Foot Care Notice",
     message: "This service is performed by a trained nail technician with special care for diabetic patients. We use sterilized tools, avoid cutting cuticles deeply, and monitor for any skin issues. Please inform your artist of your condition before the service. Consult your doctor if you have open wounds or active infections.",
     color: "#D97706",
     bg: "#FFFBEB",
   },
   senior: {
-    title: "ðŸ‘´ Senior Citizen Special Care",
+    title: "👴 Senior Citizen Special Care",
     message: "This service is specially designed for senior citizens (60+). Our artists are trained to handle fragile skin and nails with extra gentleness. We use softer tools and techniques. Please inform us of any medical conditions, blood thinners, or medications you are taking.",
     color: "#7C3AED",
     bg: "#F5F3FF",
   },
   medical: {
-    title: "ðŸ©º Medical Pedicure Notice",
+    title: "🩺 Medical Pedicure Notice",
     message: "This service is for customers with special health conditions (diabetes, arthritis, poor circulation, etc.). Performed with medical-grade sterilized tools. Please bring a doctor's note if available. We strongly recommend consulting your physician before booking if you have severe conditions.",
     color: "#E61D72",
     bg: "#FFF0F6",
   },
   prenatal: {
-    title: "ðŸ¤° Prenatal Massage Safety Notice",
+    title: "🤰 Prenatal Massage Safety Notice",
     message: "This massage is safe for pregnant women after the 1st trimester (12+ weeks). Our artists are trained in prenatal massage techniques. We avoid pressure points that may cause complications. Please consult your OB-GYN before booking. Not recommended for high-risk pregnancies.",
     color: "#22c55e",
     bg: "#F0FDF4",
@@ -465,15 +465,15 @@ export default function ServicesPage() {
 
       {/* Header */}
       <div style={{ background: "linear-gradient(135deg, #E61D72 0%, #7C3AED 100%)", padding: "24px 24px 40px", color: "#fff" }}>
-        <a href="/" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "13px" }}>← Back</a>
+        <a href="/" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "13px" }}>← Home</a>
         <h1 style={{ fontSize: "28px", fontWeight: 900, margin: "8px 0 4px" }}>All Services</h1>
         <p style={{ opacity: 0.8, margin: "0 0 16px", fontSize: "14px" }}>Beauty, wellness, cleaning, gardening & more!</p>
         <div style={{ display: "flex", alignItems: "center", background: "rgba(255,255,255,0.2)", borderRadius: "25px", padding: "10px 16px", gap: "8px" }}>
-          <span>ðŸ”</span>
+          <span>🔍</span>
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="Search e.g. Loreal Red, Rebond, Deep Clean, Diabetic..."
             style={{ border: "none", background: "transparent", flex: 1, fontSize: "14px", color: "#fff", outline: "none" }} />
-          {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", fontSize: "16px" }}>âœ•</button>}
+          {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", fontSize: "16px" }}>✕</button>}
         </div>
       </div>
 
@@ -490,13 +490,13 @@ export default function ServicesPage() {
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: v.bg, borderRadius: "12px" }}>
                     <div>
                       <p style={{ fontWeight: 600, margin: "0 0 2px", fontSize: "14px" }}>{v.name}</p>
-                      <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{v.categoryName} â€¢ {v.serviceName} â€¢ â± {v.duration}</p>
+                      <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{v.categoryName} • {v.serviceName} • ⏱ {v.duration}</p>
                     </div>
                     <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                      <span style={{ fontWeight: 900, color: v.color, fontSize: "16px" }}>â‚±{v.price}</span>
+                      <span style={{ fontWeight: 900, color: v.color, fontSize: "16px" }}>₱{v.price}</span>
                       <button onClick={() => addToCart(v.categoryName, v.serviceName, v)}
                         style={{ background: cart.find(c => c.variant === v.name) ? "#f0f0f0" : v.color, color: cart.find(c => c.variant === v.name) ? "#888" : "#fff", border: "none", padding: "6px 14px", borderRadius: "20px", cursor: "pointer", fontSize: "12px", fontWeight: 600 }}>
-                        {cart.find(c => c.variant === v.name) ? "âœ“ Added" : "+ Add"}
+                        {cart.find(c => c.variant === v.name) ? "✓ Added" : "+ Add"}
                       </button>
                     </div>
                   </div>
@@ -530,11 +530,11 @@ export default function ServicesPage() {
                   style={{ padding: "20px 24px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div>
                     <p style={{ fontWeight: 700, margin: "0 0 4px", fontSize: "16px" }}>{service.name}</p>
-                    <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{service.desc} â€¢ {service.variants.length} options</p>
+                    <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{service.desc} • {service.variants.length} options</p>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <span style={{ color: currentCategory.color, fontWeight: 700, fontSize: "14px" }}>from â‚±{Math.min(...service.variants.map((v: any) => v.price))}</span>
-                    <span style={{ color: "#888", fontSize: "18px" }}>{expandedService === service.name ? "â–²" : "â–¼"}</span>
+                    <span style={{ color: currentCategory.color, fontWeight: 700, fontSize: "14px" }}>from ₱{Math.min(...service.variants.map((v: any) => v.price))}</span>
+                    <span style={{ color: "#888", fontSize: "18px" }}>{expandedService === service.name ? "▲" : "▼"}</span>
                   </div>
                 </div>
 
@@ -546,13 +546,13 @@ export default function ServicesPage() {
                         <div key={variant.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: inCart ? currentCategory.bg : variant.warning ? "#FFFBEB" : "#f8f8f8", borderRadius: "12px", border: inCart ? `1px solid ${currentCategory.color}` : variant.warning ? "1px solid #FDE68A" : "1px solid transparent" }}>
                           <div>
                             <p style={{ fontWeight: 600, margin: "0 0 2px", fontSize: "14px" }}>{variant.name}</p>
-                            <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>â± {variant.duration}{variant.warning ? " â€¢ âš ï¸ Special care required" : ""}</p>
+                            <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>⏱ {variant.duration}{variant.warning ? " • ⚠️ Special care required" : ""}</p>
                           </div>
                           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            <span style={{ fontWeight: 900, color: currentCategory.color, fontSize: "16px" }}>â‚±{variant.price}</span>
+                            <span style={{ fontWeight: 900, color: currentCategory.color, fontSize: "16px" }}>₱{variant.price}</span>
                             <button onClick={() => inCart ? removeFromCart(variant.name) : addToCart(currentCategory.name, service.name, variant)}
                               style={{ background: inCart ? "#f0f0f0" : currentCategory.color, color: inCart ? "#888" : "#fff", border: "none", padding: "8px 14px", borderRadius: "20px", cursor: "pointer", fontSize: "12px", fontWeight: 600 }}>
-                              {inCart ? "âœ“ Remove" : "+ Add"}
+                              {inCart ? "✓ Remove" : "+ Add"}
                             </button>
                           </div>
                         </div>
@@ -575,8 +575,8 @@ export default function ServicesPage() {
                 <div key={item.variant} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", fontSize: "13px" }}>
                   <span style={{ color: "#555" }}>{item.variant}</span>
                   <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                    <span style={{ fontWeight: 700, color: "#E61D72" }}>â‚±{item.price}</span>
-                    <button onClick={() => removeFromCart(item.variant)} style={{ background: "none", border: "none", color: "#f87171", cursor: "pointer", fontSize: "16px" }}>âœ•</button>
+                    <span style={{ fontWeight: 700, color: "#E61D72" }}>₱{item.price}</span>
+                    <button onClick={() => removeFromCart(item.variant)} style={{ background: "none", border: "none", color: "#f87171", cursor: "pointer", fontSize: "16px" }}>✕</button>
                   </div>
                 </div>
               ))}
@@ -584,11 +584,11 @@ export default function ServicesPage() {
           )}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div onClick={() => setShowCart(!showCart)} style={{ cursor: "pointer" }}>
-              <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{cart.length} service(s) selected {showCart ? "â–¼" : "â–²"}</p>
-              <p style={{ color: "#E61D72", fontWeight: 900, fontSize: "20px", margin: 0 }}>Total: â‚±{total.toLocaleString()}</p>
+              <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{cart.length} service(s) selected {showCart ? "▼" : "▲"}</p>
+              <p style={{ color: "#E61D72", fontWeight: 900, fontSize: "20px", margin: 0 }}>Total: ₱{total.toLocaleString()}</p>
             </div>
             <a href="/booking" style={{ background: "#E61D72", color: "#fff", padding: "14px 28px", borderRadius: "25px", textDecoration: "none", fontWeight: 700, fontSize: "15px" }}>
-              Book Now â†’
+              Book Now →
             </a>
           </div>
         </div>
