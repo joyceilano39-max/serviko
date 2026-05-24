@@ -87,7 +87,7 @@ export default function HomePage() {
     selectedService === "all"
       ? artists
       : artists.filter((a) =>
-          a.service.toLowerCase().includes(selectedService.toLowerCase())
+          a.service?.toLowerCase()?.includes(selectedService.toLowerCase())
         );
 
   const topVouchers = vouchers.slice(0, 3);
