@@ -465,7 +465,7 @@ export default function ServicesPage() {
 
       {/* Header */}
       <div style={{ background: "linear-gradient(135deg, #E61D72 0%, #7C3AED 100%)", padding: "24px 24px 40px", color: "#fff" }}>
-        <a href="/" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "13px" }}>? Back</a></a>
+        <a href="/" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "13px" }}>← Home</a>
         <h1 style={{ fontSize: "28px", fontWeight: 900, margin: "8px 0 4px" }}>All Services</h1>
         <p style={{ opacity: 0.8, margin: "0 0 16px", fontSize: "14px" }}>Beauty, wellness, cleaning, gardening & more!</p>
         <div style={{ display: "flex", alignItems: "center", background: "rgba(255,255,255,0.2)", borderRadius: "25px", padding: "10px 16px", gap: "8px" }}>
