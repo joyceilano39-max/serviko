@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
@@ -154,7 +154,7 @@ export default function AdminPage() {
           <div>
             <h1 style={{ fontSize: "24px", fontWeight: 900, margin: "0 0 24px" }}>Vouchers ({vouchers.length})</h1>
             <div style={card}>
-              <p style={{ color: "#6B7280" }}>Vouchers feature coming soon - add voucher codes, track usage, set discounts</p>
+              <Link href="/admin/vouchers" style={{ display: "inline-block", background: "linear-gradient(135deg, #E61D72, #7C3AED)", color: "#fff", padding: "14px 24px", borderRadius: "12px", textDecoration: "none", fontWeight: 700, fontSize: "15px" }}>Go to Voucher Management →</Link>
             </div>
           </div>
         )}
