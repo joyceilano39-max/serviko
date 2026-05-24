@@ -85,7 +85,7 @@ export default function CustomerDashboardPage() {
         setLoading(false);
         return;
       }
-      // const res = await fetch(`/api/customer/bookings?email=${email}`);
+      const res = await fetch(`/api/customer/bookings?email=${email}`);
       const data = await res.json();
       setBookings([]);
     } catch {
