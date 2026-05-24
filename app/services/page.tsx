@@ -16,12 +16,12 @@ type Artist = {
 };
 
 const categories = [
-  { id: "all", name: "All Services", icon: "â­" },
-  { id: "cleaning", name: "Cleaning", icon: "ðŸ§¹" },
-  { id: "makeup", name: "Makeup", icon: "ðŸ’„" },
-  { id: "hair", name: "Hair", icon: "ðŸ’‡" },
-  { id: "nails", name: "Nails", icon: "ðŸ’…" },
-  { id: "massage", name: "Massage", icon: "ðŸ’†" },
+  { id: "all", name: "All Services", icon: "Ã¢Â­Â" },
+  { id: "cleaning", name: "Cleaning", icon: "Ã°Å¸Â§Â¹" },
+  { id: "makeup", name: "Makeup", icon: "Ã°Å¸â€™â€ž" },
+  { id: "hair", name: "Hair", icon: "Ã°Å¸â€™â€¡" },
+  { id: "nails", name: "Nails", icon: "Ã°Å¸â€™â€¦" },
+  { id: "massage", name: "Massage", icon: "Ã°Å¸â€™â€ " },
 ];
 
 export default function ServicesPage() {
@@ -76,7 +76,6 @@ export default function ServicesPage() {
   const filteredArtists = selectedCategory === "all" 
     ? artists 
     : artists.filter(artist => {
-        console.log('Filtering artist:', artist.name, 'Services:', artist.real_services);
         const keywords = getCategoryKeywords(selectedCategory);
         return artist.real_services?.some(service => {
           const serviceName = service.name.toLowerCase();
@@ -89,7 +88,7 @@ export default function ServicesPage() {
       {/* Header */}
       <div style={{ background: "linear-gradient(135deg, #E61D72 0%, #7C3AED 100%)", padding: "24px 24px 40px", color: "#fff" }}>
         <Link href="/" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "13px" }}>
-          â† Back
+          Ã¢â€ Â Back
         </Link>
         <h1 style={{ fontSize: "28px", fontWeight: 900, margin: "16px 0 8px" }}>
           {selectedCategory === "all" ? "All Services" : categories.find(c => c.id === selectedCategory)?.name}
@@ -132,7 +131,7 @@ export default function ServicesPage() {
           </div>
         ) : filteredArtists.length === 0 ? (
           <div style={{ textAlign: "center", padding: "48px" }}>
-            <p style={{ fontSize: "48px", margin: "0 0 16px" }}>ðŸ”</p>
+            <p style={{ fontSize: "48px", margin: "0 0 16px" }}>Ã°Å¸â€Â</p>
             <p style={{ fontWeight: 700, fontSize: "18px", margin: "0 0 8px" }}>No services found</p>
             <p style={{ color: "#888", fontSize: "14px", margin: "0 0 16px" }}>Try selecting a different category</p>
             <button
@@ -165,7 +164,7 @@ export default function ServicesPage() {
                     <h2 style={{ fontSize: "20px", fontWeight: 900, margin: "0 0 4px" }}>{artist.name}</h2>
                     <p style={{ color: "#888", fontSize: "14px", margin: "0 0 8px" }}>{artist.bio}</p>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ color: "#F59E0B", fontSize: "16px" }}>â­</span>
+                      <span style={{ color: "#F59E0B", fontSize: "16px" }}>Ã¢Â­Â</span>
                       <span style={{ fontWeight: 700, fontSize: "14px" }}>{artist.rating}</span>
                       <span style={{ color: "#888", fontSize: "13px" }}>({artist.total_reviews} reviews)</span>
                     </div>
@@ -211,13 +210,13 @@ export default function ServicesPage() {
                         )}
                         {service.duration && (
                           <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>
-                            â±ï¸ {service.duration}
+                            Ã¢ÂÂ±Ã¯Â¸Â {service.duration}
                           </p>
                         )}
                       </div>
                       <div style={{ textAlign: "right", minWidth: "120px" }}>
                         <p style={{ fontWeight: 900, fontSize: "20px", color: "#E61D72", margin: "0 0 8px" }}>
-                          â‚±{service.price}
+                          Ã¢â€šÂ±{service.price}
                         </p>
                         <Link
                           href={`/booking?artistId=${artist.id}&artistName=${encodeURIComponent(artist.name)}&service=${encodeURIComponent(service.name)}&price=${service.price}`}
