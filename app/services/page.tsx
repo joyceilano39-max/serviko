@@ -16,12 +16,12 @@ type Artist = {
 };
 
 const categories = [
-  { id: "all", name: "All Services", icon: "Ã¢Â­Â" },
-  { id: "cleaning", name: "Cleaning", icon: "Ã°Å¸Â§Â¹" },
-  { id: "makeup", name: "Makeup", icon: "Ã°Å¸â€™â€ž" },
-  { id: "hair", name: "Hair", icon: "Ã°Å¸â€™â€¡" },
-  { id: "nails", name: "Nails", icon: "Ã°Å¸â€™â€¦" },
-  { id: "massage", name: "Massage", icon: "Ã°Å¸â€™â€ " },
+  { id: "all", name: "All Services", icon: "ÃƒÂ¢Ã‚Â­Ã‚Â" },
+  { id: "cleaning", name: "Cleaning", icon: "ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â¹" },
+  { id: "makeup", name: "Makeup", icon: "ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã¢â‚¬Å¾" },
+  { id: "hair", name: "Hair", icon: "ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã¢â‚¬Â¡" },
+  { id: "nails", name: "Nails", icon: "ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã¢â‚¬Â¦" },
+  { id: "massage", name: "Massage", icon: "ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã¢â‚¬Â " },
 ];
 
 export default function ServicesPage() {
@@ -88,7 +88,7 @@ export default function ServicesPage() {
       {/* Header */}
       <div style={{ background: "linear-gradient(135deg, #E61D72 0%, #7C3AED 100%)", padding: "24px 24px 40px", color: "#fff" }}>
         <Link href="/" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "13px" }}>
-          Ã¢â€ Â Back
+          ÃƒÂ¢Ã¢â‚¬Â Ã‚Â Back
         </Link>
         <h1 style={{ fontSize: "28px", fontWeight: 900, margin: "16px 0 8px" }}>
           {selectedCategory === "all" ? "All Services" : categories.find(c => c.id === selectedCategory)?.name}
@@ -131,7 +131,7 @@ export default function ServicesPage() {
           </div>
         ) : filteredArtists.length === 0 ? (
           <div style={{ textAlign: "center", padding: "48px" }}>
-            <p style={{ fontSize: "48px", margin: "0 0 16px" }}>Ã°Å¸â€Â</p>
+            <p style={{ fontSize: "48px", margin: "0 0 16px" }}>ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â</p>
             <p style={{ fontWeight: 700, fontSize: "18px", margin: "0 0 8px" }}>No services found</p>
             <p style={{ color: "#888", fontSize: "14px", margin: "0 0 16px" }}>Try selecting a different category</p>
             <button
@@ -164,7 +164,7 @@ export default function ServicesPage() {
                     <h2 style={{ fontSize: "20px", fontWeight: 900, margin: "0 0 4px" }}>{artist.name}</h2>
                     <p style={{ color: "#888", fontSize: "14px", margin: "0 0 8px" }}>{artist.bio}</p>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ color: "#F59E0B", fontSize: "16px" }}>Ã¢Â­Â</span>
+                      <span style={{ color: "#F59E0B", fontSize: "16px" }}>ÃƒÂ¢Ã‚Â­Ã‚Â</span>
                       <span style={{ fontWeight: 700, fontSize: "14px" }}>{artist.rating}</span>
                       <span style={{ color: "#888", fontSize: "13px" }}>({artist.total_reviews} reviews)</span>
                     </div>
@@ -210,13 +210,13 @@ export default function ServicesPage() {
                         )}
                         {service.duration && (
                           <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>
-                            Ã¢ÂÂ±Ã¯Â¸Â {service.duration}
+                            ÃƒÂ¢Ã‚ÂÃ‚Â±ÃƒÂ¯Ã‚Â¸Ã‚Â {service.duration}
                           </p>
                         )}
                       </div>
                       <div style={{ textAlign: "right", minWidth: "120px" }}>
                         <p style={{ fontWeight: 900, fontSize: "20px", color: "#E61D72", margin: "0 0 8px" }}>
-                          Ã¢â€šÂ±{service.price}
+                          ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â±{service.price}
                         </p>
                         <Link
                           href={`/booking?artistId=${artist.id}&artistName=${encodeURIComponent(artist.name)}&service=${encodeURIComponent(service.name)}&price=${service.price}`}
