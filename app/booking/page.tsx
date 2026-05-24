@@ -220,7 +220,7 @@ function BookingContent() {
     <div style={{ minHeight: "100vh", background: "#FFF0F6", padding: "24px" }}>
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
         <div style={{ marginBottom: "24px" }}>
-          <Link href="/" style={{ color: "#E61D72", textDecoration: "none", fontSize: "14px" }}>ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â Back</Link>
+          <Link href="/" style={{ color: "#E61D72", textDecoration: "none", fontSize: "14px" }}>ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â Back</Link>
           <h1 style={{ fontSize: "28px", fontWeight: 900, margin: "16px 0 8px", color: "#E61D72" }}>Book Service</h1>
         </div>
         <div style={{ background: "#fff", borderRadius: "16px", padding: "20px", marginBottom: "24px" }}>
@@ -236,7 +236,7 @@ function BookingContent() {
           <div style={{ background: "#F5F3FF", padding: "16px", borderRadius: "12px" }}>
             <p style={{ fontSize: "14px", color: "#7C3AED", fontWeight: 600, margin: "0 0 4px" }}>Service</p>
             <p style={{ fontSize: "18px", fontWeight: 900, margin: 0 }}>{(serviceName || "Service")}</p>
-            <p style={{ fontSize: "16px", color: "#E61D72", fontWeight: 700, marginTop: "8px" }}>ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±{servicePrice}</p>
+            <p style={{ fontSize: "16px", color: "#E61D72", fontWeight: 700, marginTop: "8px" }}>ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±{servicePrice}</p>
           </div>
         </div>
         <div style={{ background: "#fff", borderRadius: "16px", padding: "24px", marginBottom: "16px" }}>
@@ -254,6 +254,32 @@ function BookingContent() {
             )}
           </div>
         </div>
+
+          {/* Family Members */}
+          <div style={{ marginBottom: '24px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '12px' }}>How many people? *</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                <button
+                  key={num}
+                  type='button'
+                  onClick={() => setMembers(num)}
+                  style={{
+                    padding: '12px',
+                    borderRadius: '12px',
+                    border: members === num ? '2px solid #E61D72' : '1px solid #e5e7eb',
+                    background: members === num ? '#FFF0F6' : '#fff',
+                    color: members === num ? '#E61D72' : '#000',
+                    fontWeight: members === num ? 700 : 400,
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                  }}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+          </div>
         <div style={{ background: "#fff", borderRadius: "16px", padding: "24px", marginBottom: "16px" }}>
           <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px" }}>Where should we go? *</h3>
           <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyPress={(e) => e.key === "Enter" && searchAddress()} placeholder="Search address..." style={{ width: "100%", padding: "12px", borderRadius: "12px", border: "1px solid #E5E7EB", fontSize: "14px", marginBottom: "8px" }} />
@@ -266,7 +292,7 @@ function BookingContent() {
             </div>
           )}
           <div ref={mapRef} style={{ height: "300px", borderRadius: "12px", marginBottom: "12px" }} />
-          {address && <div style={{ background: "#f8f8f8", padding: "12px", borderRadius: "8px", fontSize: "13px", color: "#666", marginBottom: "12px" }}>ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â {address}</div>}
+          {address && <div style={{ background: "#f8f8f8", padding: "12px", borderRadius: "8px", fontSize: "13px", color: "#666", marginBottom: "12px" }}>ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â {address}</div>}
           <label style={{ display: "block", fontWeight: 600, marginBottom: "8px", fontSize: "14px" }}>Landmark (optional)</label>
           <input type="text" value={landmark} onChange={(e) => setLandmark(e.target.value)} placeholder="e.g., Near 7-Eleven" style={{ width: "100%", padding: "12px", borderRadius: "12px", border: "1px solid #E5E7EB", fontSize: "14px" }} />
         </div>
@@ -287,7 +313,7 @@ function BookingContent() {
               <button onClick={() => { setAppliedVoucher(null); setVoucherCode(""); }} style={{ background: "#ef4444", color: "#fff", border: "none", padding: "12px 24px", borderRadius: "12px", fontWeight: 600 }}>Remove</button>
             )}
           </div>
-          {appliedVoucher && <div style={{ background: "#dcfce7", padding: "12px", borderRadius: "8px", marginTop: "12px", fontSize: "13px", color: "#16a34a" }}>ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ Applied: {appliedVoucher.code} (-ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±{appliedVoucher.discount})</div>}
+          {appliedVoucher && <div style={{ background: "#dcfce7", padding: "12px", borderRadius: "8px", marginTop: "12px", fontSize: "13px", color: "#16a34a" }}>ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ Applied: {appliedVoucher.code} (-ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±{appliedVoucher.discount})</div>}
         </div>
         <div style={{ background: "#fff", borderRadius: "16px", padding: "24px", marginBottom: "16px" }}>
           <label style={{ display: "block", fontWeight: 600, marginBottom: "8px", fontSize: "14px" }}>Notes (Optional)</label>
@@ -297,26 +323,26 @@ function BookingContent() {
           <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px" }}>Payment Summary</h3>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0" }}>
             <span>{(serviceName || "Service")}</span>
-            <span style={{ fontWeight: 600 }}>ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±{servicePrice}</span>
+            <span style={{ fontWeight: 600 }}>ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±{servicePrice}</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", color: "#888" }}>
             <span>Transport</span>
-            <span style={{ fontWeight: 600 }}>ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±50</span>
+            <span style={{ fontWeight: 600 }}>ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±50</span>
           </div>
           {appliedVoucher && (
             <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", color: "#22c55e" }}>
               <span>Discount</span>
-              <span style={{ fontWeight: 600 }}>-ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±{appliedVoucher.discount}</span>
+              <span style={{ fontWeight: 600 }}>-ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±{appliedVoucher.discount}</span>
             </div>
           )}
           <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderTop: "2px solid #f0f0f0", marginTop: "8px" }}>
             <span style={{ fontWeight: 900, fontSize: "16px" }}>Total</span>
-            <span style={{ fontWeight: 900, fontSize: "18px", color: "#E61D72" }}>ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±{getTotal()}</span>
+            <span style={{ fontWeight: 900, fontSize: "18px", color: "#E61D72" }}>ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±{getTotal()}</span>
           </div>
         </div>
         {error && <div style={{ background: "#FEF2F2", color: "#f87171", padding: "12px 16px", borderRadius: "12px", marginBottom: "16px", fontSize: "13px" }}>{error}</div>}
         <button onClick={handleSubmit} disabled={loading} style={{ width: "100%", background: loading ? "#ccc" : "linear-gradient(135deg, #E61D72, #7C3AED)", color: "#fff", border: "none", padding: "16px", borderRadius: "16px", fontWeight: 700, fontSize: "16px", cursor: loading ? "not-allowed" : "pointer" }}>
-          {loading ? "Processing..." : `Pay Now - ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±${getTotal()}`}
+          {loading ? "Processing..." : `Pay Now - ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±${getTotal()}`}
         </button>
       </div>
     </div>
