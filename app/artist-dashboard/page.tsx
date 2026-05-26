@@ -115,7 +115,7 @@ export default function ArtistDashboardPage() {
   };
 
   const fetchMyServices = async (id: number) => {
-    const res = await fetch(`/api/artist-services?artistId=${id});
+    const res = await fetch(`/api/artist-services?artistId=${id}`);
     const data = await res.json();
     setMyServices(data.services || []);
   };

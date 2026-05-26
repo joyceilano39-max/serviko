@@ -111,7 +111,7 @@ function BookingContent() {
     try {
       const res = await fetch(https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json, { headers: { "User-Agent": "Serviko App" } });
       const data = await res.json();
-      const addr = data.display_name || ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      const addr = data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
       setAddress(addr);
       setLocation({ lat, lng, address: addr });
     } catch {
