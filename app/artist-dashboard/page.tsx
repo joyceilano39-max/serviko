@@ -46,7 +46,7 @@ export default function ArtistDashboardPage() {
   const fetchBookings = async (id: number) => {
     setLoadingBookings(true);
     try {
-      const res = await fetch(/api/artist/bookings?artistId=${id});
+      const res = await fetch(`/api/artist/bookings?artistId=${id});
       const data = await res.json();
       setBookings(data.bookings || []);
     } catch (err) {
@@ -232,7 +232,7 @@ export default function ArtistDashboardPage() {
   const handleBookingAction = async (bookingId: number, status: string) => {
     setProcessing(true);
     try {
-      const res = await fetch("/api/artist/bookings", {
+      const res = await fetch("`/api/artist/bookings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bookingId, status }),
