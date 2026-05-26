@@ -318,7 +318,7 @@ export default function ArtistDashboardPage() {
       <div style={{ background: "#fff", display: "flex", gap: "4px", padding: "12px 20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", overflowX: "auto" }}>
         {[
           { id: "overview", label: "Overview" },
-          { id: "bookings", label: Bookings ${pending.length > 0 ? (${pending.length}) : ""}` },
+          { id: "bookings", label: `Bookings ${pending.length > 0 ? `(${pending.length})` : ""}` },
           { id: "earnings", label: "Earnings" },
           { id: "profile", label: "Profile" },
           { id: "portfolio", label: "Portfolio" },
