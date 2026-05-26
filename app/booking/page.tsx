@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -44,7 +44,7 @@ function BookingContent() {
     if (!artistId) return;
     const fetchArtist = async () => {
       try {
-        const res = await fetch(`/api/artists/${artistId}`);
+        const res = await fetch(/api/artists/${artistId});
         const data = await res.json();
         if (data.artist) setArtist(data.artist);
       } catch (err) {
@@ -72,7 +72,7 @@ function BookingContent() {
       mapInstanceRef.current = map;
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "OpenStreetMap" }).addTo(map);
       const pinkIcon = L.divIcon({
-        html: `<div style="background:#E61D72;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>`,
+        html: <div style="background:#E61D72;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>,
         className: "", iconSize: [32, 32], iconAnchor: [16, 32],
       });
       const marker = L.marker([defaultLat, defaultLng], { draggable: true, icon: pinkIcon }).addTo(map);
@@ -109,13 +109,13 @@ function BookingContent() {
 
   const reverseGeocode = async (lat: number, lng: number) => {
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`, { headers: { "User-Agent": "Serviko App" } });
+      const res = await fetch(https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json, { headers: { "User-Agent": "Serviko App" } });
       const data = await res.json();
-      const addr = data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      const addr = data.display_name || ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
       setAddress(addr);
       setLocation({ lat, lng, address: addr });
     } catch {
-      const addr = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      const addr = ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
       setAddress(addr);
       setLocation({ lat, lng, address: addr });
     }
@@ -124,7 +124,7 @@ function BookingContent() {
   const searchAddress = async () => {
     if (!searchQuery.trim()) return;
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery + " Philippines")}&format=json&limit=5`, { headers: { "User-Agent": "Serviko App" } });
+      const res = await fetch(https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery + " Philippines")}&format=json&limit=5, { headers: { "User-Agent": "Serviko App" } });
       const data = await res.json();
       setSearchResults(data);
     } catch {
@@ -171,8 +171,7 @@ function BookingContent() {
   };
 
   const handleSubmit = async () => {
-    // Validate future date/time
-    const selectedDateTime = new Date(`${date}T${time}`);
+    const selectedDateTime = new Date(${date}T${time});
     const now = new Date();
     if (selectedDateTime <= now) {
       setError("Please select a future date and time");
@@ -188,14 +187,15 @@ function BookingContent() {
     try {
       const bookingData = {
         artistId, artistName, service: (serviceName || "Service"), price: Number(servicePrice), date, time, members,
-        location: { lat: location.lat, lng: location.lng, address: location.address, landmark },
+        location: { lat: location.lat, lng: location.lng, address: location.address },
+        landmark,
         contactName, contactPhone, voucherCode: appliedVoucher?.code || null,
         discount: appliedVoucher?.discount || 0, notes, transportFee: 50, total: getTotal(),
       };
       const paymentRes = await fetch("/api/payment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(bookingData) });
       const paymentData = await paymentRes.json();
       if (paymentData.checkout_url) {
-        window.location.href = `/work-permit?bookingId=${paymentData.booking_id}`;
+        window.location.href = /work-permit?bookingId=${paymentData.booking_id};
       } else {
         setError("Payment initialization failed");
         setLoading(false);
@@ -208,7 +208,7 @@ function BookingContent() {
 
   const getTodayDate = () => {
     const today = new Date();
-    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    return ${today.getFullYear()}`-${String(today.getMonth() + 1).padStart(2, '0')}`-${String(today.getDate()).padStart(2, '0')}`;
   };
 
   const getTotal = () => {
@@ -255,7 +255,6 @@ function BookingContent() {
           </div>
         </div>
 
-        {/* Family Members */}
         <div style={{ background: "#fff", borderRadius: "16px", padding: "24px", marginBottom: "16px" }}>
           <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "12px" }}>How many people? *</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
@@ -343,7 +342,7 @@ function BookingContent() {
         </div>
         {error && <div style={{ background: "#FEF2F2", color: "#f87171", padding: "12px 16px", borderRadius: "12px", marginBottom: "16px", fontSize: "13px" }}>{error}</div>}
         <button onClick={handleSubmit} disabled={loading} style={{ width: "100%", background: loading ? "#ccc" : "linear-gradient(135deg, #E61D72, #7C3AED)", color: "#fff", border: "none", padding: "16px", borderRadius: "16px", fontWeight: 700, fontSize: "16px", cursor: loading ? "not-allowed" : "pointer" }}>
-          {loading ? "Processing..." : `Pay Now - ₱${getTotal()}`}
+          {loading ? "Processing..." : Pay Now - ₱${getTotal()}}
         </button>
       </div>
     </div>
