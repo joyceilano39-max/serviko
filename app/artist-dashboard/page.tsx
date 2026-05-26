@@ -232,7 +232,7 @@ export default function ArtistDashboardPage() {
   const handleBookingAction = async (bookingId: number, status: string) => {
     setProcessing(true);
     try {
-      const res = await fetch("`/api/artist/bookings", {
+      const res = await fetch(`/api/artist/bookings`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bookingId, status }),
