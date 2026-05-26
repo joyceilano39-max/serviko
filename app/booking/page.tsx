@@ -109,7 +109,7 @@ function BookingContent() {
 
   const reverseGeocode = async (lat: number, lng: number) => {
     try {
-      const res = await fetch(https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json, { headers: { "User-Agent": "Serviko App" } });
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json, { headers: { "User-Agent": "Serviko App" } });
       const data = await res.json();
       const addr = data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
       setAddress(addr);
@@ -124,7 +124,7 @@ function BookingContent() {
   const searchAddress = async () => {
     if (!searchQuery.trim()) return;
     try {
-      const res = await fetch(https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery + " Philippines")}&format=json&limit=5, { headers: { "User-Agent": "Serviko App" } });
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery + " Philippines")}&format=json&limit=5, { headers: { "User-Agent": "Serviko App" } });
       const data = await res.json();
       setSearchResults(data);
     } catch {
