@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useEffect } from "react";
 import { useUser, UserButton } from "@clerk/nextjs";
 
@@ -46,7 +46,7 @@ export default function ArtistDashboardPage() {
   const fetchBookings = async (id: number) => {
     setLoadingBookings(true);
     try {
-      const res = await fetch(/api/artist/bookings?artistId=${id});
+      const res = await fetch(`/api/artist/bookings?artistId=${id});
       const data = await res.json();
       setBookings(data.bookings || []);
     } catch (err) {
@@ -84,7 +84,7 @@ export default function ArtistDashboardPage() {
           disabled={updatingStatus === booking.id}
           style={{ background: "#10b981", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}
         >
-          {updatingStatus === booking.id ? "..." : "✓ Confirm Booking"}
+          {updatingStatus === booking.id ? "..." : "? Confirm Booking"}
         </button>
       );
     } else if (status === "confirmed") {
@@ -94,7 +94,7 @@ export default function ArtistDashboardPage() {
           disabled={updatingStatus === booking.id}
           style={{ background: "#3b82f6", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}
         >
-          {updatingStatus === booking.id ? "..." : "🔧 Start Work"}
+          {updatingStatus === booking.id ? "..." : "?? Start Work"}
         </button>
       );
     } else if (status === "in_progress") {
@@ -104,18 +104,18 @@ export default function ArtistDashboardPage() {
           disabled={updatingStatus === booking.id}
           style={{ background: "#8b5cf6", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}
         >
-          {updatingStatus === booking.id ? "..." : "✓ Complete Job"}
+          {updatingStatus === booking.id ? "..." : "? Complete Job"}
         </button>
       );
     } else if (status === "completed") {
-      return <span style={{ color: "#10b981", fontWeight: 600 }}>✓ Completed</span>;
+      return <span style={{ color: "#10b981", fontWeight: 600 }}>? Completed</span>;
     } else {
       return <span style={{ color: "#888" }}>{status}</span>;
     }
   };
 
   const fetchMyServices = async (id: number) => {
-    const res = await fetch(/api/artist-services?artistId=${id});
+    const res = await fetch(`/api/artist-services?artistId=${id});
     const data = await res.json();
     setMyServices(data.services || []);
   };
@@ -143,7 +143,7 @@ export default function ArtistDashboardPage() {
   };
 
   const fetchPortfolio = async (id: number) => {
-    const res = await fetch(/api/portfolio?artistId=${id});
+    const res = await fetch(`/api/portfolio?artistId=${id});
     const data = await res.json();
     setPortfolioPhotos(data.photos || []);
   };
@@ -224,7 +224,7 @@ export default function ArtistDashboardPage() {
   const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
-    fetch(/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id})
+    fetch(`/api/auth/role?email=${user?.emailAddresses[0]?.emailAddress}&clerkId=${user?.id})
       .then(r => r.json())
       .then(d => { if (d.profilePhoto) setProfilePhoto(d.profilePhoto); if (d.name) setDbName(d.name.split(" ")[0]); if (d.artistId) { setArtistId(d.artistId); fetchPortfolio(d.artistId); fetchMyServices(d.artistId); fetchBookings(d.artistId); setLoading(false); } });
   }, [user]);
@@ -337,7 +337,7 @@ export default function ArtistDashboardPage() {
               {[
                 { label: "Pending", value: pending.length, color: "#D97706", bg: "#FFF9E6" },
                 { label: "Completed", value: completed.length, color: "#22c55e", bg: "#F0FDF4" },
-                { label: "Total Earnings", value: ₱${Math.round(totalEarnings)}, color: "#7C3AED", bg: "#F5F3FF" },
+                { label: "Total Earnings", value: ?${Math.round(totalEarnings)}, color: "#7C3AED", bg: "#F5F3FF" },
               ].map(stat => (
                 <div key={stat.label} style={{ background: stat.bg, borderRadius: "16px", padding: "16px", textAlign: "center" }}>
                   <p style={{ fontWeight: 900, fontSize: "24px", color: stat.color, margin: "0 0 4px" }}>{stat.value}</p>
@@ -368,7 +368,7 @@ export default function ArtistDashboardPage() {
                         <span style={{ background: sc.bg, color: sc.color, padding: "3px 8px", borderRadius: "20px", fontSize: "10px", fontWeight: 700, textTransform: "capitalize", display: "block", marginBottom: "4px" }}>
                           {booking.status}
                         </span>
-                        <p style={{ fontWeight: 700, color: "#7C3AED", margin: 0, fontSize: "13px" }}>₱{booking.total}</p>
+                        <p style={{ fontWeight: 700, color: "#7C3AED", margin: 0, fontSize: "13px" }}>?{booking.total}</p>
                       </div>
                     </div>
                   );
@@ -413,8 +413,8 @@ export default function ArtistDashboardPage() {
                           <span style={{ background: sc.bg, color: sc.color, padding: "3px 8px", borderRadius: "20px", fontSize: "10px", fontWeight: 700, textTransform: "capitalize", display: "block", marginBottom: "4px" }}>
                             {booking.status}
                           </span>
-                          <p style={{ fontWeight: 900, color: "#7C3AED", margin: 0, fontSize: "16px" }}>₱{booking.total}</p>
-                          <p style={{ color: "#888", fontSize: "10px", margin: 0 }}>Your cut: ₱{Math.round(booking.total * 0.9)}</p>
+                          <p style={{ fontWeight: 900, color: "#7C3AED", margin: 0, fontSize: "16px" }}>?{booking.total}</p>
+                          <p style={{ color: "#888", fontSize: "10px", margin: 0 }}>Your cut: ?{Math.round(booking.total * 0.9)}</p>
                         </div>
                       </div>
                       <p style={{ color: "#555", fontSize: "12px", margin: "0 0 8px" }}>Address: {booking.address}</p>
@@ -441,7 +441,7 @@ export default function ArtistDashboardPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div style={{ background: "linear-gradient(135deg, #7C3AED, #4F46E5)", borderRadius: "20px", padding: "28px", color: "#fff", textAlign: "center" }}>
               <p style={{ opacity: 0.8, margin: "0 0 8px", fontSize: "14px" }}>Total Earnings (90%)</p>
-              <p style={{ fontWeight: 900, fontSize: "40px", margin: "0 0 4px" }}>₱{Math.round(totalEarnings)}</p>
+              <p style={{ fontWeight: 900, fontSize: "40px", margin: "0 0 4px" }}>?{Math.round(totalEarnings)}</p>
               <p style={{ opacity: 0.7, fontSize: "12px", margin: 0 }}>From {completed.length} completed bookings</p>
             </div>
             <div style={{ background: "#fff", borderRadius: "20px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
@@ -456,8 +456,8 @@ export default function ArtistDashboardPage() {
                       <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{booking.date}</p>
                     </div>
                     <div style={{ textAlign: "right" }}>
-                      <p style={{ fontWeight: 700, color: "#22c55e", margin: "0 0 2px" }}>+₱{Math.round(booking.total * 0.9)}</p>
-                      <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>Total: ₱{booking.total}</p>
+                      <p style={{ fontWeight: 700, color: "#22c55e", margin: "0 0 2px" }}>+?{Math.round(booking.total * 0.9)}</p>
+                      <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>Total: ?{booking.total}</p>
                     </div>
                   </div>
                 ))
@@ -487,7 +487,7 @@ export default function ArtistDashboardPage() {
                 {[
                   { label: "Total Bookings", val: bookings.length },
                   { label: "Completed", val: completed.length },
-                  { label: "Total Earnings", val: ₱${Math.round(totalEarnings)} },
+                  { label: "Total Earnings", val: ?${Math.round(totalEarnings)} },
                 ].map(item => (
                   <div key={item.label} style={{ textAlign: "center" }}>
                     <p style={{ fontWeight: 900, fontSize: "20px", color: "#7C3AED", margin: "0 0 2px" }}>{item.val}</p>
@@ -535,7 +535,7 @@ export default function ArtistDashboardPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 <input value={newServiceName} onChange={e => setNewServiceName(e.target.value)} placeholder="Service name (e.g. Haircut & Styling)" style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px" }} />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                  <input value={newServicePrice} onChange={e => setNewServicePrice(e.target.value)} placeholder="Price (₱)" type="number" style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px" }} />
+                  <input value={newServicePrice} onChange={e => setNewServicePrice(e.target.value)} placeholder="Price (?)" type="number" style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px" }} />
                   <input value={newServiceDuration} onChange={e => setNewServiceDuration(e.target.value)} placeholder="Duration (e.g. 1 hour)" style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px" }} />
                 </div>
                 <input value={newServiceDesc} onChange={e => setNewServiceDesc(e.target.value)} placeholder="Description (optional)" style={{ padding: "10px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px" }} />
@@ -558,7 +558,7 @@ export default function ArtistDashboardPage() {
                         {service.description && <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>{service.description}</p>}
                       </div>
                       <div style={{ textAlign: "right", display: "flex", alignItems: "center", gap: "10px" }}>
-                        <p style={{ fontWeight: 900, color: "#7C3AED", fontSize: "16px", margin: 0 }}>₱{service.price}</p>
+                        <p style={{ fontWeight: 900, color: "#7C3AED", fontSize: "16px", margin: 0 }}>?{service.price}</p>
                         <button onClick={() => deleteService(service.id)} style={{ background: "#FEF2F2", color: "#f87171", border: "none", borderRadius: "8px", padding: "6px 10px", cursor: "pointer", fontWeight: 700, fontSize: "12px" }}>Del</button>
                       </div>
                     </div>
@@ -575,7 +575,7 @@ export default function ArtistDashboardPage() {
           <div style={{ background: "#fff", borderRadius: "24px", padding: "28px", maxWidth: "400px", width: "100%", textAlign: "center" }}>
             {reviewSuccess ? (
               <>
-                <div style={{ fontSize: "48px", marginBottom: "12px" }}>🎉</div>
+                <div style={{ fontSize: "48px", marginBottom: "12px" }}>??</div>
                 <h3 style={{ fontWeight: 900, margin: "0 0 8px", color: "#22c55e" }}>Review Submitted!</h3>
                 <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>Thank you for your feedback!</p>
                 <button onClick={() => { setReviewBooking(null); setReviewSuccess(false); setReviewComment(""); setReviewRating(5); }} style={{ width: "100%", background: "#7C3AED", color: "#fff", border: "none", padding: "12px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>Done</button>
@@ -586,7 +586,7 @@ export default function ArtistDashboardPage() {
                 <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>How was {reviewBooking.customer_name}?</p>
                 <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginBottom: "16px" }}>
                   {[1,2,3,4,5].map(star => (
-                    <button key={star} onClick={() => setReviewRating(star)} style={{ background: "none", border: "none", fontSize: "32px", cursor: "pointer", opacity: star <= reviewRating ? 1 : 0.3 }}>⭐</button>
+                    <button key={star} onClick={() => setReviewRating(star)} style={{ background: "none", border: "none", fontSize: "32px", cursor: "pointer", opacity: star <= reviewRating ? 1 : 0.3 }}>?</button>
                   ))}
                 </div>
                 <textarea value={reviewComment} onChange={e => setReviewComment(e.target.value)} placeholder="Leave a comment about this booking..." style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "13px", marginBottom: "16px", minHeight: "80px", boxSizing: "border-box", resize: "none" }} />
@@ -626,8 +626,8 @@ export default function ArtistDashboardPage() {
                 { label: "Date", val: selectedBooking.date },
                 { label: "Time", val: selectedBooking.time },
                 { label: "Address", val: selectedBooking.address },
-                { label: "Total", val: ₱${selectedBooking.total} },
-                { label: "Your Cut (90%)", val: ₱${Math.round(selectedBooking.total * 0.9)} },
+                { label: "Total", val: ?${selectedBooking.total} },
+                { label: "Your Cut (90%)", val: ?${Math.round(selectedBooking.total * 0.9)} },
               ].map(item => (
                 <div key={item.label} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #f0f0f0" }}>
                   <span style={{ color: "#888", fontSize: "13px" }}>{item.label}</span>

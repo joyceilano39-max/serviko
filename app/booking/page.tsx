@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -44,7 +44,7 @@ function BookingContent() {
     if (!artistId) return;
     const fetchArtist = async () => {
       try {
-        const res = await fetch(/api/artists/${artistId});
+        const res = await fetch(`/api/artists/${artistId});
         const data = await res.json();
         if (data.artist) setArtist(data.artist);
       } catch (err) {
@@ -220,7 +220,7 @@ function BookingContent() {
     <div style={{ minHeight: "100vh", background: "#FFF0F6", padding: "24px" }}>
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
         <div style={{ marginBottom: "24px" }}>
-          <Link href="/" style={{ color: "#E61D72", textDecoration: "none", fontSize: "14px" }}>← Back</Link>
+          <Link href="/" style={{ color: "#E61D72", textDecoration: "none", fontSize: "14px" }}>? Back</Link>
           <h1 style={{ fontSize: "28px", fontWeight: 900, margin: "16px 0 8px", color: "#E61D72" }}>Book Service</h1>
         </div>
         <div style={{ background: "#fff", borderRadius: "16px", padding: "20px", marginBottom: "24px" }}>
@@ -236,7 +236,7 @@ function BookingContent() {
           <div style={{ background: "#F5F3FF", padding: "16px", borderRadius: "12px" }}>
             <p style={{ fontSize: "14px", color: "#7C3AED", fontWeight: 600, margin: "0 0 4px" }}>Service</p>
             <p style={{ fontSize: "18px", fontWeight: 900, margin: 0 }}>{(serviceName || "Service")}</p>
-            <p style={{ fontSize: "16px", color: "#E61D72", fontWeight: 700, marginTop: "8px" }}>₱{servicePrice}</p>
+            <p style={{ fontSize: "16px", color: "#E61D72", fontWeight: 700, marginTop: "8px" }}>?{servicePrice}</p>
           </div>
         </div>
         <div style={{ background: "#fff", borderRadius: "16px", padding: "24px", marginBottom: "16px" }}>
@@ -292,7 +292,7 @@ function BookingContent() {
             </div>
           )}
           <div ref={mapRef} style={{ height: "300px", borderRadius: "12px", marginBottom: "12px" }} />
-          {address && <div style={{ background: "#f8f8f8", padding: "12px", borderRadius: "8px", fontSize: "13px", color: "#666", marginBottom: "12px" }}>📍 {address}</div>}
+          {address && <div style={{ background: "#f8f8f8", padding: "12px", borderRadius: "8px", fontSize: "13px", color: "#666", marginBottom: "12px" }}>?? {address}</div>}
           <label style={{ display: "block", fontWeight: 600, marginBottom: "8px", fontSize: "14px" }}>Landmark (optional)</label>
           <input type="text" value={landmark} onChange={(e) => setLandmark(e.target.value)} placeholder="e.g., Near 7-Eleven" style={{ width: "100%", padding: "12px", borderRadius: "12px", border: "1px solid #E5E7EB", fontSize: "14px" }} />
         </div>
@@ -313,7 +313,7 @@ function BookingContent() {
               <button onClick={() => { setAppliedVoucher(null); setVoucherCode(""); }} style={{ background: "#ef4444", color: "#fff", border: "none", padding: "12px 24px", borderRadius: "12px", fontWeight: 600 }}>Remove</button>
             )}
           </div>
-          {appliedVoucher && <div style={{ background: "#dcfce7", padding: "12px", borderRadius: "8px", marginTop: "12px", fontSize: "13px", color: "#16a34a" }}>✓ Applied: {appliedVoucher.code} (-₱{appliedVoucher.discount})</div>}
+          {appliedVoucher && <div style={{ background: "#dcfce7", padding: "12px", borderRadius: "8px", marginTop: "12px", fontSize: "13px", color: "#16a34a" }}>? Applied: {appliedVoucher.code} (-?{appliedVoucher.discount})</div>}
         </div>
         <div style={{ background: "#fff", borderRadius: "16px", padding: "24px", marginBottom: "16px" }}>
           <label style={{ display: "block", fontWeight: 600, marginBottom: "8px", fontSize: "14px" }}>Notes (Optional)</label>
@@ -323,26 +323,26 @@ function BookingContent() {
           <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px" }}>Payment Summary</h3>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0" }}>
             <span>{(serviceName || "Service")}</span>
-            <span style={{ fontWeight: 600 }}>₱{servicePrice}</span>
+            <span style={{ fontWeight: 600 }}>?{servicePrice}</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", color: "#888" }}>
             <span>Transport</span>
-            <span style={{ fontWeight: 600 }}>₱50</span>
+            <span style={{ fontWeight: 600 }}>?50</span>
           </div>
           {appliedVoucher && (
             <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", color: "#22c55e" }}>
               <span>Discount</span>
-              <span style={{ fontWeight: 600 }}>-₱{appliedVoucher.discount}</span>
+              <span style={{ fontWeight: 600 }}>-?{appliedVoucher.discount}</span>
             </div>
           )}
           <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderTop: "2px solid #f0f0f0", marginTop: "8px" }}>
             <span style={{ fontWeight: 900, fontSize: "16px" }}>Total</span>
-            <span style={{ fontWeight: 900, fontSize: "18px", color: "#E61D72" }}>₱{getTotal()}</span>
+            <span style={{ fontWeight: 900, fontSize: "18px", color: "#E61D72" }}>?{getTotal()}</span>
           </div>
         </div>
         {error && <div style={{ background: "#FEF2F2", color: "#f87171", padding: "12px 16px", borderRadius: "12px", marginBottom: "16px", fontSize: "13px" }}>{error}</div>}
         <button onClick={handleSubmit} disabled={loading} style={{ width: "100%", background: loading ? "#ccc" : "linear-gradient(135deg, #E61D72, #7C3AED)", color: "#fff", border: "none", padding: "16px", borderRadius: "16px", fontWeight: 700, fontSize: "16px", cursor: loading ? "not-allowed" : "pointer" }}>
-          {loading ? "Processing..." : Pay Now - ₱${getTotal()}}
+          {loading ? "Processing..." : Pay Now - ?${getTotal()}}
         </button>
       </div>
     </div>
