@@ -626,8 +626,8 @@ export default function ArtistDashboardPage() {
                 { label: "Date", val: selectedBooking.date },
                 { label: "Time", val: selectedBooking.time },
                 { label: "Address", val: selectedBooking.address },
-                { label: "Total", val: ?${selectedBooking.total} },
-                { label: "Your Cut (90%)", val: ?${Math.round(selectedBooking.total * 0.9)} },
+                { label: "Total", val: `?${selectedBooking.total}` },
+                { label: "Your Cut (90%)", val: `?${Math.round(selectedBooking.total * 0.9)}` },
               ].map(item => (
                 <div key={item.label} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #f0f0f0" }}>
                   <span style={{ color: "#888", fontSize: "13px" }}>{item.label}</span>
@@ -647,3 +647,4 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
