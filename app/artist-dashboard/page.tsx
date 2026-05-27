@@ -604,7 +604,7 @@ export default function ArtistDashboardPage() {
                     await fetch("/api/reviews", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ artistId, customerName: reviewBooking.contact_name, customerEmail: reviewBooking.customer_email, bookingId: reviewBooking.id, rating: reviewRating, comment: reviewComment }),
+                      body: JSON.stringify({ artistId, customerName: reviewBooking.contact_name, customerEmail: reviewBooking.contact_email, bookingId: reviewBooking.id, rating: reviewRating, comment: reviewComment }),
                     });
                     setReviewSubmitting(false);
                     setReviewSuccess(true);
@@ -654,5 +654,6 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
 
 
