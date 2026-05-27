@@ -20,8 +20,8 @@ export async function POST(request: Request) {
         transport_fee, total, notes, status, payment_status, customer_email
       ) VALUES (
         ${bookingReference}, ${body.artistId}, ${body.artistName}, ${body.service}, ${body.price},
-        ${body.date}, ${body.time}, ${body.location.lat}, ${body.location.lng}, 
-        ${body.location.address}, ${body.location.landmark || ''},
+        ${body.date}, ${body.time}, ${body.location?.lat || 0}, ${body.location?.lng || 0}, 
+        ${body.location?.address || body.address || ""}, ${body.location?.landmark || ""},
         ${body.contactName}, ${body.contactPhone}, ${body.voucherCode || ''}, ${body.discount || 0},
         ${body.transportFee}, ${body.total}, ${body.notes || ''}, 'pending', 'pending', \
       )
@@ -43,3 +43,5 @@ export async function POST(request: Request) {
     return Response.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
+
