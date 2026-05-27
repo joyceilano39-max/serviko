@@ -1,16 +1,16 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { useUser, UserButton } from "@clerk/nextjs";
 
 type Booking = {
   id: number;
-  customer_name: string;
-  customer_email: string;
-  customer_phone: string;
+  contact_name: string;
+  contact_email: string;
+  contact_phone: string;
   date: string;
   time: string;
-  address: string;
-  services: string;
+  location_address: string;
+  service: string;
   total: number;
   transport_fee: number;
   status: string;
@@ -369,7 +369,7 @@ export default function ArtistDashboardPage() {
                   return (
                     <div key={booking.id} onClick={() => setSelectedBooking(booking)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}>
                       <div>
-                        <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{booking.customer_name}</p>
+                        <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{booking.contact_name}</p>
                         <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{booking.date} at {booking.time}</p>
                       </div>
                       <div style={{ textAlign: "right" }}>
@@ -413,7 +413,7 @@ export default function ArtistDashboardPage() {
                     <div key={booking.id} style={{ background: "#fff", borderRadius: "16px", padding: "16px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", cursor: "pointer", border: booking.status === "pending" ? "2px solid #F59E0B" : "2px solid transparent" }} onClick={() => setSelectedBooking(booking)}>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                         <div>
-                          <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "15px" }}>{booking.customer_name}</p>
+                          <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "15px" }}>{booking.contact_name}</p>
                           <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>{booking.customer_phone}</p>
                           <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{booking.date} at {booking.time}</p>
                         </div>
@@ -425,7 +425,7 @@ export default function ArtistDashboardPage() {
                           <p style={{ color: "#888", fontSize: "10px", margin: 0 }}>Your cut: {`\u20B1${Math.round(booking.total * 0.9)}`}</p>
                         </div>
                       </div>
-                      <p style={{ color: "#555", fontSize: "12px", margin: "0 0 8px" }}>Address: {booking.address}</p>
+                      <p style={{ color: "#555", fontSize: "12px", margin: "0 0 8px" }}>Address: {booking.location_address || "No address"}</p>
                       {booking.notes && <p style={{ color: "#888", fontSize: "11px", margin: "0 0 8px", fontStyle: "italic" }}>Note: {booking.notes}</p>}
                       {booking.status === "pending" && (
                         <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
@@ -460,7 +460,7 @@ export default function ArtistDashboardPage() {
                 completed.map(booking => (
                   <div key={booking.id} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid #f0f0f0" }}>
                     <div>
-                      <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{booking.customer_name}</p>
+                      <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "14px" }}>{booking.contact_name}</p>
                       <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{booking.date}</p>
                     </div>
                     <div style={{ textAlign: "right" }}>
@@ -590,7 +590,7 @@ export default function ArtistDashboardPage() {
             ) : (
               <>
                 <h3 style={{ fontWeight: 900, margin: "0 0 4px" }}>Rate this Booking</h3>
-                <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>How was {reviewBooking.customer_name}?</p>
+                <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>How was {reviewbooking.contact_name}?</p>
                 <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginBottom: "16px" }}>
                   {[1,2,3,4,5].map(star => (
                     <button key={star} onClick={() => setReviewRating(star)} style={{ background: "none", border: "none", fontSize: "32px", cursor: "pointer", opacity: star <= reviewRating ? 1 : 0.3 }}>&#9733;</button>
@@ -604,7 +604,7 @@ export default function ArtistDashboardPage() {
                     await fetch("/api/reviews", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ artistId, customerName: reviewBooking.customer_name, customerEmail: reviewBooking.customer_email, bookingId: reviewBooking.id, rating: reviewRating, comment: reviewComment }),
+                      body: JSON.stringify({ artistId, customerName: reviewbooking.contact_name, customerEmail: reviewBooking.customer_email, bookingId: reviewBooking.id, rating: reviewRating, comment: reviewComment }),
                     });
                     setReviewSubmitting(false);
                     setReviewSuccess(true);
@@ -627,12 +627,12 @@ export default function ArtistDashboardPage() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
               {[
-                { label: "Customer", val: selectedBooking.customer_name },
-                { label: "Phone", val: selectedBooking.customer_phone },
-                { label: "Email", val: selectedBooking.customer_email },
+                { label: "Customer", val: selectedbooking.contact_name },
+                { label: "Phone", val: selectedBooking.contact_phone },
+                { label: "Email", val: selectedBooking.contact_email },
                 { label: "Date", val: selectedBooking.date },
                 { label: "Time", val: selectedBooking.time },
-                { label: "Address", val: selectedBooking.address },
+                { label: "Address", val: selectedbooking.location_address },
                 { label: "Total", val: `\u20B1${selectedBooking.total}` },
                 { label: "Your Cut (90%)", val: `\u20B1${Math.round(selectedBooking.total * 0.9)}` },
               ].map(item => (
@@ -654,3 +654,4 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
