@@ -87,7 +87,7 @@ export default function CustomerDashboardPage() {
       }
       const res = await fetch(`/api/customer/bookings?email=${email}`);
       const data = await res.json();
-      setBookings([]);
+      setBookings(data.bookings || []);
     } catch {
       setBookings([]);
     }
@@ -169,7 +169,7 @@ export default function CustomerDashboardPage() {
       {vouchers.length > 0 && activeTab === "bookings" && (
         <div style={{ padding: "0 20px 16px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-            <h3 style={{ fontWeight: 900, margin: 0, fontSize: "16px" }}>ðŸŽŸï¸ Active Promos</h3>
+            <h3 style={{ fontWeight: 900, margin: 0, fontSize: "16px" }}>&#127873;Ÿï¸ Active Promos</h3>
             <button onClick={() => setActiveTab("vouchers")} style={{ background: "none", border: "none", color: "#E61D72", fontWeight: 600, cursor: "pointer", fontSize: "13px" }}>
               See All
             </button>
@@ -191,7 +191,7 @@ export default function CustomerDashboardPage() {
       {artists.length > 0 && activeTab === "bookings" && (
         <div style={{ padding: "0 20px 16px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-            <h3 style={{ fontWeight: 900, margin: 0, fontSize: "16px" }}>âœ¨ Services Near You</h3>
+            <h3 style={{ fontWeight: 900, margin: 0, fontSize: "16px" }}>&#10024; Services Near You</h3>
             <Link href="/services" style={{ background: "none", border: "none", color: "#E61D72", fontWeight: 600, textDecoration: "none", fontSize: "13px" }}>
               See All
             </Link>
@@ -334,7 +334,7 @@ export default function CustomerDashboardPage() {
               {[
                 { href: "/user-profile", label: "Manage Account" },
                 { href: "/reviews", label: "My Reviews" },
-                { href: "/referral", label: "ðŸŽ Refer & Earn" },
+                { href: "/referral", label: "&#127873; Refer & Earn" },
                 { href: "/", label: "Back to Home" },
               ].map((item) => (
                 <Link key={item.href} href={item.href} style={{ display: "block", background: "#FFF0F6", color: "#E61D72", padding: "12px 16px", borderRadius: "12px", textDecoration: "none", fontWeight: 600, fontSize: "14px" }}>
@@ -432,4 +432,6 @@ export default function CustomerDashboardPage() {
     </div>
   );
 }
+
+
 
