@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -123,7 +123,7 @@ export default function ArtistProfilePage() {
                   </div>
                   <div style={{ textAlign: "right", marginLeft: "12px" }}>
                     <p style={{ fontWeight: 900, fontSize: "20px", color: "#E61D72", margin: "0 0 8px" }}>P{svc.price}</p>
-                    <Link href={"/booking?artistId=" + artist.id + "&artistName=" + encodeURIComponent(artist.name) + "&service=" + encodeURIComponent(svc.service_name) + "&price=" + svc.price}
+                    <Link href={"/checkout?artistId=" + artist.id + "&artistName=" + encodeURIComponent(artist.name) + "&service=" + encodeURIComponent(svc.service_name) + "&price=" + svc.price}
                       style={{ background: "#E61D72", color: "#fff", padding: "8px 16px", borderRadius: "20px", textDecoration: "none", fontSize: "12px", fontWeight: 700 }}>
                       Book
                     </Link>
@@ -190,7 +190,7 @@ export default function ArtistProfilePage() {
           </p>
           <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>Starting price</p>
         </div>
-        <Link href={"/booking?artistId=" + artist.id + "&artistName=" + encodeURIComponent(artist.name)}
+        <Link href={"/checkout?artistId=" + artist.id + "&artistName=" + encodeURIComponent(artist.name)}
           style={{ background: "#E61D72", color: "#fff", padding: "14px 28px", borderRadius: "14px", textDecoration: "none", fontWeight: 700, fontSize: "15px" }}>
           Book Now
         </Link>
@@ -198,3 +198,4 @@ export default function ArtistProfilePage() {
     </div>
   );
 }
+
