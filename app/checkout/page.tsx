@@ -108,21 +108,21 @@ function CheckoutContent() {
     setError("");
 
     try {
-      const res = await fetch("/api/bookings", {
+      const res = await fetch("/api/payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customer_name: name,
-          customer_email: email,
-          customer_phone: phone,
-          artist_id: bookingData.artistId,
+          contactName: name,
+          contactEmail: email,
+          contactPhone: phone,
+          artistId: bookingData.artistId,
           service: bookingData.service,
           date: bookingData.date,
           time: bookingData.time,
           address: bookingData.address,
           hours: bookingData.hours || 1,
           total: getTotal(),
-          transport_fee: bookingData.transportFee || 0,
+          transportFee: bookingData.transportFee || 0,
           notes: bookingData.notes || "",
           payment_method: paymentMethod,
           voucher_code: appliedVoucher?.code || "",
@@ -262,3 +262,4 @@ function CheckoutContent() {
 }
 
 export default function CheckoutPage() { return <Suspense fallback={<div>Loading...</div>}><CheckoutContent /></Suspense>; }
+
