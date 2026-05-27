@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
@@ -114,7 +114,7 @@ function CheckoutContent() {
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "16px" }}>
         <p style={{ color: "#888", fontSize: "16px" }}>No booking data found</p>
         <button onClick={() => router.push("/")} style={{ background: "#E61D72", color: "#fff", border: "none", padding: "12px 24px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
-          ← Go to Home
+          â† Go to Home
         </button>
       </div>
     );
@@ -126,7 +126,7 @@ function CheckoutContent() {
       <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1 style={{ fontSize: "20px", fontWeight: 700, margin: 0 }}>Checkout</h1>
         <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "#E61D72", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}>
-          ← Back
+          â† Back
         </button>
       </div>
 
@@ -255,3 +255,4 @@ export default function CheckoutPage() {
     </Suspense>
   );
 }
+
