@@ -1,6 +1,5 @@
 ﻿import { neon } from "@neondatabase/serverless";
 import { NextRequest, NextResponse } from "next/server";
-
 export async function GET(req: NextRequest) {
   const sql = neon(process.env.DATABASE_URL!);
   const email = req.nextUrl.searchParams.get("email");
@@ -12,7 +11,8 @@ export async function GET(req: NextRequest) {
         FROM bookings b
         LEFT JOIN artists a ON b.artist_id = a.id
         LEFT JOIN users u ON a.user_id = u.id
-        WHERE b.customer_email = ${email}
+        WHERE b.customer_id = (SELECT id FROM users WHERE email = ${email} LIMIT 1)
+        OR b.contact_name ILIKE (SELECT name FROM users WHERE email = ${email} LIMIT 1)
         ORDER BY b.created_at DESC
       `;
     } else {
