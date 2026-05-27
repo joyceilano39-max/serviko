@@ -1,5 +1,6 @@
-"use client";
-import { useState, useEffect } from "react";
+﻿"use client";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 type Voucher = {
@@ -13,7 +14,7 @@ type Voucher = {
   is_active: boolean;
 };
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const [bookingData, setBookingData] = useState<any>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -26,11 +27,20 @@ export default function CheckoutPage() {
   const [error, setError] = useState("");
   const [availableVouchers, setAvailableVouchers] = useState<Voucher[]>([]);
 
+  const searchParams = useSearchParams();
   useEffect(() => {
     const saved = localStorage.getItem("serviko_booking");
     if (saved) {
       const data = JSON.parse(saved);
       setBookingData(data);
+    } else {
+      const artistId = searchParams.get("artistId");
+      const artistName = searchParams.get("artistName");
+      const service = searchParams.get("service");
+      const price = searchParams.get("price");
+      if (artistId && artistName) {
+        setBookingData({ artistId, artistName, service, price, hourlyRate: price, hours: 1 });
+      }
     }
     fetchVouchers();
   }, []);
@@ -67,7 +77,7 @@ export default function CheckoutPage() {
           discount: data.discount,
           description: data.voucher.description,
         });
-        setVoucherMsg(`✅ ${data.message}`);
+        setVoucherMsg(`âœ… ${data.message}`);
       } else {
         setAppliedVoucher(null);
         setVoucherMsg(data.message);
@@ -138,7 +148,7 @@ export default function CheckoutPage() {
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", padding: "20px" }}>
         <p style={{ fontWeight: 700, margin: "0 0 12px" }}>No booking data found</p>
         <Link href="/booking" style={{ color: "#E61D72", textDecoration: "none", fontWeight: 600 }}>
-          ← Go to Booking
+          â† Go to Booking
         </Link>
       </div>
     );
@@ -149,7 +159,7 @@ export default function CheckoutPage() {
       <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1 style={{ fontSize: "20px", fontWeight: 700, margin: 0 }}>Checkout</h1>
         <Link href="/booking" style={{ color: "#888", textDecoration: "none", fontWeight: 600, fontSize: "14px" }}>
-          ← Back
+          â† Back
         </Link>
       </div>
 
@@ -184,7 +194,7 @@ export default function CheckoutPage() {
               Apply
             </button>
           </div>
-          {voucherMsg && <p style={{ fontSize: "12px", color: voucherMsg.startsWith("✅") ? "#22c55e" : "#f87171", margin: "0 0 8px" }}>{voucherMsg}</p>}
+          {voucherMsg && <p style={{ fontSize: "12px", color: voucherMsg.startsWith("âœ…") ? "#22c55e" : "#f87171", margin: "0 0 8px" }}>{voucherMsg}</p>}
           {availableVouchers.length > 0 && (
             <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
               {availableVouchers.map(v => (
@@ -218,22 +228,22 @@ export default function CheckoutPage() {
         <div style={{ background: "#fff", borderRadius: "16px", padding: "20px", marginBottom: "16px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
           <h3 style={{ fontWeight: 900, margin: "0 0 12px", fontSize: "16px" }}>Price Breakdown</h3>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0" }}>
-            <span style={{ color: "#888", fontSize: "13px" }}>Service ({bookingData.hours || 1}hr × ₱{bookingData.hourlyRate})</span>
-            <span style={{ fontWeight: 600, fontSize: "13px" }}>₱{(bookingData.hourlyRate || 0) * (bookingData.hours || 1)}</span>
+            <span style={{ color: "#888", fontSize: "13px" }}>Service ({bookingData.hours || 1}hr Ã— â‚±{bookingData.hourlyRate})</span>
+            <span style={{ fontWeight: 600, fontSize: "13px" }}>â‚±{(bookingData.hourlyRate || 0) * (bookingData.hours || 1)}</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0" }}>
             <span style={{ color: "#888", fontSize: "13px" }}>Transport Fee</span>
-            <span style={{ fontWeight: 600, fontSize: "13px" }}>₱{bookingData.transportFee || 0}</span>
+            <span style={{ fontWeight: 600, fontSize: "13px" }}>â‚±{bookingData.transportFee || 0}</span>
           </div>
           {appliedVoucher && (
             <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", color: "#22c55e" }}>
               <span style={{ fontSize: "13px" }}>Discount ({appliedVoucher.code})</span>
-              <span style={{ fontWeight: 600, fontSize: "13px" }}>-₱{appliedVoucher.discount}</span>
+              <span style={{ fontWeight: 600, fontSize: "13px" }}>-â‚±{appliedVoucher.discount}</span>
             </div>
           )}
           <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderTop: "2px solid #f0f0f0", marginTop: "8px" }}>
             <span style={{ fontWeight: 900, fontSize: "16px" }}>Total</span>
-            <span style={{ fontWeight: 900, fontSize: "18px", color: "#E61D72" }}>₱{getTotal()}</span>
+            <span style={{ fontWeight: 900, fontSize: "18px", color: "#E61D72" }}>â‚±{getTotal()}</span>
           </div>
         </div>
 
@@ -244,9 +254,11 @@ export default function CheckoutPage() {
         )}
 
         <button onClick={handleSubmit} disabled={loading} style={{ width: "100%", background: loading ? "#ccc" : "linear-gradient(135deg, #E61D72, #7C3AED)", color: "#fff", border: "none", padding: "16px", borderRadius: "16px", fontWeight: 700, fontSize: "16px", cursor: loading ? "not-allowed" : "pointer" }}>
-          {loading ? "Processing..." : `Pay ₱${getTotal()}`}
+          {loading ? "Processing..." : `Pay â‚±${getTotal()}`}
         </button>
       </div>
     </div>
   );
 }
+
+export default function CheckoutPage() { return <Suspense fallback={<div>Loading...</div>}><CheckoutContent /></Suspense>; }
