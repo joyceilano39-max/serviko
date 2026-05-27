@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { useUser, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
@@ -98,7 +98,7 @@ export default function CustomerDashboardPage() {
     switch (status) {
       case "pending":
         return { bg: "#FFF9E6", color: "#D97706", label: "Pending" };
-      case "accepted":
+      case "confirmed":
         return { bg: "#EFF6FF", color: "#3b82f6", label: "Confirmed" };
       case "completed":
         return { bg: "#F0FDF4", color: "#22c55e", label: "Completed" };
@@ -115,7 +115,7 @@ export default function CustomerDashboardPage() {
   };
 
   const pending = bookings.filter((b) => b.status === "pending");
-  const upcoming = bookings.filter((b) => b.status === "accepted");
+  const upcoming = bookings.filter((b) => b.status === "confirmed");
   const completed = bookings.filter((b) => b.status === "completed");
   const filteredBookings =
     filterStatus === "all"
@@ -169,7 +169,7 @@ export default function CustomerDashboardPage() {
       {vouchers.length > 0 && activeTab === "bookings" && (
         <div style={{ padding: "0 20px 16px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-            <h3 style={{ fontWeight: 900, margin: 0, fontSize: "16px" }}>🎟️ Active Promos</h3>
+            <h3 style={{ fontWeight: 900, margin: 0, fontSize: "16px" }}>ðŸŽŸï¸ Active Promos</h3>
             <button onClick={() => setActiveTab("vouchers")} style={{ background: "none", border: "none", color: "#E61D72", fontWeight: 600, cursor: "pointer", fontSize: "13px" }}>
               See All
             </button>
@@ -191,7 +191,7 @@ export default function CustomerDashboardPage() {
       {artists.length > 0 && activeTab === "bookings" && (
         <div style={{ padding: "0 20px 16px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-            <h3 style={{ fontWeight: 900, margin: 0, fontSize: "16px" }}>✨ Services Near You</h3>
+            <h3 style={{ fontWeight: 900, margin: 0, fontSize: "16px" }}>âœ¨ Services Near You</h3>
             <Link href="/services" style={{ background: "none", border: "none", color: "#E61D72", fontWeight: 600, textDecoration: "none", fontSize: "13px" }}>
               See All
             </Link>
@@ -203,7 +203,7 @@ export default function CustomerDashboardPage() {
                   {artist.photo ? (
                     <img src={artist.photo} alt={artist.name} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }} />
                   ) : (
-                    "👤"
+                    "ðŸ‘¤"
                   )}
                 </div>
                 <p style={{ fontWeight: 700, fontSize: "13px", margin: "0 0 2px", color: "#333" }}>
@@ -249,9 +249,9 @@ export default function CustomerDashboardPage() {
             </Link>
 
             <div style={{ display: "flex", gap: "8px", marginBottom: "16px", overflowX: "auto" }}>
-              {["all", "pending", "accepted", "completed", "declined"].map((f) => (
+              {["all", "pending", "confirmed", "completed", "declined"].map((f) => (
                 <button key={f} onClick={() => setFilterStatus(f)} style={{ padding: "7px 14px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "11px", textTransform: "capitalize", whiteSpace: "nowrap", background: filterStatus === f ? "#E61D72" : "#fff", color: filterStatus === f ? "#fff" : "#555", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-                  {f === "accepted" ? "confirmed" : f}{" "}
+                  {f === "confirmed" ? "confirmed" : f}{" "}
                   {f !== "all" &&
                     `(${bookings.filter((b) => b.status === f).length})`}
                 </button>
@@ -277,7 +277,7 @@ export default function CustomerDashboardPage() {
                 {filteredBookings.map((booking) => {
                   const sc = getStatusColor(booking.status);
                   return (
-                    <div key={booking.id} onClick={() => setSelectedBooking(booking)} style={{ background: "#fff", borderRadius: "16px", padding: "16px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", cursor: "pointer", border: booking.status === "accepted" ? "2px solid #3b82f6" : "2px solid transparent" }}>
+                    <div key={booking.id} onClick={() => setSelectedBooking(booking)} style={{ background: "#fff", borderRadius: "16px", padding: "16px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", cursor: "pointer", border: booking.status === "confirmed" ? "2px solid #3b82f6" : "2px solid transparent" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                         <div>
                           <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "15px" }}>
@@ -295,11 +295,11 @@ export default function CustomerDashboardPage() {
                             {sc.label}
                           </span>
                           <p style={{ fontWeight: 900, color: "#E61D72", margin: 0, fontSize: "16px" }}>
-                            ₱{booking.total}
+                            â‚±{booking.total}
                           </p>
                         </div>
                       </div>
-                      {booking.status === "accepted" && (
+                      {booking.status === "confirmed" && (
                         <Link href="/tracking" onClick={(e) => e.stopPropagation()} style={{ display: "block", background: "#EFF6FF", color: "#3b82f6", padding: "8px", borderRadius: "10px", textDecoration: "none", fontWeight: 600, fontSize: "12px", textAlign: "center", marginTop: "8px" }}>
                           Track Artist
                         </Link>
@@ -334,7 +334,7 @@ export default function CustomerDashboardPage() {
               {[
                 { href: "/user-profile", label: "Manage Account" },
                 { href: "/reviews", label: "My Reviews" },
-                { href: "/referral", label: "🎁 Refer & Earn" },
+                { href: "/referral", label: "ðŸŽ Refer & Earn" },
                 { href: "/", label: "Back to Home" },
               ].map((item) => (
                 <Link key={item.href} href={item.href} style={{ display: "block", background: "#FFF0F6", color: "#E61D72", padding: "12px 16px", borderRadius: "12px", textDecoration: "none", fontWeight: 600, fontSize: "14px" }}>
@@ -367,7 +367,7 @@ export default function CustomerDashboardPage() {
                         {v.description}
                       </p>
                       <p style={{ color: "#888", fontSize: "11px", margin: 0 }}>
-                        {v.min_order > 0 ? `Min. ₱${v.min_order}` : "No minimum"} • Expires: {v.expiry_date}
+                        {v.min_order > 0 ? `Min. â‚±${v.min_order}` : "No minimum"} â€¢ Expires: {v.expiry_date}
                       </p>
                     </div>
                     <button onClick={() => {
@@ -390,7 +390,7 @@ export default function CustomerDashboardPage() {
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
               <h3 style={{ fontWeight: 900, margin: 0 }}>Booking Details</h3>
               <button onClick={() => setSelectedBooking(null)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer" }}>
-                ×
+                Ã—
               </button>
             </div>
             {[
@@ -401,7 +401,7 @@ export default function CustomerDashboardPage() {
               { label: "Date", val: selectedBooking.date },
               { label: "Time", val: selectedBooking.time },
               { label: "Address", val: selectedBooking.address },
-              { label: "Total", val: `₱${selectedBooking.total}` },
+              { label: "Total", val: `â‚±${selectedBooking.total}` },
               { label: "Status", val: getStatusColor(selectedBooking.status).label },
             ].map((item) => (
               <div key={item.label} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #f0f0f0" }}>
@@ -410,7 +410,7 @@ export default function CustomerDashboardPage() {
               </div>
             ))}
             <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-              {selectedBooking.status === "accepted" && (
+              {selectedBooking.status === "confirmed" && (
                 <Link href="/tracking" style={{ flex: 1, background: "#3b82f6", color: "#fff", padding: "12px", borderRadius: "12px", textDecoration: "none", fontWeight: 700, textAlign: "center" }}>
                   Track Artist
                 </Link>
@@ -432,3 +432,4 @@ export default function CustomerDashboardPage() {
     </div>
   );
 }
+
