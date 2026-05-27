@@ -630,6 +630,7 @@ export default function ArtistDashboardPage() {
               {[
                 { label: "Customer", val: selectedBooking.contact_name },
                 { label: "Service", val: selectedBooking.service || "Not specified" },
+                { label: "Service", val: selectedBooking.service || "Not specified" },
                 { label: "Phone", val: selectedBooking.contact_phone },
                 { label: "Email", val: selectedBooking.contact_email },
                 { label: "Date", val: selectedBooking.date },
@@ -656,6 +657,8 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
+
 
 
 
