@@ -1,4 +1,4 @@
-import { neon } from "@neondatabase/serverless";
+﻿import { neon } from "@neondatabase/serverless";
 
 export async function POST(request: Request) {
   try {
@@ -17,13 +17,13 @@ export async function POST(request: Request) {
         booking_reference, artist_id, artist_name, service, price,
         date, time, location_lat, location_lng, location_address, landmark,
         contact_name, contact_phone, voucher_code, discount,
-        transport_fee, total, notes, status, payment_status
+        transport_fee, total, notes, status, payment_status, customer_email
       ) VALUES (
         ${bookingReference}, ${body.artistId}, ${body.artistName}, ${body.service}, ${body.price},
         ${body.date}, ${body.time}, ${body.location.lat}, ${body.location.lng}, 
         ${body.location.address}, ${body.location.landmark || ''},
         ${body.contactName}, ${body.contactPhone}, ${body.voucherCode || ''}, ${body.discount || 0},
-        ${body.transportFee}, ${body.total}, ${body.notes || ''}, 'pending', 'pending'
+        ${body.transportFee}, ${body.total}, ${body.notes || ''}, 'pending', 'pending', \
       )
       RETURNING id, booking_reference
     `;

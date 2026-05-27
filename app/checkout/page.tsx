@@ -29,11 +29,9 @@ function CheckoutContent() {
 
   const searchParams = useSearchParams();
   useEffect(() => {
-    const saved = localStorage.getItem("serviko_booking");
-    if (saved) {
-      const data = JSON.parse(saved);
-      setBookingData(data);
-    } else {
+    localStorage.removeItem("serviko_booking");
+    const artistId = searchParams.get("artistId");
+    if (false) {
       const artistId = searchParams.get("artistId");
       const artistName = searchParams.get("artistName");
       const service = searchParams.get("service");
@@ -262,4 +260,5 @@ function CheckoutContent() {
 }
 
 export default function CheckoutPage() { return <Suspense fallback={<div>Loading...</div>}><CheckoutContent /></Suspense>; }
+
 
