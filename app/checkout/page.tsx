@@ -229,7 +229,7 @@ function CheckoutContent() {
           ))}
           <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0 0" }}>
             <span style={{ fontWeight: 900, fontSize: "18px" }}>Total</span>
-            <span style={{ fontWeight: 900, fontSize: "22px", color: "#E61D72" }}>\u20B1{total}</span>
+            <span style={{ fontWeight: 900, fontSize: "22px", color: "#E61D72" }}>{`\u20B1${total}`}</span>
           </div>
         </div>
 
@@ -255,4 +255,6 @@ export default function CheckoutPage() {
     </Suspense>
   );
 }
+
+
 
