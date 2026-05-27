@@ -414,7 +414,8 @@ export default function ArtistDashboardPage() {
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                         <div>
                           <p style={{ fontWeight: 700, margin: "0 0 2px", fontSize: "15px" }}>{booking.contact_name}</p>
-                          <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>{booking.customer_phone}</p>
+                          <p style={{ color: "#7C3AED", fontSize: "13px", fontWeight: 700, margin: "0 0 2px" }}>{booking.service || "Service not specified"}</p>
+                          <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>{booking.contact_phone}</p>
                           <p style={{ color: "#888", fontSize: "12px", margin: 0 }}>{booking.date} at {booking.time}</p>
                         </div>
                         <div style={{ textAlign: "right" }}>
@@ -655,6 +656,7 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
 
 
 
