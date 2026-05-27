@@ -590,7 +590,7 @@ export default function ArtistDashboardPage() {
             ) : (
               <>
                 <h3 style={{ fontWeight: 900, margin: "0 0 4px" }}>Rate this Booking</h3>
-                <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>How was {reviewbooking.contact_name}?</p>
+                <p style={{ color: "#888", fontSize: "13px", margin: "0 0 20px" }}>How was {reviewBooking.contact_name}?</p>
                 <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginBottom: "16px" }}>
                   {[1,2,3,4,5].map(star => (
                     <button key={star} onClick={() => setReviewRating(star)} style={{ background: "none", border: "none", fontSize: "32px", cursor: "pointer", opacity: star <= reviewRating ? 1 : 0.3 }}>&#9733;</button>
@@ -604,7 +604,7 @@ export default function ArtistDashboardPage() {
                     await fetch("/api/reviews", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ artistId, customerName: reviewbooking.contact_name, customerEmail: reviewBooking.customer_email, bookingId: reviewBooking.id, rating: reviewRating, comment: reviewComment }),
+                      body: JSON.stringify({ artistId, customerName: reviewBooking.contact_name, customerEmail: reviewBooking.customer_email, bookingId: reviewBooking.id, rating: reviewRating, comment: reviewComment }),
                     });
                     setReviewSubmitting(false);
                     setReviewSuccess(true);
@@ -654,4 +654,5 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
 
