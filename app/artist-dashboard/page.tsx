@@ -627,12 +627,12 @@ export default function ArtistDashboardPage() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
               {[
-                { label: "Customer", val: selectedbooking.contact_name },
+                { label: "Customer", val: selectedBooking.contact_name },
                 { label: "Phone", val: selectedBooking.contact_phone },
                 { label: "Email", val: selectedBooking.contact_email },
                 { label: "Date", val: selectedBooking.date },
                 { label: "Time", val: selectedBooking.time },
-                { label: "Address", val: selectedbooking.location_address },
+                { label: "Address", val: selectedBooking.location_address },
                 { label: "Total", val: `\u20B1${selectedBooking.total}` },
                 { label: "Your Cut (90%)", val: `\u20B1${Math.round(selectedBooking.total * 0.9)}` },
               ].map(item => (
@@ -654,6 +654,7 @@ export default function ArtistDashboardPage() {
     </div>
   );
 }
+
 
 
 
