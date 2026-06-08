@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
@@ -28,6 +28,8 @@ function CheckoutContent() {
   const [availableVouchers, setAvailableVouchers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [tempTime, setTempTime] = useState("");
 
   const transportFee = 50;
   const total = price + transportFee - voucherDiscount;
@@ -56,7 +58,7 @@ function CheckoutContent() {
       const data = await res.json();
       if (data.valid) {
         setVoucherDiscount(data.discount || 0);
-        setVoucherMsg(`Voucher applied! -\u20B1${data.discount}`);
+        setVoucherMsg(`Voucher applied! -₱${data.discount}`);
       } else {
         setVoucherDiscount(0);
         setVoucherMsg(data.message || "Invalid voucher code.");
@@ -65,6 +67,13 @@ function CheckoutContent() {
       setVoucherMsg("Failed to validate voucher.");
     }
     setApplyingVoucher(false);
+  };
+
+  const handleSaveTime = () => {
+    if (tempTime) {
+      setTime(tempTime);
+      setShowTimePicker(false);
+    }
   };
 
   const handlePay = async () => {
@@ -114,7 +123,7 @@ function CheckoutContent() {
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "16px" }}>
         <p style={{ color: "#888", fontSize: "16px" }}>No booking data found</p>
         <button onClick={() => router.push("/")} style={{ background: "#E61D72", color: "#fff", border: "none", padding: "12px 24px", borderRadius: "12px", fontWeight: 700, cursor: "pointer" }}>
-          â† Go to Home
+          ← Go to Home
         </button>
       </div>
     );
@@ -126,7 +135,7 @@ function CheckoutContent() {
       <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1 style={{ fontSize: "20px", fontWeight: 700, margin: 0 }}>Checkout</h1>
         <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "#E61D72", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}>
-          â† Back
+          ← Back
         </button>
       </div>
 
@@ -152,8 +161,8 @@ function CheckoutContent() {
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             <input type="date" value={date} onChange={e => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]}
               style={{ padding: "12px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "14px" }} />
-            <input type="time" value={time} onChange={e => setTime(e.target.value)}
-              style={{ padding: "12px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "14px" }} />
+            <input type="time" value={time} onChange={e => setTime(e.target.value)} onClick={() => setShowTimePicker(true)}
+              style={{ padding: "12px 14px", borderRadius: "10px", border: "1px solid #e0e0e0", fontSize: "14px", cursor: "pointer" }} />
           </div>
         </div>
 
@@ -207,7 +216,7 @@ function CheckoutContent() {
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {["gcash", "paymaya", "cash"].map(method => (
               <div key={method} onClick={() => setPaymentMethod(method)}
-                style={{ padding: "14px 16px", borderRadius: "12px", border: `2px solid ${paymentMethod === method ? "#E61D72" : "#e0e0e0"}`, background: paymentMethod === method ? "#FFF0F6" : "#fff", cursor: "pointer", fontWeight: 600, fontSize: "14px", textTransform: "capitalize" }}>
+                style={{ padding: "14px 16px", borderRadius: "12px", border: `2px solid ${paymentMethod === method ? "#E61D72" : "#e0e0e0"}`, background: paymentMethod === method ? "#FFF0F6" : "#fff", cursor: "pointer", fontWeight: 600, fontSize: "14px" }}>
                 {method === "gcash" ? "GCash" : method === "paymaya" ? "PayMaya" : "Cash"}
               </div>
             ))}
@@ -218,9 +227,9 @@ function CheckoutContent() {
         <div style={{ background: "#fff", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
           <h3 style={{ fontWeight: 900, margin: "0 0 14px", fontSize: "16px" }}>Price Breakdown</h3>
           {[
-            { label: `${service}`, val: `\u20B1${price}` },
-            { label: "Transport Fee", val: `\u20B1${transportFee}` },
-            ...(voucherDiscount > 0 ? [{ label: "Voucher Discount", val: `-\u20B1${voucherDiscount}` }] : []),
+            { label: `${service}`, val: `₱${price}` },
+            { label: "Transport Fee", val: `₱${transportFee}` },
+            ...(voucherDiscount > 0 ? [{ label: "Voucher Discount", val: `-₱${voucherDiscount}` }] : []),
           ].map(item => (
             <div key={item.label} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #f5f5f5" }}>
               <span style={{ color: "#888", fontSize: "14px" }}>{item.label}</span>
@@ -229,7 +238,7 @@ function CheckoutContent() {
           ))}
           <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0 0" }}>
             <span style={{ fontWeight: 900, fontSize: "18px" }}>Total</span>
-            <span style={{ fontWeight: 900, fontSize: "22px", color: "#E61D72" }}>{`\u20B1${total}`}</span>
+            <span style={{ fontWeight: 900, fontSize: "22px", color: "#E61D72" }}>{`₱${total}`}</span>
           </div>
         </div>
 
@@ -240,10 +249,124 @@ function CheckoutContent() {
         )}
 
         <button onClick={handlePay} disabled={loading}
-          style={{ width: "100%", background: loading ? "#ccc" : "linear-gradient(135deg, #E61D72, #7C3AED)", color: "#fff", border: "none", padding: "18px", borderRadius: "16px", fontWeight: 700, fontSize: "18px", cursor: loading ? "not-allowed" : "pointer", marginBottom: "32px" }}>
-          {loading ? "Processing..." : `Pay \u20B1${total}`}
+          style={{ width: "100%", background: loading ? "#ccc" : "linear-gradient(135deg, #E61D72, #7C3AED)", color: "#fff", border: "none", padding: "18px", borderRadius: "16px", fontWeight: 700, cursor: "pointer", fontSize: "16px" }}>
+          {loading ? "Processing..." : `Pay ₱${total}`}
         </button>
       </div>
+
+      {/* Time Picker Modal */}
+      {showTimePicker && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "rgba(0,0,0,0.5)",
+          display: "flex",
+          alignItems: "flex-end",
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: "#fff",
+            width: "100%",
+            borderRadius: "16px 16px 0 0",
+            padding: "20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px"
+          }}>
+            <h3 style={{ margin: 0, fontWeight: 900, fontSize: "18px" }}>Select Time</h3>
+            
+            {/* Clock Display */}
+            <div style={{
+              background: "#A0593A",
+              borderRadius: "16px",
+              padding: "24px",
+              textAlign: "center",
+              color: "#fff"
+            }}>
+              <p style={{ fontSize: "48px", fontWeight: 700, margin: 0, letterSpacing: "2px" }}>
+                {tempTime || "00:00"}
+              </p>
+              <p style={{ fontSize: "14px", margin: "8px 0 0", opacity: 0.9 }}>AM/PM</p>
+            </div>
+
+            {/* Clock Input */}
+            <input 
+              type="time" 
+              value={tempTime} 
+              onChange={e => setTempTime(e.target.value)}
+              style={{
+                padding: "12px 14px",
+                borderRadius: "10px",
+                border: "1px solid #e0e0e0",
+                fontSize: "16px"
+              }}
+            />
+
+            {/* Buttons */}
+            <div style={{
+              display: "flex",
+              gap: "12px",
+              justifyContent: "space-between"
+            }}>
+              <button
+                onClick={() => {
+                  setTempTime("");
+                }}
+                style={{
+                  flex: 1,
+                  padding: "12px",
+                  borderRadius: "10px",
+                  border: "1px solid #A0593A",
+                  background: "#fff",
+                  color: "#A0593A",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontSize: "14px"
+                }}
+              >
+                Clear
+              </button>
+              
+              <button
+                onClick={handleSaveTime}
+                style={{
+                  flex: 1,
+                  padding: "12px",
+                  borderRadius: "10px",
+                  background: "#A0593A",
+                  color: "#fff",
+                  border: "none",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontSize: "14px"
+                }}
+              >
+                OK
+              </button>
+              
+              <button
+                onClick={() => setShowTimePicker(false)}
+                style={{
+                  flex: 1,
+                  padding: "12px",
+                  borderRadius: "10px",
+                  border: "1px solid #A0593A",
+                  background: "#fff",
+                  color: "#A0593A",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontSize: "14px"
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -255,6 +378,3 @@ export default function CheckoutPage() {
     </Suspense>
   );
 }
-
-
-
